@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Avatar from '@mui/material/Avatar';
-import LogoImage from '../assets/logo-gosaas.png'; // Replace with the actual path to your logo image
+import LogoImage from '../assets/logo.png'; // Replace with the actual path to your logo image
 
 const AppNavbar = () => {
   return (
@@ -15,15 +15,12 @@ const AppNavbar = () => {
         <img
           src={LogoImage}
           alt='Logo'
-          style={{ width: '50px', marginRight: '16px' }}
+          style={{ width: '100px', marginRight: '16px' }}
         />
 
         {/* App title */}
-        <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
-          GoSaaS
-        </Typography>
+        <Typography sx={{ flexGrow: 1 }}>{/* GoSaaS */}</Typography>
 
-        {/* Notification icon with an avatar */}
         <div style={{ marginRight: '16px' }}>
           <IconButton color='inherit' aria-label='Notifications'>
             <Badge badgeContent={5} color='error'>
