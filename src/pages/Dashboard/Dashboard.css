@@ -1,0 +1,18 @@
+/* DashboardStyles.css */
+.dashboard {
+  text-align: center;
+  padding: 20px;
+}
+
+.app-tiles {
+  display: flex;
+  justify-content: space-between; /* Distribute tiles evenly with space in between */
+  flex-wrap: wrap; /* Allow wrapping to the next line */
+}
+
+.app-tile {
+  flex-basis: calc(
+    33.33% - 20px
+  ); /* Adjust the width of each tile for 3 tiles in a row */
+  margin-bottom: 20px; /* Add spacing between rows */
+}
