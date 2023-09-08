@@ -1,5 +1,5 @@
-import NotificationForm from '../common/NotificationForm/NotificationForm';
 import Paper from '@mui/material/Paper';
+import NotificationForm from '../components/Notifications/NotificationForm';
 
 const AddNotification = () => {
   const handleFormSubmit = (formData: {

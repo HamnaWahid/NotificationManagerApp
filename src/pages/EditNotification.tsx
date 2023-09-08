@@ -1,4 +1,4 @@
-import NotificationForm from '../common/NotificationForm/NotificationForm';
+import NotificationForm from '../components/Notifications/NotificationForm';
 import Paper from '@mui/material/Paper';
 
 const NotificationEdit = () => {
