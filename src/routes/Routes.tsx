@@ -6,8 +6,9 @@ import AppEdit from '../pages/EditApp';
 import AddApp from '../pages/AddApp';
 import EventEdit from '../pages/EditEvent';
 import AddEvent from '../pages/AddEvent';
-import NotificationEdit from '../pages/NotificationEdit';
+import NotificationEdit from '../pages/EditNotification';
 import Loading from '../common/Loading';
+import AddNotification from '../pages/AddNotification';
 
 function App() {
   return (
@@ -38,6 +39,14 @@ function App() {
         }
       />
       <Route
+        path='/AddNotification'
+        element={
+          <Wrapper>
+            <AddNotification />
+          </Wrapper>
+        }
+      />
+      <Route
         path='/EditApp'
         element={
           <Wrapper>
@@ -60,7 +69,7 @@ function App() {
             <NotificationEdit />
           </Wrapper>
         }
-      />{' '}
+      />
       <Route
         path='/Loading'
         element={
