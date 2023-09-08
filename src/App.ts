@@ -4,7 +4,7 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#cf482b', // Adjust the primary color to your desired color
+      main: '#3f51b5', // Adjust the primary color to your desired color
     },
   },
   components: {
@@ -13,7 +13,7 @@ const theme = createTheme({
         root: {
           '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline':
             {
-              borderColor: '#ea3c2d', // Change the highlight color to red
+              borderColor: '#3f51b5', // Change the highlight color to red
             },
         },
       },

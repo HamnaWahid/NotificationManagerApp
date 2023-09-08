@@ -2,9 +2,12 @@ import { Routes, Route } from 'react-router-dom';
 import Wrapper from '../HOC/Wrapper';
 import LoginPage from '../pages/Login/Login';
 import Dashboard from '../pages/Dashboard/Dashboard';
-import AppEdit from '../pages/AppEdit';
-import EventEdit from '../pages/EventEdit';
+import AppEdit from '../pages/EditApp';
+import AddApp from '../pages/AddApp';
+import EventEdit from '../pages/EditEvent';
+import AddEvent from '../pages/AddEvent';
 import NotificationEdit from '../pages/NotificationEdit';
+import Loading from '../common/Loading';
 
 function App() {
   return (
@@ -15,6 +18,22 @@ function App() {
         element={
           <Wrapper>
             <Dashboard />
+          </Wrapper>
+        }
+      />
+      <Route
+        path='/AddApp'
+        element={
+          <Wrapper>
+            <AddApp />
+          </Wrapper>
+        }
+      />
+      <Route
+        path='/AddEvent'
+        element={
+          <Wrapper>
+            <AddEvent />
           </Wrapper>
         }
       />
@@ -39,6 +58,14 @@ function App() {
         element={
           <Wrapper>
             <NotificationEdit />
+          </Wrapper>
+        }
+      />{' '}
+      <Route
+        path='/Loading'
+        element={
+          <Wrapper>
+            <Loading />
           </Wrapper>
         }
       />
