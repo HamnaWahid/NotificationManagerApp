@@ -1,6 +1,7 @@
+import { ReactNode } from 'react';
 import AppNavbar from '../common/AppBar';
 
-const Wrapper = ({ children }) => {
+const Wrapper = ({ children }: { children: ReactNode }) => {
   return (
     <div>
       <AppNavbar />
