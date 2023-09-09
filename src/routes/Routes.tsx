@@ -7,13 +7,13 @@ import AddApp from '../pages/AddApp';
 import EventEdit from '../pages/EditEvent';
 import AddEvent from '../pages/AddEvent';
 import NotificationEdit from '../pages/EditNotification';
-import Loading from '../common/Loading';
 import AddNotification from '../pages/AddNotification';
 
 function App() {
   return (
     <Routes>
       <Route path='/' element={<LoginPage />} />
+
       <Route
         path='/Dashboard'
         element={
@@ -67,14 +67,6 @@ function App() {
         element={
           <Wrapper>
             <NotificationEdit />
-          </Wrapper>
-        }
-      />
-      <Route
-        path='/Loading'
-        element={
-          <Wrapper>
-            <Loading />
           </Wrapper>
         }
       />
