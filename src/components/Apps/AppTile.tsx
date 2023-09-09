@@ -1,7 +1,6 @@
-import React from "react";
-import { AppTileCard, Heading, Description } from "./AppTileStyles";
-import ButtonGroup from "../../common/ButtonGroup/ButtonGroup";
-import CardContent from "@mui/material/CardContent";
+import { AppTileCard, Heading, Description } from './AppTileStyles';
+import ButtonGroup from '../../common/ButtonGroup/ButtonGroup';
+import CardContent from '@mui/material/CardContent';
 
 interface AppTileProps {
   title: string;
