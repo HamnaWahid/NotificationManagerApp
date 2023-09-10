@@ -6,6 +6,7 @@ import Badge from '@mui/material/Badge';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import Avatar from '@mui/material/Avatar';
 import LogoImage from '../assets/logo.png'; // Replace with the actual path to your logo image
+import AvatarImage from '../assets/your-avatar-path.png';
 
 const AppNavbar = () => {
   return (
@@ -28,7 +29,8 @@ const AppNavbar = () => {
             </Badge>
           </IconButton>
         </div>
-        <Avatar alt='User Avatar' src='/your-avatar-path.png' />
+
+        <Avatar alt='User Avatar' src={AvatarImage} />
       </Toolbar>
     </AppBar>
   );

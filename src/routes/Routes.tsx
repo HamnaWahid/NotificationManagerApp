@@ -8,11 +8,13 @@ import EventEdit from '../pages/EditEvent';
 import AddEvent from '../pages/AddEvent';
 import NotificationEdit from '../pages/EditNotification';
 import AddNotification from '../pages/AddNotification';
+import YourComponent from '../pages/appgettest';
 
 function App() {
   return (
     <Routes>
       <Route path='/' element={<LoginPage />} />
+      <Route path='/test' element={<YourComponent />} />
 
       <Route
         path='/Dashboard'
