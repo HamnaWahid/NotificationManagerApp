@@ -22,17 +22,29 @@ const FormComponent = ({
 }: FormComponentProps) => {
   const [name, setName] = useState(initialName || '');
   const [description, setDescription] = useState(initialDescription || '');
+  const [nameError, setNameError] = useState(false);
+  const [descriptionError, setDescriptionError] = useState(false);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
+    const newName = e.target.value;
+    setName(newName);
+    setNameError(newName.trim() === ''); // Check if name is empty
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDescription(e.target.value);
+    const newDescription = e.target.value;
+    setDescription(newDescription);
+    setDescriptionError(newDescription.trim() === ''); // Check if description is empty
   };
 
   const handleSubmit = () => {
-    onSubmit({ name, description });
+    if (name.trim() === '' || description.trim() === '') {
+      // If either field is empty, set error states
+      setNameError(name.trim() === '');
+      setDescriptionError(description.trim() === '');
+    } else {
+      onSubmit({ name, description });
+    }
   };
 
   const handleCancel = () => {
@@ -62,6 +74,9 @@ const FormComponent = ({
           fullWidth
           margin='normal'
           variant='outlined'
+          required // Make the field required
+          error={nameError}
+          helperText={nameError ? 'Name is required' : ''}
         />
         <TextField
           label='Description'
@@ -70,6 +85,9 @@ const FormComponent = ({
           fullWidth
           margin='normal'
           variant='outlined'
+          required // Make the field required
+          error={descriptionError}
+          helperText={descriptionError ? 'Description is required' : ''}
         />
         <div className='button-container'>
           <Button

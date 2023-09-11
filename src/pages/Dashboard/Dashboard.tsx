@@ -15,7 +15,8 @@ const Dashboard: React.FC = () => {
   const [selectedAppData, setSelectedAppData] = useState<{
     name: string;
     description: string;
-    title: string; // Add title to selected app data
+    title: string;
+    isToggled: boolean; // Add isToggled state
   } | null>(null);
 
   const handleNext = () => {
@@ -29,9 +30,10 @@ const Dashboard: React.FC = () => {
   const handleUpdateClick = (
     name: string,
     description: string,
-    title: string
+    title: string,
+    isToggled: boolean
   ) => {
-    setSelectedAppData({ name, description, title });
+    setSelectedAppData({ name, description, title, isToggled: !isToggled }); // Toggle the isToggled state
     setDialogOpen(true);
   };
 
@@ -72,19 +74,25 @@ const Dashboard: React.FC = () => {
                   <AppTile
                     title={data.appName}
                     description={data.appDescription}
-                    onUpdateClick={
-                      () =>
-                        handleUpdateClick(
-                          data.appName,
-                          data.appDescription,
-                          data.appName
-                        ) // Pass title as well
+                    isToggled={
+                      selectedAppData && data.appName === selectedAppData.title
+                        ? selectedAppData.isToggled
+                        : false
+                    }
+                    onUpdateClick={() =>
+                      handleUpdateClick(
+                        data.appName,
+                        data.appDescription,
+                        data.appName,
+                        selectedAppData
+                          ? data.appName === selectedAppData.title
+                          : false
+                      )
                     }
                     onDeleteClick={function (): void {
                       throw new Error('Function not implemented.');
                     }}
                     onToggleClick={function (): void {}}
-                    isToggled={false}
                   />
                 </Grid>
               )
@@ -125,7 +133,7 @@ const Dashboard: React.FC = () => {
             message='Update App'
             initialName={selectedAppData.name}
             initialDescription={selectedAppData.description}
-            title={'Edit Application'} // Pass the title prop
+            title={'Edit Application'}
           />
         )}
       </Dialog>

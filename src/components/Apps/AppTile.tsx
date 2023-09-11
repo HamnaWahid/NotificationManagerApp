@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { AppTileCard, Heading, Description } from './AppTileStyles';
 import ButtonGroup from '../../common/ButtonGroup/ButtonGroup';
 import CardContent from '@mui/material/CardContent';
@@ -19,6 +20,13 @@ const AppTile = ({
   onToggleClick,
   isToggled,
 }: AppTileProps) => {
+  const [toggled, setToggled] = useState<boolean>(isToggled);
+
+  const handleToggleClick = () => {
+    setToggled(!toggled);
+    onToggleClick(); // Call the parent's onToggleClick function
+  };
+
   return (
     <AppTileCard>
       <CardContent>
@@ -27,8 +35,8 @@ const AppTile = ({
         <ButtonGroup
           onUpdateClick={onUpdateClick}
           onDeleteClick={onDeleteClick}
-          onToggleClick={onToggleClick}
-          isToggled={isToggled}
+          onToggleClick={handleToggleClick} // Use the local handleToggleClick function
+          isToggled={toggled} // Use the local toggled state
         />
       </CardContent>
     </AppTileCard>
