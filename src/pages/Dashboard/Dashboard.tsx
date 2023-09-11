@@ -1,16 +1,18 @@
-import { Key, useState } from 'react';
+import React, { Key, useState } from 'react';
 import AppTile from '../../components/Apps/AppTile';
 import './Dashboard.css';
-import { Slide, Paper, Grid, IconButton } from '@mui/material';
+import { Slide, Paper, Grid, IconButton, Dialog } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
-import { useApplications } from '../../containers/AppTiles'; // Update with the correct path to your api.ts file
+import { useApplications } from '../../containers/AppTiles';
+import FormComponent from '../../common/Form/FormComponent'; // Import the FormComponent
 
-const tilesPerRow = 4; // Number of tiles to display per row
+const tilesPerRow = 4;
 
-const Dashboard = () => {
+const Dashboard: React.FC = () => {
   const { data: appTilesData, isLoading, isError } = useApplications();
-
-  const [activeStep, setActiveStep] = useState(0);
+  const [activeStep, setActiveStep] = useState<number>(0);
+  const [isDialogOpen, setDialogOpen] = useState<boolean>(false); // State for dialog
+  const [selectedAppTitle, setSelectedAppTitle] = useState<string>(''); // State to store selected app title
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -18,6 +20,21 @@ const Dashboard = () => {
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const handleUpdateClick = (appName: string) => {
+    setSelectedAppTitle(appName); // Set the selected app title
+    setDialogOpen(true); // Open the dialog when "Update" is clicked
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false); // Close the dialog
+  };
+
+  const handleUpdateAction = () => {
+    // Implement the logic for updating the app using formData
+    // Close the dialog after updating
+    handleCloseDialog();
   };
 
   if (isLoading) {
@@ -28,8 +45,7 @@ const Dashboard = () => {
     return <div>Error fetching data</div>;
   }
 
-  const maxSteps = Math.ceil(appTilesData.length / tilesPerRow); // Calculate based on tilesPerRow
-
+  const maxSteps = Math.ceil(appTilesData.length / tilesPerRow);
   const startIndex = activeStep * tilesPerRow;
   const endIndex = Math.min(startIndex + tilesPerRow, appTilesData.length);
   const displayedAppTiles = appTilesData.slice(startIndex, endIndex);
@@ -48,16 +64,14 @@ const Dashboard = () => {
                   <AppTile
                     title={data.appName}
                     description={data.appDescription}
-                    onUpdateClick={function (): void {
-                      throw new Error('Function not implemented.');
-                    }}
+                    onUpdateClick={() => handleUpdateClick(data.appName)} // Handle Update click with appName
                     onDeleteClick={function (): void {
                       throw new Error('Function not implemented.');
                     }}
                     onToggleClick={function (): void {
                       throw new Error('Function not implemented.');
                     }}
-                    isToggled={false} // Add other props as needed
+                    isToggled={false}
                   />
                 </Grid>
               )
@@ -88,6 +102,16 @@ const Dashboard = () => {
           </div>
         </Paper>
       </div>
+
+      {/* Dialog for Update */}
+      <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
+        <FormComponent
+          onCancel={handleCloseDialog}
+          onSubmit={handleUpdateAction}
+          message='Update App'
+          title={'edit application'} // Pass the selected app title
+        />
+      </Dialog>
     </>
   );
 };

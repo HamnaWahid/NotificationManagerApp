@@ -7,10 +7,16 @@ import Grid from '@mui/material/Grid';
 interface FormComponentProps {
   onCancel: () => void;
   onSubmit: (formData: { name: string; description: string }) => void;
-  message?: string; // New prop for displaying a message
+  message?: string;
+  title?: string;
 }
 
-const FormComponent = ({ onCancel, onSubmit, message }: FormComponentProps) => {
+const FormComponent = ({
+  onCancel,
+  onSubmit,
+  
+  title,
+}: FormComponentProps) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
@@ -33,7 +39,7 @@ const FormComponent = ({ onCancel, onSubmit, message }: FormComponentProps) => {
   return (
     <Grid container justifyContent='center' alignItems='center' height='93vh'>
       <FormContainer>
-        {message && (
+        {title && (
           <div className='message'>
             <p
               style={{
@@ -42,7 +48,7 @@ const FormComponent = ({ onCancel, onSubmit, message }: FormComponentProps) => {
                 fontWeight: 'bold',
               }}
             >
-              {message}
+              {title}
             </p>
           </div>
         )}
