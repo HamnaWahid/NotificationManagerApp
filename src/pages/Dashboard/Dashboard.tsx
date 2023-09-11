@@ -107,7 +107,7 @@ const Dashboard: React.FC = () => {
                       )
                     }
                     onDeleteClick={
-                      () => handleDeleteClick(data.applicationId) // Pass the correct applicationId
+                      () => handleDeleteClick(data.id || data._id) // Pass the correct applicationId
                     }
                     onToggleClick={function (): void {}}
                   />
