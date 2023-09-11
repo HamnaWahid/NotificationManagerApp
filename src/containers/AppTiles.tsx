@@ -13,3 +13,10 @@ export const fetchApplications = async () => {
 export const useApplications = () => {
   return useQuery(['applications'], fetchApplications);
 };
+
+export const deleteApplication = async (
+  applicationId: string | number
+): Promise<void> => {
+  const response = await axios.patch(`${API_BASE_URL}/${applicationId}/delete`);
+  return response.data; // You may handle the response data as needed
+};

@@ -1,7 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Wrapper from '../HOC/Wrapper';
 import LoginPage from '../pages/Login/Login';
-import AppEdit from '../pages/EditApp';
 import AddApp from '../pages/AddApp';
 import EventEdit from '../pages/EditEvent';
 import AddEvent from '../pages/AddEvent';
@@ -48,14 +47,7 @@ function App() {
           </Wrapper>
         }
       />
-      <Route
-        path='/EditApp'
-        element={
-          <Wrapper>
-            <AppEdit />
-          </Wrapper>
-        }
-      />
+
       <Route
         path='/EditEvent'
         element={

@@ -3,7 +3,7 @@ import AppTile from '../../components/Apps/AppTile';
 import './Dashboard.css';
 import { Slide, Paper, Grid, IconButton, Dialog } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
-import { useApplications } from '../../containers/AppTiles';
+import { useApplications, deleteApplication } from '../../containers/AppTiles';
 import FormComponent from '../../common/Form/FormComponent';
 
 const tilesPerRow = 4;
@@ -47,6 +47,16 @@ const Dashboard: React.FC = () => {
     handleCloseDialog();
   };
 
+  const handleDeleteClick = async (applicationId: string | number) => {
+    try {
+      // Call the deleteApplication function with the applicationId
+      await deleteApplication(applicationId);
+      // You can add logic to update the UI or refresh the application list here
+    } catch (error) {
+      console.error('Error deleting application:', error);
+      // Handle the error (e.g., show an error message to the user)
+    }
+  };
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -67,11 +77,18 @@ const Dashboard: React.FC = () => {
           <Grid container spacing={2}>
             {displayedAppTiles.map(
               (
-                data: { appName: string; appDescription: string },
+                data: {
+                  id: number;
+                  _id: string;
+                  appName: string;
+                  appDescription: string;
+                  applicationId: string | number;
+                },
                 index: Key | null | undefined
               ) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <AppTile
+                    applicationId={data.id || data._id} // Pass the applicationId
                     title={data.appName}
                     description={data.appDescription}
                     isToggled={
@@ -89,9 +106,9 @@ const Dashboard: React.FC = () => {
                           : false
                       )
                     }
-                    onDeleteClick={function (): void {
-                      throw new Error('Function not implemented.');
-                    }}
+                    onDeleteClick={
+                      () => handleDeleteClick(data.applicationId) // Pass the correct applicationId
+                    }
                     onToggleClick={function (): void {}}
                   />
                 </Grid>
