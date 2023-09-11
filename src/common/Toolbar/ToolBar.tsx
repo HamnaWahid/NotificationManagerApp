@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Toolbar,
   Typography,
@@ -6,8 +6,12 @@ import {
   IconButton,
   Menu,
   MenuItem,
-} from '@material-ui/core';
-import { Search, Sort, SortByAlpha } from '@material-ui/icons';
+  Button,
+  Dialog,
+} from '@mui/material';
+import { Search, Sort, SortByAlpha, Add } from '@mui/icons-material';
+import FormComponent from '../Form/FormComponent'; // Import the FormComponent
+
 import './ToolbarStyles.css';
 
 interface ToolbarHeaderProps {
@@ -15,11 +19,10 @@ interface ToolbarHeaderProps {
 }
 
 const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({ title }) => {
-  const [sortAnchorEl, setSortAnchorEl] = React.useState<null | HTMLElement>(
-    null
-  );
+  const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
   const [alphaSortAnchorEl, setAlphaSortAnchorEl] =
-    React.useState<null | HTMLElement>(null);
+    useState<null | HTMLElement>(null);
+  const [openDialog, setOpenDialog] = useState(false);
 
   const handleClickSort = (event: React.MouseEvent<HTMLElement>) => {
     setSortAnchorEl(event.currentTarget);
@@ -32,6 +35,24 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({ title }) => {
   const handleClose = () => {
     setSortAnchorEl(null);
     setAlphaSortAnchorEl(null);
+  };
+
+  const handleAddClick = () => {
+    setOpenDialog(true);
+  };
+
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+  };
+
+  const handleFormSubmit = (formData: {
+    name: string;
+    description: string;
+  }) => {
+    // Handle form submission here
+    console.log(formData);
+    // Close the dialog
+    setOpenDialog(false);
   };
 
   return (
@@ -51,9 +72,11 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({ title }) => {
         />
       </div>
       <div>
-        <IconButton onClick={handleClickSortByAlpha}>
-          <SortByAlpha />
-        </IconButton>
+        <div style={{ display: 'flex' }}>
+          <IconButton onClick={handleClickSortByAlpha}>
+            <SortByAlpha />
+          </IconButton>
+        </div>
         <Menu
           anchorEl={alphaSortAnchorEl}
           keepMounted
@@ -78,6 +101,30 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({ title }) => {
           <MenuItem onClick={handleClose}>Ascending</MenuItem>
           <MenuItem onClick={handleClose}>Descending</MenuItem>
         </Menu>
+      </div>
+      <div>
+        <Button
+          variant='contained'
+          color='primary'
+          size='small'
+          style={{
+            marginRight: '5px',
+            backgroundColor: 'white',
+            color: '#3f51b5',
+          }}
+          onClick={handleAddClick}
+        >
+          <Add />
+        </Button>
+        {/* Dialog component */}
+        <Dialog open={openDialog} onClose={handleDialogClose}>
+          {/* Pass title and other props to FormComponent */}
+          <FormComponent
+            title='Add Application'
+            onCancel={handleDialogClose}
+            onSubmit={handleFormSubmit}
+          />
+        </Dialog>
       </div>
     </Toolbar>
   );
