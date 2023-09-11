@@ -9,16 +9,19 @@ interface FormComponentProps {
   onSubmit: (formData: { name: string; description: string }) => void;
   message?: string;
   title?: string;
+  initialName?: string;
+  initialDescription?: string;
 }
 
 const FormComponent = ({
   onCancel,
   onSubmit,
-  
   title,
+  initialName,
+  initialDescription,
 }: FormComponentProps) => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState(initialName || '');
+  const [description, setDescription] = useState(initialDescription || '');
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -37,7 +40,7 @@ const FormComponent = ({
   };
 
   return (
-    <Grid container justifyContent='center' alignItems='center' height='93vh'>
+    <Grid container justifyContent='center' alignItems='center'>
       <FormContainer>
         {title && (
           <div className='message'>

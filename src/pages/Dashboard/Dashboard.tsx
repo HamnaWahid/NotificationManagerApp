@@ -4,15 +4,19 @@ import './Dashboard.css';
 import { Slide, Paper, Grid, IconButton, Dialog } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { useApplications } from '../../containers/AppTiles';
-import FormComponent from '../../common/Form/FormComponent'; // Import the FormComponent
+import FormComponent from '../../common/Form/FormComponent';
 
 const tilesPerRow = 4;
 
 const Dashboard: React.FC = () => {
   const { data: appTilesData, isLoading, isError } = useApplications();
   const [activeStep, setActiveStep] = useState<number>(0);
-  const [isDialogOpen, setDialogOpen] = useState<boolean>(false); // State for dialog
-  const [selectedAppTitle, setSelectedAppTitle] = useState<string>(''); // State to store selected app title
+  const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [selectedAppData, setSelectedAppData] = useState<{
+    name: string;
+    description: string;
+    title: string; // Add title to selected app data
+  } | null>(null);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -22,13 +26,17 @@ const Dashboard: React.FC = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleUpdateClick = (appName: string) => {
-    setSelectedAppTitle(appName); // Set the selected app title
-    setDialogOpen(true); // Open the dialog when "Update" is clicked
+  const handleUpdateClick = (
+    name: string,
+    description: string,
+    title: string
+  ) => {
+    setSelectedAppData({ name, description, title });
+    setDialogOpen(true);
   };
 
   const handleCloseDialog = () => {
-    setDialogOpen(false); // Close the dialog
+    setDialogOpen(false);
   };
 
   const handleUpdateAction = () => {
@@ -64,13 +72,18 @@ const Dashboard: React.FC = () => {
                   <AppTile
                     title={data.appName}
                     description={data.appDescription}
-                    onUpdateClick={() => handleUpdateClick(data.appName)} // Handle Update click with appName
+                    onUpdateClick={
+                      () =>
+                        handleUpdateClick(
+                          data.appName,
+                          data.appDescription,
+                          data.appName
+                        ) // Pass title as well
+                    }
                     onDeleteClick={function (): void {
                       throw new Error('Function not implemented.');
                     }}
-                    onToggleClick={function (): void {
-                      throw new Error('Function not implemented.');
-                    }}
+                    onToggleClick={function (): void {}}
                     isToggled={false}
                   />
                 </Grid>
@@ -105,12 +118,16 @@ const Dashboard: React.FC = () => {
 
       {/* Dialog for Update */}
       <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
-        <FormComponent
-          onCancel={handleCloseDialog}
-          onSubmit={handleUpdateAction}
-          message='Update App'
-          title={'edit application'} // Pass the selected app title
-        />
+        {selectedAppData && (
+          <FormComponent
+            onCancel={handleCloseDialog}
+            onSubmit={handleUpdateAction}
+            message='Update App'
+            initialName={selectedAppData.name}
+            initialDescription={selectedAppData.description}
+            title={'Edit Application'} // Pass the title prop
+          />
+        )}
       </Dialog>
     </>
   );
