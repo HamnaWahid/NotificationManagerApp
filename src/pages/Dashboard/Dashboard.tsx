@@ -3,8 +3,21 @@ import AppTile from '../../components/Apps/AppTile';
 import './Dashboard.css';
 import { Slide, Paper, Grid, IconButton, Dialog } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
-import { useApplications, deleteApplication } from '../../containers/AppTiles';
+import {
+  useApplications,
+  deleteApplication,
+  deactivateApplication,
+  updateApplication,
+} from '../../containers/AppTiles';
 import FormComponent from '../../common/Form/FormComponent';
+
+// Define a TypeScript interface for the application data
+interface ApplicationData {
+  id: number;
+  _id: string;
+  appName: string;
+  appDescription: string;
+}
 
 const tilesPerRow = 4;
 
@@ -12,12 +25,8 @@ const Dashboard: React.FC = () => {
   const { data: appTilesData, isLoading, isError } = useApplications();
   const [activeStep, setActiveStep] = useState<number>(0);
   const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
-  const [selectedAppData, setSelectedAppData] = useState<{
-    name: string;
-    description: string;
-    title: string;
-    isToggled: boolean; // Add isToggled state
-  } | null>(null);
+  const [selectedAppData, setSelectedAppData] =
+    useState<ApplicationData | null>(null);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -27,13 +36,8 @@ const Dashboard: React.FC = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleUpdateClick = (
-    name: string,
-    description: string,
-    title: string,
-    isToggled: boolean
-  ) => {
-    setSelectedAppData({ name, description, title, isToggled: !isToggled }); // Toggle the isToggled state
+  const handleUpdateClick = (data: ApplicationData) => {
+    setSelectedAppData(data);
     setDialogOpen(true);
   };
 
@@ -41,15 +45,26 @@ const Dashboard: React.FC = () => {
     setDialogOpen(false);
   };
 
-  const handleUpdateAction = () => {
-    // Implement the logic for updating the app using formData
-    // Close the dialog after updating
-    handleCloseDialog();
+  const handleUpdateAction = async (formData: {
+    appName: string;
+    appDescription: string;
+  }) => {
+    if (selectedAppData) {
+      try {
+        await updateApplication(
+          selectedAppData.id || selectedAppData._id,
+          formData
+        );
+        handleCloseDialog();
+      } catch (error) {
+        console.error('Error updating application:', error);
+        // Handle the error (e.g., show an error message to the user)
+      }
+    }
   };
 
   const handleDeleteClick = async (applicationId: string | number) => {
     try {
-      // Call the deleteApplication function with the applicationId
       await deleteApplication(applicationId);
       // You can add logic to update the UI or refresh the application list here
     } catch (error) {
@@ -57,6 +72,15 @@ const Dashboard: React.FC = () => {
       // Handle the error (e.g., show an error message to the user)
     }
   };
+
+  const handleToggleClick = async (applicationId: string | number) => {
+    try {
+      await deactivateApplication(applicationId);
+    } catch (error) {
+      console.error('Error deactivating application:', error);
+    }
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -76,40 +100,16 @@ const Dashboard: React.FC = () => {
         <Slide direction='left' in={true} mountOnEnter unmountOnExit>
           <Grid container spacing={2}>
             {displayedAppTiles.map(
-              (
-                data: {
-                  id: number;
-                  _id: string;
-                  appName: string;
-                  appDescription: string;
-                  applicationId: string | number;
-                },
-                index: Key | null | undefined
-              ) => (
+              (data: ApplicationData, index: Key | null | undefined) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <AppTile
-                    applicationId={data.id || data._id} // Pass the applicationId
+                    applicationId={data.id || data._id}
                     title={data.appName}
                     description={data.appDescription}
-                    isToggled={
-                      selectedAppData && data.appName === selectedAppData.title
-                        ? selectedAppData.isToggled
-                        : false
-                    }
-                    onUpdateClick={() =>
-                      handleUpdateClick(
-                        data.appName,
-                        data.appDescription,
-                        data.appName,
-                        selectedAppData
-                          ? data.appName === selectedAppData.title
-                          : false
-                      )
-                    }
-                    onDeleteClick={
-                      () => handleDeleteClick(data.id || data._id) // Pass the correct applicationId
-                    }
-                    onToggleClick={function (): void {}}
+                    isToggled={true}
+                    onUpdateClick={() => handleUpdateClick(data)}
+                    onDeleteClick={() => handleDeleteClick(data.id || data._id)}
+                    onToggleClick={() => handleToggleClick(data.id || data._id)}
                   />
                 </Grid>
               )
@@ -148,8 +148,8 @@ const Dashboard: React.FC = () => {
             onCancel={handleCloseDialog}
             onSubmit={handleUpdateAction}
             message='Update App'
-            initialName={selectedAppData.name}
-            initialDescription={selectedAppData.description}
+            initialName={selectedAppData.appName}
+            initialDescription={selectedAppData.appDescription}
             title={'Edit Application'}
           />
         )}

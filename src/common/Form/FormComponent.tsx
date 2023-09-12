@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 
 interface FormComponentProps {
   onCancel: () => void;
-  onSubmit: (formData: { name: string; description: string }) => void;
+  onSubmit: (formData: { appName: string; appDescription: string }) => void;
   message?: string;
   title?: string;
   initialName?: string;
@@ -20,8 +20,8 @@ const FormComponent = ({
   initialName,
   initialDescription,
 }: FormComponentProps) => {
-  const [name, setName] = useState(initialName || '');
-  const [description, setDescription] = useState(initialDescription || '');
+  const [appName, setName] = useState(initialName || '');
+  const [appDescription, setDescription] = useState(initialDescription || '');
   const [nameError, setNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
 
@@ -38,12 +38,12 @@ const FormComponent = ({
   };
 
   const handleSubmit = () => {
-    if (name.trim() === '' || description.trim() === '') {
+    if (appName.trim() === '' || appDescription.trim() === '') {
       // If either field is empty, set error states
-      setNameError(name.trim() === '');
-      setDescriptionError(description.trim() === '');
+      setNameError(appName.trim() === '');
+      setDescriptionError(appDescription.trim() === '');
     } else {
-      onSubmit({ name, description });
+      onSubmit({ appName, appDescription });
     }
   };
 
@@ -69,7 +69,7 @@ const FormComponent = ({
         )}
         <TextField
           label='Name'
-          value={name}
+          value={appName}
           onChange={handleNameChange}
           fullWidth
           margin='normal'
@@ -80,7 +80,7 @@ const FormComponent = ({
         />
         <TextField
           label='Description'
-          value={description}
+          value={appDescription}
           onChange={handleDescriptionChange}
           fullWidth
           margin='normal'
