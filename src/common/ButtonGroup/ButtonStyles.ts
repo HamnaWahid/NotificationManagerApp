@@ -38,7 +38,7 @@ export const DeleteButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-export const ToggleButton = styled(Switch)(({ theme }) => ({
+export const ToggleButton = styled(Switch)(() => ({
   '& .MuiSwitch-switchBase.Mui-checked': {
     color: '#ea3c2d',
     '&:hover': {

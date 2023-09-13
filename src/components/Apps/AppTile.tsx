@@ -3,6 +3,7 @@ import { AppTileCard, Heading, Description } from './AppTileStyles';
 import ButtonGroup from '../../common/ButtonGroup/ButtonGroup';
 import CardActionArea from '@mui/material/CardActionArea'; // Import CardActionArea
 import CardContent from '@mui/material/CardContent';
+import { CardActions } from '@mui/material';
 
 interface AppTileProps {
   title: string;
@@ -34,20 +35,24 @@ const AppTile = ({
     console.log('Clicked App ID:', applicationId);
   };
   return (
-    <CardActionArea onClick={handleCardClick}>
+    <>
       <AppTileCard>
-        <CardContent>
-          <Heading>{title}</Heading>
-          <Description>{description}</Description>
+        <CardActionArea onClick={handleCardClick}>
+          <CardContent>
+            <Heading>{title}</Heading>
+            <Description>{description}</Description>
+          </CardContent>
+        </CardActionArea>
+        <CardActions sx={{ justifyContent: 'center' }}>
           <ButtonGroup
             onUpdateClick={onUpdateClick}
             onDeleteClick={onDeleteClick}
             onToggleClick={handleToggleClick}
             isToggled={toggled}
           />
-        </CardContent>
+        </CardActions>
       </AppTileCard>
-    </CardActionArea>
+    </>
   );
 };
 

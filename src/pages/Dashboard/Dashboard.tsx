@@ -1,4 +1,4 @@
-import React, { Key, useState } from 'react';
+import React, { useState } from 'react';
 import AppTile from '../../components/Apps/AppTile';
 import './Dashboard.css';
 import { Slide, Paper, Grid, IconButton, Dialog } from '@mui/material';
@@ -14,6 +14,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 // Define a TypeScript interface for the application data
 interface ApplicationData {
+  isActive: boolean;
   id: number;
   _id: string;
   appName: string;
@@ -24,36 +25,37 @@ const pageSize = 4;
 
 const Dashboard: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [selectedAppData, setSelectedAppData] =
+    useState<ApplicationData | null>(null);
 
   const {
     data: appTilesData,
     isLoading,
     isError,
   } = useApplications(currentPage, pageSize);
-  const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
-  const [selectedAppData, setSelectedAppData] =
-    useState<ApplicationData | null>(null);
+
   const queryClient = useQueryClient();
 
   const handleNext = () => {
     if (currentPage < appTilesData.totalPages) {
-      setCurrentPage(currentPage + 1);
       queryClient.invalidateQueries([
         'applications',
         currentPage + 1,
         pageSize,
       ]);
+      setCurrentPage(currentPage + 1);
     }
   };
 
   const handleBack = () => {
     if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
       queryClient.invalidateQueries([
         'applications',
         currentPage - 1,
         pageSize,
       ]);
+      setCurrentPage(currentPage - 1);
     }
   };
   const handleUpdateClick = (data: ApplicationData) => {
@@ -75,6 +77,8 @@ const Dashboard: React.FC = () => {
           selectedAppData.id || selectedAppData._id,
           formData
         );
+        queryClient.invalidateQueries(['applications', currentPage, pageSize]);
+
         handleCloseDialog();
       } catch (error) {
         console.error('Error updating application:', error);
@@ -86,6 +90,8 @@ const Dashboard: React.FC = () => {
   const handleDeleteClick = async (applicationId: string | number) => {
     try {
       await deleteApplication(applicationId);
+      queryClient.invalidateQueries(['applications', currentPage, pageSize]);
+
       // You can add logic to update the UI or refresh the application list here
     } catch (error) {
       console.error('Error deleting application:', error);
@@ -94,8 +100,10 @@ const Dashboard: React.FC = () => {
   };
 
   const handleToggleClick = async (applicationId: string | number) => {
+    console.log(applicationId);
     try {
       await deactivateApplication(applicationId);
+      queryClient.invalidateQueries(['applications', currentPage, pageSize]);
     } catch (error) {
       console.error('Error deactivating application:', error);
     }
@@ -109,28 +117,26 @@ const Dashboard: React.FC = () => {
     return <div>Error fetching data</div>;
   }
 
-  console.log(typeof appTilesData);
+  console.log(appTilesData);
 
   return (
     <>
       <div className='dashboard'>
         <Slide direction='left' in={true} mountOnEnter unmountOnExit>
           <Grid container spacing={2}>
-            {appTilesData?.applications.map(
-              (data: ApplicationData, index: Key | null | undefined) => (
-                <Grid item xs={12} sm={6} md={3} key={index}>
-                  <AppTile
-                    applicationId={data.id || data._id}
-                    title={data.appName}
-                    description={data.appDescription}
-                    isToggled={true}
-                    onUpdateClick={() => handleUpdateClick(data)}
-                    onDeleteClick={() => handleDeleteClick(data.id || data._id)}
-                    onToggleClick={() => handleToggleClick(data.id || data._id)}
-                  />
-                </Grid>
-              )
-            )}
+            {appTilesData?.applications.map((data: ApplicationData) => (
+              <Grid item xs={12} sm={6} md={3} key={data.id || data._id}>
+                <AppTile
+                  applicationId={data.id || data._id}
+                  title={data.appName}
+                  description={data.appDescription}
+                  isToggled={data.isActive}
+                  onUpdateClick={() => handleUpdateClick(data)}
+                  onDeleteClick={() => handleDeleteClick(data.id || data._id)}
+                  onToggleClick={() => handleToggleClick(data.id || data._id)}
+                />
+              </Grid>
+            ))}
           </Grid>
         </Slide>
         <Paper elevation={1} square>
