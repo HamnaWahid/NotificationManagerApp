@@ -25,7 +25,6 @@ export const updateApplication = async (
 
 // Define a function to fetch the applications
 export const fetchApplications = async (page: number, pageSize: number) => {
-  console.log(`${API_BASE_URL}?page=${page}&pageSize=${pageSize}`);
   const response = await axios.get(
     `${API_BASE_URL}?page=${page}&pageSize=${pageSize}`
   );

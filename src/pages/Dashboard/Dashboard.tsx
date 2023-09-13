@@ -100,7 +100,6 @@ const Dashboard: React.FC = () => {
   };
 
   const handleToggleClick = async (applicationId: string | number) => {
-    console.log(applicationId);
     try {
       await deactivateApplication(applicationId);
       queryClient.invalidateQueries(['applications', currentPage, pageSize]);
@@ -117,7 +116,6 @@ const Dashboard: React.FC = () => {
     return <div>Error fetching data</div>;
   }
 
-  console.log(appTilesData);
 
   return (
     <>

@@ -22,8 +22,8 @@ const AppTile = ({
   onDeleteClick,
   onToggleClick,
   isToggled,
-  applicationId,
-}: AppTileProps) => {
+}: // applicationId,
+AppTileProps) => {
   const [toggled, setToggled] = useState<boolean>(isToggled);
 
   const handleToggleClick = () => {
@@ -31,8 +31,8 @@ const AppTile = ({
     onToggleClick();
   };
   const handleCardClick = () => {
-    // Pass the applicationId to the parent component or store it as needed
-    console.log('Clicked App ID:', applicationId);
+    // // Pass the applicationId to the parent component or store it as needed
+    // console.log('Clicked App ID:', applicationId);
   };
   return (
     <>
