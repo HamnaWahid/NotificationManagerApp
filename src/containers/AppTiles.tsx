@@ -2,13 +2,13 @@ import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 
 const API_BASE_URL = 'http://localhost:3000/api/applications'; // Replace with your backend URL
-interface UpdateApplicationData {
+interface ApplicationData {
   appName: string;
   appDescription: string;
 }
 export const updateApplication = async (
   applicationId: string | number,
-  data: UpdateApplicationData
+  data: ApplicationData
 ): Promise<void> => {
   try {
     const response = await axios.put(
@@ -28,7 +28,6 @@ export const fetchApplications = async (page: number, pageSize: number) => {
   const response = await axios.get(
     `${API_BASE_URL}?page=${page}&pageSize=${pageSize}`
   );
-
   return response.data;
 };
 
@@ -42,6 +41,7 @@ export const useApplications = (page: number, pageSize: number) => {
     }
   );
 };
+
 export const deleteApplication = async (
   applicationId: string | number
 ): Promise<void> => {
@@ -56,4 +56,14 @@ export const deactivateApplication = async (
     `${API_BASE_URL}/${applicationId}/deactivate`
   );
   return response.data; // You may handle the response data as needed
+};
+
+export const addApplication = async (data: ApplicationData): Promise<void> => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/`, data);
+    console.log('Application added:', response.data);
+  } catch (error) {
+    console.error('Error adding application:', error);
+    throw error; // You can handle or propagate the error as necessary
+  }
 };

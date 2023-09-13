@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import useHandleAddApplication from './handleAddApplication';
 import {
   Toolbar,
   Typography,
@@ -45,14 +46,15 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({ title }) => {
     setOpenDialog(false);
   };
 
+  const handleAddApplication = useHandleAddApplication();
   const handleFormSubmit = (formData: {
-    name: string;
-    description: string;
+    appName: string;
+    appDescription: string;
   }) => {
-    // Handle form submission here
-    console.log(formData);
-    // Close the dialog
-    setOpenDialog(false);
+    if (title === 'Application') {
+      handleAddApplication(formData);
+      setOpenDialog(false);
+    }
   };
 
   return (
