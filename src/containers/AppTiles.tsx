@@ -24,16 +24,25 @@ export const updateApplication = async (
 };
 
 // Define a function to fetch the applications
-export const fetchApplications = async () => {
-  const response = await axios.get(`${API_BASE_URL}`);
-  return response.data.applications;
+export const fetchApplications = async (page: number, pageSize: number) => {
+  console.log(`${API_BASE_URL}?page=${page}&pageSize=${pageSize}`);
+  const response = await axios.get(
+    `${API_BASE_URL}?page=${page}&pageSize=${pageSize}`
+  );
+
+  return response.data;
 };
 
 // Create a React Query hook to fetch the applications
-export const useApplications = () => {
-  return useQuery(['applications'], fetchApplications);
+export const useApplications = (page: number, pageSize: number) => {
+  return useQuery(
+    ['applications', page, pageSize], // Update the query key here
+    () => fetchApplications(page, pageSize),
+    {
+      staleTime: 1000,
+    }
+  );
 };
-
 export const deleteApplication = async (
   applicationId: string | number
 ): Promise<void> => {

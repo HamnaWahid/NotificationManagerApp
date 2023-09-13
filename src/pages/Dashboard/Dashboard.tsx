@@ -10,6 +10,7 @@ import {
   updateApplication,
 } from '../../containers/AppTiles';
 import FormComponent from '../../common/Form/FormComponent';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Define a TypeScript interface for the application data
 interface ApplicationData {
@@ -19,23 +20,42 @@ interface ApplicationData {
   appDescription: string;
 }
 
-const tilesPerRow = 4;
+const pageSize = 4;
 
 const Dashboard: React.FC = () => {
-  const { data: appTilesData, isLoading, isError } = useApplications();
-  const [activeStep, setActiveStep] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const {
+    data: appTilesData,
+    isLoading,
+    isError,
+  } = useApplications(currentPage, pageSize);
   const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
   const [selectedAppData, setSelectedAppData] =
     useState<ApplicationData | null>(null);
+  const queryClient = useQueryClient();
 
   const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if (currentPage < appTilesData.totalPages) {
+      setCurrentPage(currentPage + 1);
+      queryClient.invalidateQueries([
+        'applications',
+        currentPage + 1,
+        pageSize,
+      ]);
+    }
   };
 
   const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      queryClient.invalidateQueries([
+        'applications',
+        currentPage - 1,
+        pageSize,
+      ]);
+    }
   };
-
   const handleUpdateClick = (data: ApplicationData) => {
     setSelectedAppData(data);
     setDialogOpen(true);
@@ -89,17 +109,14 @@ const Dashboard: React.FC = () => {
     return <div>Error fetching data</div>;
   }
 
-  const maxSteps = Math.ceil(appTilesData.length / tilesPerRow);
-  const startIndex = activeStep * tilesPerRow;
-  const endIndex = Math.min(startIndex + tilesPerRow, appTilesData.length);
-  const displayedAppTiles = appTilesData.slice(startIndex, endIndex);
+  console.log(typeof appTilesData);
 
   return (
     <>
       <div className='dashboard'>
         <Slide direction='left' in={true} mountOnEnter unmountOnExit>
           <Grid container spacing={2}>
-            {displayedAppTiles.map(
+            {appTilesData?.applications.map(
               (data: ApplicationData, index: Key | null | undefined) => (
                 <Grid item xs={12} sm={6} md={3} key={index}>
                   <AppTile
@@ -116,7 +133,6 @@ const Dashboard: React.FC = () => {
             )}
           </Grid>
         </Slide>
-
         <Paper elevation={1} square>
           <div
             style={{
@@ -125,15 +141,15 @@ const Dashboard: React.FC = () => {
               alignItems: 'center',
             }}
           >
-            <IconButton onClick={handleBack} disabled={activeStep === 0}>
+            <IconButton onClick={handleBack} disabled={currentPage === 1}>
               <ArrowBackIos />
             </IconButton>
             <span style={{ margin: '0 5px' }}>
-              {activeStep + 1} of {maxSteps}
+              {currentPage} of {appTilesData?.totalPages}
             </span>
             <IconButton
               onClick={handleNext}
-              disabled={activeStep === maxSteps - 1}
+              disabled={currentPage === appTilesData?.totalPages}
             >
               <ArrowForwardIos />
             </IconButton>
