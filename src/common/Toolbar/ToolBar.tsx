@@ -14,16 +14,25 @@ import { Search, Sort, SortByAlpha, Add } from '@mui/icons-material';
 import FormComponent from '../Form/FormComponent'; // Import the FormComponent
 
 import './ToolbarStyles.css';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ToolbarHeaderProps {
   title: string;
+  searchTerm: string; // Add searchTerm to the interface
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({ title }) => {
+const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
+  title,
+  searchTerm,
+  setSearchTerm,
+}) => {
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
   const [alphaSortAnchorEl, setAlphaSortAnchorEl] =
     useState<null | HTMLElement>(null);
   const [openDialog, setOpenDialog] = useState(false);
+
+  const queryClient = useQueryClient();
 
   const handleClickSort = (event: React.MouseEvent<HTMLElement>) => {
     setSortAnchorEl(event.currentTarget);
@@ -71,6 +80,13 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({ title }) => {
           placeholder='Search'
           style={{ color: '#3f51b5', marginLeft: '10px' }}
           inputProps={{ 'aria-label': 'search' }}
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            if (searchTerm.length >= 3) {
+              queryClient.invalidateQueries(['applications', searchTerm]);
+            }
+          }}
         />
       </div>
       <div>

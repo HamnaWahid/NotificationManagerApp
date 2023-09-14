@@ -20,10 +20,12 @@ interface ApplicationData {
   appName: string;
   appDescription: string;
 }
-
+interface DashboardProps {
+  searchTerm: string; // Add searchTerm to the interface
+}
 const pageSize = 4;
 
-const Dashboard: React.FC = () => {
+const Dashboard: React.FC<DashboardProps> = ({ searchTerm }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
   const [selectedAppData, setSelectedAppData] =
@@ -33,7 +35,7 @@ const Dashboard: React.FC = () => {
     data: appTilesData,
     isLoading,
     isError,
-  } = useApplications(currentPage, pageSize);
+  } = useApplications(currentPage, pageSize, searchTerm);
 
   const queryClient = useQueryClient();
 
@@ -115,7 +117,6 @@ const Dashboard: React.FC = () => {
   if (isError) {
     return <div>Error fetching data</div>;
   }
-
 
   return (
     <>

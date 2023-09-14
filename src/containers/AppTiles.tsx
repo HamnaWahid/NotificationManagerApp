@@ -24,18 +24,33 @@ export const updateApplication = async (
 };
 
 // Define a function to fetch the applications
-export const fetchApplications = async (page: number, pageSize: number) => {
-  const response = await axios.get(
-    `${API_BASE_URL}?page=${page}&pageSize=${pageSize}`
-  );
+export const fetchApplications = async (
+  page: number,
+  pageSize: number,
+  searchTerm?: string
+) => {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    pageSize: pageSize.toString(),
+  });
+
+  if (searchTerm && searchTerm.length >= 3) {
+    params.set('appName', searchTerm);
+  }
+
+  const response = await axios.get(`${API_BASE_URL}?${params}`);
   return response.data;
 };
 
 // Create a React Query hook to fetch the applications
-export const useApplications = (page: number, pageSize: number) => {
+export const useApplications = (
+  page: number,
+  pageSize: number,
+  searchTerm?: string // Add searchTerm parameter
+) => {
   return useQuery(
-    ['applications', page, pageSize], // Update the query key here
-    () => fetchApplications(page, pageSize),
+    ['applications', page, pageSize, searchTerm], // Update the query key
+    () => fetchApplications(page, pageSize, searchTerm), // Pass searchTerm to fetchApplications
     {
       staleTime: 1000,
     }
