@@ -80,11 +80,17 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
           placeholder='Search'
           style={{ color: '#3f51b5', marginLeft: '10px' }}
           inputProps={{ 'aria-label': 'search' }}
-          value={searchTerm}
+          defaultValue={searchTerm}
           onChange={(e) => {
-            setSearchTerm(e.target.value);
-            if (searchTerm.length >= 3) {
+            const v = e.target.value;
+
+            if (v.length >= 3) {
+              setSearchTerm(v);
               queryClient.invalidateQueries(['applications', searchTerm]);
+            }
+
+            if (v.length === 0) {
+              setSearchTerm('');
             }
           }}
         />
