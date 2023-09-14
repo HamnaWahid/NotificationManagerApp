@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AppTileCard, Heading, Description } from './AppTileStyles';
-import ButtonGroup from '../../common/ButtonGroup/ButtonGroup';
+import ButtonGroup from '../ButtonGroup/ButtonGroup';
 import CardActionArea from '@mui/material/CardActionArea'; // Import CardActionArea
 import CardContent from '@mui/material/CardContent';
 import { CardActions } from '@mui/material';

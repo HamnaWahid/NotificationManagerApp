@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import AppTile from '../../components/Apps/AppTile';
+import AppTile from '../../common/Apps/AppTile';
 import './Dashboard.css';
 import { Slide, Paper, Grid, IconButton, Dialog } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
