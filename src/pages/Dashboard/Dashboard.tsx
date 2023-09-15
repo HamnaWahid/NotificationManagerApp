@@ -22,10 +22,16 @@ interface ApplicationData {
 }
 interface DashboardProps {
   searchTerm: string; // Add searchTerm to the interface
+  sortBy: string;
+  sortOrder: string;
 }
 const pageSize = 4;
 
-const Dashboard: React.FC<DashboardProps> = ({ searchTerm }) => {
+const Dashboard: React.FC<DashboardProps> = ({
+  searchTerm,
+  sortBy,
+  sortOrder,
+}) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
   const [selectedAppData, setSelectedAppData] =
@@ -35,7 +41,7 @@ const Dashboard: React.FC<DashboardProps> = ({ searchTerm }) => {
     data: appTilesData,
     isLoading,
     isError,
-  } = useApplications(currentPage, pageSize, searchTerm);
+  } = useApplications(currentPage, pageSize, searchTerm, sortBy, sortOrder); // Pass sortBy and sortOrder
 
   const queryClient = useQueryClient();
 
