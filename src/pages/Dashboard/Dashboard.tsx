@@ -148,22 +148,27 @@ const Dashboard: React.FC<DashboardProps> = ({
           <div
             style={{
               display: 'flex',
-              justifyContent: 'center',
               alignItems: 'center',
+              flexDirection: 'column', // Align in a column layout
             }}
           >
-            <IconButton onClick={handleBack} disabled={currentPage === 1}>
-              <ArrowBackIos />
-            </IconButton>
-            <span style={{ margin: '0 5px' }}>
-              {currentPage} of {appTilesData?.totalPages}
-            </span>
-            <IconButton
-              onClick={handleNext}
-              disabled={currentPage === appTilesData?.totalPages}
-            >
-              <ArrowForwardIos />
-            </IconButton>
+            <div style={{ flex: 1 }}>
+              <IconButton onClick={handleBack} disabled={currentPage === 1}>
+                <ArrowBackIos />
+              </IconButton>
+              <span style={{ margin: '0 5px' }}>
+                {currentPage} of {appTilesData?.totalPages}
+              </span>
+              <IconButton
+                onClick={handleNext}
+                disabled={currentPage === appTilesData?.totalPages}
+              >
+                <ArrowForwardIos />
+              </IconButton>
+            </div>
+            <div style={{ flex: 1, textAlign: 'center' }}>
+              Applications: {appTilesData?.totalApplications}
+            </div>
           </div>
         </Paper>
       </div>
