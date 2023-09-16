@@ -1,0 +1,28 @@
+.events {
+  text-align: center;
+  padding: 20px;
+}
+.notifications {
+  text-align: center;
+  padding: 20px;
+}
+.tiles {
+  display: flex;
+  justify-content: space-between; /* Distribute tiles evenly with space in between */
+  flex-wrap: wrap; /* Allow wrapping to the next line */
+}
+
+.tile {
+  flex-basis: calc(
+    33.33% - 20px
+  ); /* Adjust the width of each tile for 3 tiles in a row */
+  margin-bottom: 20px; /* Add spacing between rows */
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(300px, 1fr)
+  ); /* Adjust the tile width as needed */
+  grid-gap: 20px; /* Add spacing between tiles */
+}
