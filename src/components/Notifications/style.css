@@ -1,0 +1,35 @@
+/* Existing styles */
+
+/* Add the new styles */
+
+.custom-mentions-input {
+  margin: 'normal';
+  padding: 10px;
+  border-radius: 8px;
+  height: 105px;
+  margin-top: 15px;
+  letter-spacing: inherit;
+}
+.custom-mentions-input .custom-mentions-input__input:hover {
+  border-color: black; /* Change to the color you want on hover */
+}
+.custom-mentions-input .custom-mentions-input__input {
+  color: black; /* Set text color to black for the textarea */
+  border-radius: 4px;
+  font: inherit;
+  border-color: #c4c4c4;
+  padding: 10px 14px;
+}
+
+.custom-mention {
+  padding: 8px 12px;
+  background-color: #c4c4c4;
+  border-radius: 8px;
+  cursor: pointer;
+  color: black; /* Set text color to black */
+}
+.custom-mention:hover {
+  background-color: #3f51b5; /* Change to the color you want on hover */
+}
+
+/* Add more styles as needed */

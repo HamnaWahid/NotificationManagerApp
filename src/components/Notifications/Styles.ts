@@ -39,3 +39,4 @@ export const RightBox = styled.div`
     margin-bottom: 10px;
   }
 `;
+

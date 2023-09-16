@@ -1,9 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import { Styles, LeftBox, RightBox } from './Styles';
 import sanitizeHtml from 'sanitize-html'; // Import sanitize-html
+import { MentionsInput, Mention } from 'react-mentions';
+import './style.css';
+
+interface Tag {
+  id: number;
+  display: string;
+}
+
+const hardcodedTags: Tag[] = [
+  { id: 1, display: 'John Doe' },
+  { id: 2, display: 'Jane Smith' },
+  // Add more tags as needed
+];
 
 interface Props {
   onCancel: () => void;
@@ -17,6 +30,11 @@ interface Props {
 }
 
 const NotificationForm = ({ onCancel, onSubmit, message }: Props) => {
+  const [formData, setFormData] = useState({
+    templatebody: '',
+    tags: hardcodedTags,
+  });
+
   const [name, setName] = useState('');
   const [subject, setSubject] = useState('');
   const [description, setDescription] = useState('');
@@ -46,7 +64,7 @@ const NotificationForm = ({ onCancel, onSubmit, message }: Props) => {
       allowedAttributes: {}, // Allow no HTML attributes
     });
 
-    const previewText = ` <strong>${sanitizedSubject}</strong>\n\n${body}`;
+    const previewText = `<strong>${sanitizedSubject}</strong>\n\n${body}`;
     setPreview(previewText);
   }, [name, subject, description, body]);
 
@@ -101,21 +119,34 @@ const NotificationForm = ({ onCancel, onSubmit, message }: Props) => {
                 margin='normal'
                 variant='outlined'
               />
-              <TextField
-                label='Body'
+              <MentionsInput
+                className='custom-mentions-input'
                 value={body}
-                onChange={handleBodyChange}
-                fullWidth
-                multiline
-                rows={4}
-                margin='normal'
-                variant='outlined'
-              />
+                onChange={(e) => handleBodyChange(e)}
+                placeholder='Body'
+              >
+                <Mention
+                  trigger='{'
+                  data={formData.tags}
+                  renderSuggestion={(
+                    suggestion,
+                    search,
+                    highlightedDisplay
+                  ) => (
+                    <div className='custom-mention'>{highlightedDisplay}</div>
+                  )}
+                  displayTransform={(id, display) => `{${display}}`}
+                  markup='{__display__}'
+                />
+              </MentionsInput>
               <div className='button-container'>
                 <Button
                   variant='contained'
                   onClick={handleSubmit}
                   className='submit-button'
+                  style={{
+                    marginTop: '10px',
+                  }}
                 >
                   Submit
                 </Button>
@@ -123,7 +154,11 @@ const NotificationForm = ({ onCancel, onSubmit, message }: Props) => {
                   variant='contained'
                   onClick={handleCancel}
                   className='cancel-button'
-                  style={{ marginLeft: '10px', backgroundColor: 'red' }}
+                  style={{
+                    marginLeft: '10px',
+                    backgroundColor: 'red',
+                    marginTop: '10px',
+                  }}
                 >
                   Cancel
                 </Button>

@@ -42,7 +42,6 @@ const Dashboard: React.FC<DashboardProps> = ({
     isLoading,
     isError,
   } = useApplications(currentPage, pageSize, searchTerm, sortBy, sortOrder); // Pass sortBy and sortOrder
-
   const queryClient = useQueryClient();
 
   const handleNext = () => {
@@ -90,7 +89,6 @@ const Dashboard: React.FC<DashboardProps> = ({
         handleCloseDialog();
       } catch (error) {
         console.error('Error updating application:', error);
-        // Handle the error (e.g., show an error message to the user)
       }
     }
   };
