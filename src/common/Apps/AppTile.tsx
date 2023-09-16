@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { AppTileCard, Heading, Description } from './AppTileStyles';
-import ButtonGroup from '../ButtonGroup/ButtonGroup';
-import CardActionArea from '@mui/material/CardActionArea'; // Import CardActionArea
-import CardContent from '@mui/material/CardContent';
-import { CardActions } from '@mui/material';
+import { useState } from "react";
+import { AppTileCard, Heading, Description } from "./AppTileStyles";
+import ButtonGroup from "../ButtonGroup/ButtonGroup";
+import CardActionArea from "@mui/material/CardActionArea"; // Import CardActionArea
+import CardContent from "@mui/material/CardContent";
+import { CardActions } from "@mui/material";
 
 interface AppTileProps {
   title: string;
@@ -13,6 +13,9 @@ interface AppTileProps {
   onToggleClick: () => void;
   isToggled: boolean;
   applicationId: string | number;
+  ///check
+  onSelected: (applicationId: string | number) => void; // Add a new prop for handling the click event
+  isClicked: boolean; // New prop for clicked state
 }
 
 const AppTile = ({
@@ -22,8 +25,10 @@ const AppTile = ({
   onDeleteClick,
   onToggleClick,
   isToggled,
-}: // applicationId,
-AppTileProps) => {
+  applicationId,
+  onSelected,
+  isClicked, // Ensure the correct prop name
+}: AppTileProps) => {
   const [toggled, setToggled] = useState<boolean>(isToggled);
 
   const handleToggleClick = () => {
@@ -31,19 +36,19 @@ AppTileProps) => {
     onToggleClick();
   };
   const handleCardClick = () => {
-    // // Pass the applicationId to the parent component or store it as needed
-    // console.log('Clicked App ID:', applicationId);
+    console.log("Clicked App ID:", applicationId);
+    onSelected(applicationId); // Call the onClick prop to pass the applicationId to the parent
   };
   return (
     <>
-      <AppTileCard>
+      <AppTileCard className={isClicked ? "clicked" : ""}>
         <CardActionArea onClick={handleCardClick}>
           <CardContent>
             <Heading>{title}</Heading>
             <Description>{description}</Description>
           </CardContent>
         </CardActionArea>
-        <CardActions sx={{ justifyContent: 'center' }}>
+        <CardActions sx={{ justifyContent: "center" }}>
           <ButtonGroup
             onUpdateClick={onUpdateClick}
             onDeleteClick={onDeleteClick}

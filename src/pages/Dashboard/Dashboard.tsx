@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import AppTile from '../../common/Apps/AppTile';
-import './Dashboard.css';
-import { Slide, Paper, Grid, IconButton, Dialog } from '@mui/material';
-import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
+import React, { useState } from "react";
+import AppTile from "../../common/Apps/AppTile";
+import "./Dashboard.css";
+import { Slide, Paper, Grid, IconButton, Dialog } from "@mui/material";
+import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import {
   useApplications,
   deleteApplication,
   deactivateApplication,
   updateApplication,
-} from '../../containers/AppTiles';
-import FormComponent from '../../common/Form/FormComponent';
-import { useQueryClient } from '@tanstack/react-query';
+} from "../../containers/AppTiles";
+import FormComponent from "../../common/Form/FormComponent";
+import { useQueryClient } from "@tanstack/react-query";
 
 // Define a TypeScript interface for the application data
 interface ApplicationData {
@@ -20,14 +20,18 @@ interface ApplicationData {
   appName: string;
   appDescription: string;
 }
+
 interface DashboardProps {
+  onSet: (applicationId: string | number, appName: string) => void;
   searchTerm: string; // Add searchTerm to the interface
   sortBy: string;
   sortOrder: string;
 }
+
 const pageSize = 4;
 
 const Dashboard: React.FC<DashboardProps> = ({
+  onSet,
   searchTerm,
   sortBy,
   sortOrder,
@@ -36,6 +40,10 @@ const Dashboard: React.FC<DashboardProps> = ({
   const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
   const [selectedAppData, setSelectedAppData] =
     useState<ApplicationData | null>(null);
+
+  const [clickedApplicationIds, setClickedApplicationIds] = useState<
+    Set<string | number>
+  >(new Set());
 
   const {
     data: appTilesData,
@@ -47,7 +55,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   const handleNext = () => {
     if (currentPage < appTilesData.totalPages) {
       queryClient.invalidateQueries([
-        'applications',
+        "applications",
         currentPage + 1,
         pageSize,
       ]);
@@ -58,13 +66,14 @@ const Dashboard: React.FC<DashboardProps> = ({
   const handleBack = () => {
     if (currentPage > 1) {
       queryClient.invalidateQueries([
-        'applications',
+        "applications",
         currentPage - 1,
         pageSize,
       ]);
       setCurrentPage(currentPage - 1);
     }
   };
+
   const handleUpdateClick = (data: ApplicationData) => {
     setSelectedAppData(data);
     setDialogOpen(true);
@@ -84,8 +93,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           selectedAppData.id || selectedAppData._id,
           formData
         );
-        queryClient.invalidateQueries(['applications', currentPage, pageSize]);
-
+        queryClient.invalidateQueries(["applications", currentPage, pageSize]);
         handleCloseDialog();
       } catch (error) {
         console.error('Error updating application:', error);
@@ -96,22 +104,33 @@ const Dashboard: React.FC<DashboardProps> = ({
   const handleDeleteClick = async (applicationId: string | number) => {
     try {
       await deleteApplication(applicationId);
-      queryClient.invalidateQueries(['applications', currentPage, pageSize]);
-
-      // You can add logic to update the UI or refresh the application list here
+      queryClient.invalidateQueries(["applications", currentPage, pageSize]);
     } catch (error) {
-      console.error('Error deleting application:', error);
-      // Handle the error (e.g., show an error message to the user)
+      console.error("Error deleting application:", error);
     }
   };
 
   const handleToggleClick = async (applicationId: string | number) => {
     try {
       await deactivateApplication(applicationId);
-      queryClient.invalidateQueries(['applications', currentPage, pageSize]);
+      queryClient.invalidateQueries(["applications", currentPage, pageSize]);
     } catch (error) {
-      console.error('Error deactivating application:', error);
+      console.error("Error deactivating application:", error);
     }
+  };
+
+  const handleAppTileClick = (
+    applicationId: string | number,
+    appName: string
+  ) => {
+    // Update the clicked application IDs
+    const newClickedApplicationIds = new Set(clickedApplicationIds);
+    newClickedApplicationIds.clear(); // Clear the previous set
+    newClickedApplicationIds.add(applicationId); // Add the clicked application ID
+    setClickedApplicationIds(newClickedApplicationIds);
+
+    // Call the onSet function
+    onSet(applicationId, appName);
   };
 
   if (isLoading) {
@@ -124,8 +143,8 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <>
-      <div className='dashboard'>
-        <Slide direction='left' in={true} mountOnEnter unmountOnExit>
+      <div className="dashboard">
+        <Slide direction="left" in={true} mountOnEnter unmountOnExit>
           <Grid container spacing={2}>
             {appTilesData?.applications.map((data: ApplicationData) => (
               <Grid item xs={12} sm={6} md={3} key={data.id || data._id}>
@@ -137,6 +156,10 @@ const Dashboard: React.FC<DashboardProps> = ({
                   onUpdateClick={() => handleUpdateClick(data)}
                   onDeleteClick={() => handleDeleteClick(data.id || data._id)}
                   onToggleClick={() => handleToggleClick(data.id || data._id)}
+                  onSelected={() =>
+                    handleAppTileClick(data.id || data._id, data.appName)
+                  }
+                  isClicked={clickedApplicationIds.has(data.id || data._id)}
                 />
               </Grid>
             ))}
@@ -145,16 +168,16 @@ const Dashboard: React.FC<DashboardProps> = ({
         <Paper elevation={1} square>
           <div
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              flexDirection: 'column', // Align in a column layout
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
             <div style={{ flex: 1 }}>
               <IconButton onClick={handleBack} disabled={currentPage === 1}>
                 <ArrowBackIos />
               </IconButton>
-              <span style={{ margin: '0 5px' }}>
+              <span style={{ margin: "0 5px" }}>
                 {currentPage} of {appTilesData?.totalPages}
               </span>
               <IconButton
@@ -164,23 +187,22 @@ const Dashboard: React.FC<DashboardProps> = ({
                 <ArrowForwardIos />
               </IconButton>
             </div>
-            <div style={{ flex: 1, textAlign: 'center' }}>
+            <div style={{ flex: 1, textAlign: "center" }}>
               Applications: {appTilesData?.totalApplications}
             </div>
           </div>
         </Paper>
       </div>
 
-      {/* Dialog for Update */}
       <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
         {selectedAppData && (
           <FormComponent
             onCancel={handleCloseDialog}
             onSubmit={handleUpdateAction}
-            message='Update App'
+            message="Update App"
             initialName={selectedAppData.appName}
             initialDescription={selectedAppData.appDescription}
-            title={'Edit Application'}
+            title={"Edit Application"}
           />
         )}
       </Dialog>

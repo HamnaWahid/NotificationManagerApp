@@ -1,6 +1,6 @@
-import { UpdateButton, DeleteButton, ToggleButton } from './ButtonStyles';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { UpdateButton, DeleteButton, ToggleButton } from "./ButtonStyles";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface ButtonGroupProps {
   onUpdateClick: () => void;
@@ -20,15 +20,15 @@ const ButtonGroup = ({
       <UpdateButton onClick={onUpdateClick}>
         <EditIcon />
       </UpdateButton>
-      <span style={{ margin: '0 8px' }}></span>
+      <span style={{ margin: "0 8px" }}></span>
       <DeleteButton onClick={onDeleteClick}>
         <DeleteIcon />
       </DeleteButton>
-      <span style={{ margin: '0 8px' }}></span>
+      <span style={{ margin: "0 8px" }}></span>
       <ToggleButton
         checked={isToggled}
         onChange={onToggleClick}
-        name='toggle'
+        name="toggle"
       />
     </div>
   );
