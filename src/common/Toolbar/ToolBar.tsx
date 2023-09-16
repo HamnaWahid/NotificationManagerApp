@@ -16,16 +16,23 @@ import FormComponent from "../Form/FormComponent"; // Import the FormComponent
 import "./ToolbarStyles.css";
 import { useQueryClient } from "@tanstack/react-query";
 
+// Update the ToolbarHeaderProps interface to include sortBy and sortOrder props
 interface ToolbarHeaderProps {
   title: string;
-  searchTerm: string; // Add searchTerm to the interface
+  searchTerm: string;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+  sortBy: string; // Add sortBy prop
+  sortOrder: string; // Add sortOrder prop
+  setSortBy: React.Dispatch<React.SetStateAction<string>>; // Add setSortBy prop
+  setSortOrder: React.Dispatch<React.SetStateAction<string>>; // Add setSortOrder prop
 }
 
 const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
   title,
   searchTerm,
   setSearchTerm,
+  setSortBy, // Add setSortBy prop
+  setSortOrder, // Add setSortOrder prop
 }) => {
   // State for sorting menu and dialog
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
@@ -52,7 +59,12 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
     setAlphaSortAnchorEl(null);
   };
 
-  // Function to handle click on the "Add" button
+  const handleSortOptionClick = (option: string) => {
+    setSortBy(option);
+    setSortOrder("asc"); // Reset to default ascending order when a new sort option is selected
+    handleClose();
+  };
+
   const handleAddClick = () => {
     setOpenDialog(true);
   };
@@ -73,7 +85,6 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
     handleAddApplication(formData);
     setOpenDialog(false); // Close the dialog after submission
   };
-
   return (
     // Toolbar component
     <Toolbar className="curved-appbar toolbar-header">
@@ -119,9 +130,15 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
           open={Boolean(alphaSortAnchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={handleClose}>Sort by Name</MenuItem>
-          <MenuItem onClick={handleClose}>Sort by Date</MenuItem>
-          <MenuItem onClick={handleClose}>Sort by Size</MenuItem>
+          <MenuItem onClick={() => handleSortOptionClick("appName")}>
+            Sort by Name
+          </MenuItem>
+          <MenuItem onClick={() => handleSortOptionClick("dateCreated")}>
+            Sort by Date
+          </MenuItem>
+          <MenuItem onClick={() => handleSortOptionClick("isActive")}>
+            Sort by Status
+          </MenuItem>
         </Menu>
       </div>
       <div>
@@ -135,8 +152,22 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
           open={Boolean(sortAnchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={handleClose}>Ascending</MenuItem>
-          <MenuItem onClick={handleClose}>Descending</MenuItem>
+          <MenuItem
+            onClick={() => {
+              setSortOrder("asc");
+              handleClose(); // Close the menu after setting the sort order
+            }}
+          >
+            Ascending
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setSortOrder("desc");
+              handleClose(); // Close the menu after setting the sort order
+            }}
+          >
+            Descending
+          </MenuItem>
         </Menu>
       </div>
       <div>
@@ -155,7 +186,6 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
         </Button>
         {/* Dialog component for adding an application */}
         <Dialog open={openDialog} onClose={handleDialogClose}>
-          {/* Pass title and other props to FormComponent */}
           <FormComponent
             title="Add Application"
             onCancel={handleDialogClose}

@@ -8,28 +8,35 @@ import Notifications from "./Notifications";
 
 const Index: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [clickedAppId, setClickedAppId] = useState<string>("");
+  const [clickedAppId, setClickedAppId] = useState<string | number>("");
   const [clickedAppName, setClickedAppName] = useState<string>("");
-  const [clickedEventId, setClickedEventId] = useState<string>("");
+  const [clickedEventId, setClickedEventId] = useState<string | number>("");
   const [clickedEventName, setClickedEventName] = useState<string>("");
-  const [clickedNotificationId, setClickedNotificationId] =
-    useState<string>("");
+  const [sortBy, setSortBy] = useState<string>("appName"); // Initialize with default sort option
+  const [sortOrder, setSortOrder] = useState<string>("asc"); // Initialize with default sort order
 
-  const handleAppTileClick = (appId: string, appName: string) => {
+  const [clickedNotificationId, setClickedNotificationId] = useState<
+    string | number
+  >("");
+
+  const handleAppTileClick = (appId: string | number, appName: string) => {
     setClickedAppId(appId);
     setClickedAppName(appName);
     console.log("Clicked App ID:", appId);
     console.log("Clicked App Name:", appName);
   };
 
-  const handleEventTileClick = (eventId: string, eventName: string) => {
+  const handleEventTileClick = (
+    eventId: string | number,
+    eventName: string
+  ) => {
     setClickedEventId(eventId);
     setClickedEventName(eventName);
     console.log("Clicked Event ID:", eventId);
     console.log("Clicked Event Name:", eventName);
   };
 
-  const handleNotificationTileClick = (notificationId: string) => {
+  const handleNotificationTileClick = (notificationId: string | number) => {
     setClickedNotificationId(notificationId);
     console.log("Clicked Notification ID:", notificationId);
   };
@@ -40,8 +47,17 @@ const Index: React.FC = () => {
         title="Application"
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
+        sortBy={sortBy}
+        sortOrder={sortOrder} // Pass sortOrder to ToolbarHeader
+        setSortBy={setSortBy} // Pass setSortBy to ToolbarHeader
+        setSortOrder={setSortOrder} // Pass setSortOrder to ToolbarHeader
       />
-      <Dashboard searchTerm={searchTerm} onSet={handleAppTileClick} />
+      <Dashboard
+        searchTerm={searchTerm}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSet={handleAppTileClick}
+      />
 
       {/* Conditionally render Event components */}
       {clickedAppId ? (

@@ -27,7 +27,9 @@ export const updateApplication = async (
 export const fetchApplications = async (
   page: number,
   pageSize: number,
-  searchTerm?: string
+  searchTerm?: string,
+  sortBy?: string, // Add sortBy as a parameter
+  sortOrder?: string // Add sortOrder as a parameter
 ) => {
   const params = new URLSearchParams({
     page: page.toString(),
@@ -38,6 +40,12 @@ export const fetchApplications = async (
     params.set('appName', searchTerm);
   }
 
+  // Add sorting parameters to the URL if provided
+  if (sortBy && sortOrder) {
+    params.set('sortBy', sortBy);
+    params.set('sortOrder', sortOrder);
+  }
+
   const response = await axios.get(`${API_BASE_URL}?${params}`);
   return response.data;
 };
@@ -46,11 +54,14 @@ export const fetchApplications = async (
 export const useApplications = (
   page: number,
   pageSize: number,
-  searchTerm?: string // Add searchTerm parameter
+  searchTerm?: string,
+  sortBy?: string,
+  sortOrder?: string
 ) => {
   return useQuery(
-    ['applications', page, pageSize, searchTerm], // Update the query key
-    () => fetchApplications(page, pageSize, searchTerm), // Pass searchTerm to fetchApplications
+    // Update the query key to include searchTerm, sortBy, and sortOrder
+    ['applications', page, pageSize, searchTerm, sortBy, sortOrder],
+    () => fetchApplications(page, pageSize, searchTerm, sortBy, sortOrder), // Pass all parameters to fetchApplications
     {
       staleTime: 1000,
     }
