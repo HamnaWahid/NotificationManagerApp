@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import Tile from "../../common/Tiles/Tile";
-import { Slide, Paper, Grid, IconButton, Dialog } from "@mui/material";
-import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
+import React, { useState } from 'react';
+import Tile from '../../common/Tiles/Tile';
+import { Slide, Paper, Grid, IconButton, Dialog } from '@mui/material';
+import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import {
   useNotifications,
   deleteNotification,
   deactivateNotification,
   updateNotification,
-} from "../../containers/NotificationGrid"; // Update the import path
-import NotificationFormComponent from "../../common/Form/NotificationFormComponent";
-import { useQueryClient } from "@tanstack/react-query";
-import "./Tiles.css";
+} from '../../containers/NotificationGrid'; // Update the import path
+import NotificationFormComponent from '../../common/Form/NotificationFormComponent';
+import { useQueryClient } from '@tanstack/react-query';
+import './Tiles.css';
 
 interface NotificationData {
   isActive: boolean;
@@ -26,7 +26,7 @@ interface NotificationsProps {
   onNotificationTileClick: (notificationId: string | number) => void; // Update the property name
 }
 
-const pageSize = 4;
+const pageSize = 6;
 
 const Notifications: React.FC<NotificationsProps> = ({
   searchTerm,
@@ -49,7 +49,7 @@ const Notifications: React.FC<NotificationsProps> = ({
   const handleNext = () => {
     if (currentPage < TilesData.totalPages) {
       queryClient.invalidateQueries([
-        "notifications",
+        'notifications',
         clickedEventId, // Update the parameter
         currentPage + 1,
         pageSize,
@@ -61,7 +61,7 @@ const Notifications: React.FC<NotificationsProps> = ({
   const handleBack = () => {
     if (currentPage > 1) {
       queryClient.invalidateQueries([
-        "notifications",
+        'notifications',
         clickedEventId, // Update the parameter
         currentPage - 1,
         pageSize,
@@ -90,14 +90,14 @@ const Notifications: React.FC<NotificationsProps> = ({
           formData
         );
         queryClient.invalidateQueries([
-          "notifications",
+          'notifications',
           clickedEventId,
           currentPage,
           pageSize,
         ]);
         handleCloseDialog();
       } catch (error) {
-        console.error("Error updating notification:", error);
+        console.error('Error updating notification:', error);
       }
     }
   };
@@ -106,13 +106,13 @@ const Notifications: React.FC<NotificationsProps> = ({
     try {
       await deleteNotification(notificationId);
       queryClient.invalidateQueries([
-        "notifications",
+        'notifications',
         clickedEventId,
         currentPage,
         pageSize,
       ]);
     } catch (error) {
-      console.error("Error deleting notification:", error);
+      console.error('Error deleting notification:', error);
     }
   };
 
@@ -120,13 +120,13 @@ const Notifications: React.FC<NotificationsProps> = ({
     try {
       await deactivateNotification(notificationId);
       queryClient.invalidateQueries([
-        "notifications",
+        'notifications',
         clickedEventId,
         currentPage,
         pageSize,
       ]);
     } catch (error) {
-      console.error("Error deactivating notification:", error);
+      console.error('Error deactivating notification:', error);
     }
   };
 
@@ -140,9 +140,9 @@ const Notifications: React.FC<NotificationsProps> = ({
 
   return (
     <>
-      <div className="notifications">
-        <Slide direction="left" in={true} mountOnEnter unmountOnExit>
-          <Grid container spacing={2} className="gridcontainer">
+      <div className='notifications'>
+        <Slide direction='left' in={true} mountOnEnter unmountOnExit>
+          <Grid container spacing={2} className='gridcontainer'>
             {TilesData?.notifications?.map((data: NotificationData) => (
               <Grid item xs={12} sm={6} md={4} key={data.id || data._id}>
                 <Tile
@@ -164,15 +164,15 @@ const Notifications: React.FC<NotificationsProps> = ({
         <Paper elevation={1} square>
           <div
             style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
             <IconButton onClick={handleBack} disabled={currentPage === 1}>
               <ArrowBackIos />
             </IconButton>
-            <span style={{ margin: "0 5px" }}>
+            <span style={{ margin: '0 5px' }}>
               {currentPage} of {TilesData?.totalPages}
             </span>
             <IconButton
@@ -190,12 +190,12 @@ const Notifications: React.FC<NotificationsProps> = ({
           <NotificationFormComponent
             onCancel={handleCloseDialog}
             onSubmit={handleUpdateAction}
-            message="Update Notification" // Update the message
+            message='Update Notification' // Update the message
             initialName={selectedNotificationData.notificationName} // Update the property name
             initialDescription={
               selectedNotificationData.notificationDescription
             } // Update the property name
-            title={"Edit Notification"} // Update the title
+            title={'Edit Notification'} // Update the title
           />
         )}
       </Dialog>

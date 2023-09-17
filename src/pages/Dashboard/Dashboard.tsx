@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import AppTile from "../../common/Apps/AppTile";
-import "./Dashboard.css";
-import { Slide, Paper, Grid, IconButton, Dialog } from "@mui/material";
-import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
+import React, { useState } from 'react';
+import AppTile from '../../common/Apps/AppTile';
+import './Dashboard.css';
+import { Slide, Paper, Grid, IconButton, Dialog } from '@mui/material';
+import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import {
   useApplications,
   deleteApplication,
   deactivateApplication,
   updateApplication,
-} from "../../containers/AppTiles";
-import FormComponent from "../../common/Form/FormComponent";
-import { useQueryClient } from "@tanstack/react-query";
+} from '../../containers/AppTiles';
+import FormComponent from '../../common/Form/FormComponent';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Define a TypeScript interface for the application data
 interface ApplicationData {
@@ -55,7 +55,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   const handleNext = () => {
     if (currentPage < appTilesData.totalPages) {
       queryClient.invalidateQueries([
-        "applications",
+        'applications',
         currentPage + 1,
         pageSize,
       ]);
@@ -66,7 +66,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   const handleBack = () => {
     if (currentPage > 1) {
       queryClient.invalidateQueries([
-        "applications",
+        'applications',
         currentPage - 1,
         pageSize,
       ]);
@@ -93,7 +93,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           selectedAppData.id || selectedAppData._id,
           formData
         );
-        queryClient.invalidateQueries(["applications", currentPage, pageSize]);
+        queryClient.invalidateQueries(['applications', currentPage, pageSize]);
         handleCloseDialog();
       } catch (error) {
         console.error('Error updating application:', error);
@@ -104,18 +104,18 @@ const Dashboard: React.FC<DashboardProps> = ({
   const handleDeleteClick = async (applicationId: string | number) => {
     try {
       await deleteApplication(applicationId);
-      queryClient.invalidateQueries(["applications", currentPage, pageSize]);
+      queryClient.invalidateQueries(['applications', currentPage, pageSize]);
     } catch (error) {
-      console.error("Error deleting application:", error);
+      console.error('Error deleting application:', error);
     }
   };
 
   const handleToggleClick = async (applicationId: string | number) => {
     try {
       await deactivateApplication(applicationId);
-      queryClient.invalidateQueries(["applications", currentPage, pageSize]);
+      queryClient.invalidateQueries(['applications', currentPage, pageSize]);
     } catch (error) {
-      console.error("Error deactivating application:", error);
+      console.error('Error deactivating application:', error);
     }
   };
 
@@ -143,8 +143,8 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <>
-      <div className="dashboard">
-        <Slide direction="left" in={true} mountOnEnter unmountOnExit>
+      <div className='dashboard'>
+        <Slide direction='left' in={true} mountOnEnter unmountOnExit>
           <Grid container spacing={2}>
             {appTilesData?.applications.map((data: ApplicationData) => (
               <Grid item xs={12} sm={6} md={3} key={data.id || data._id}>
@@ -168,16 +168,17 @@ const Dashboard: React.FC<DashboardProps> = ({
         <Paper elevation={1} square>
           <div
             style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+              flexDirection: 'column',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
             <div style={{ flex: 1 }}>
               <IconButton onClick={handleBack} disabled={currentPage === 1}>
                 <ArrowBackIos />
               </IconButton>
-              <span style={{ margin: "0 5px" }}>
+              <span style={{ margin: '0 5px' }}>
                 {currentPage} of {appTilesData?.totalPages}
               </span>
               <IconButton
@@ -187,7 +188,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                 <ArrowForwardIos />
               </IconButton>
             </div>
-            <div style={{ flex: 1, textAlign: "center" }}>
+            <div style={{ flex: 1, textAlign: 'center' }}>
               Applications: {appTilesData?.totalApplications}
             </div>
           </div>
@@ -199,10 +200,10 @@ const Dashboard: React.FC<DashboardProps> = ({
           <FormComponent
             onCancel={handleCloseDialog}
             onSubmit={handleUpdateAction}
-            message="Update App"
+            message='Update App'
             initialName={selectedAppData.appName}
             initialDescription={selectedAppData.appDescription}
-            title={"Edit Application"}
+            title={'Edit Application'}
           />
         )}
       </Dialog>
