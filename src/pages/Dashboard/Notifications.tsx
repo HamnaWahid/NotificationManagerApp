@@ -7,7 +7,7 @@ import {
   deleteNotification,
   deactivateNotification,
   updateNotification,
-} from "../../containers/NotificationGrid"; // Update the import path
+} from "../../containers/NotificationGrid";
 import NotificationFormComponent from "../../common/Form/NotificationFormComponent";
 import { useQueryClient } from "@tanstack/react-query";
 import "./Tiles.css";
@@ -16,33 +16,37 @@ interface NotificationData {
   isActive: boolean;
   id: number;
   _id: string;
-  notificationName: string; // Update the property name
-  notificationDescription: string; // Update the property name
+  notificationName: string;
+  notificationDescription: string;
 }
 
 interface NotificationsProps {
   searchTerm: string;
-  clickedEventId: string | number; // Update the property name
-  onNotificationTileClick: (notificationId: string | number) => void; // Update the property name
+  clickedEventId: string | number;
+  onNotificationTileClick: (notificationId: string | number) => void;
 }
 
-const pageSize = 4;
+const pageSize = 6;
 
 const Notifications: React.FC<NotificationsProps> = ({
   searchTerm,
-  clickedEventId, // Update the property name
-  onNotificationTileClick, // Update the property name
+  clickedEventId,
+  onNotificationTileClick,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
   const [selectedNotificationData, setSelectedNotificationData] =
     useState<NotificationData | null>(null);
 
+  const [clickedTileIds, setClickedTileIds] = useState<Set<string | number>>(
+    new Set()
+  ); // State to track clicked tile IDs
+
   const {
     data: TilesData,
     isLoading,
     isError,
-  } = useNotifications(clickedEventId, currentPage, pageSize, searchTerm); // Update the function and parameters
+  } = useNotifications(clickedEventId, currentPage, pageSize, searchTerm);
 
   const queryClient = useQueryClient();
 
@@ -50,7 +54,7 @@ const Notifications: React.FC<NotificationsProps> = ({
     if (currentPage < TilesData.totalPages) {
       queryClient.invalidateQueries([
         "notifications",
-        clickedEventId, // Update the parameter
+        clickedEventId,
         currentPage + 1,
         pageSize,
       ]);
@@ -62,7 +66,7 @@ const Notifications: React.FC<NotificationsProps> = ({
     if (currentPage > 1) {
       queryClient.invalidateQueries([
         "notifications",
-        clickedEventId, // Update the parameter
+        clickedEventId,
         currentPage - 1,
         pageSize,
       ]);
@@ -80,8 +84,8 @@ const Notifications: React.FC<NotificationsProps> = ({
   };
 
   const handleUpdateAction = async (formData: {
-    notificationName: string; // Update the property name
-    notificationDescription: string; // Update the property name
+    notificationName: string;
+    notificationDescription: string;
   }) => {
     if (selectedNotificationData) {
       try {
@@ -130,6 +134,20 @@ const Notifications: React.FC<NotificationsProps> = ({
     }
   };
 
+  const handleTileClick = (tileId: string | number) => {
+    // Toggle the clicked state of the tile
+    const updatedClickedTileIds = new Set(clickedTileIds);
+    if (updatedClickedTileIds.has(tileId)) {
+      updatedClickedTileIds.delete(tileId);
+    } else {
+      updatedClickedTileIds.add(tileId);
+    }
+    setClickedTileIds(updatedClickedTileIds);
+
+    // Notify the parent component of the tile click
+    onNotificationTileClick(tileId);
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -147,15 +165,14 @@ const Notifications: React.FC<NotificationsProps> = ({
               <Grid item xs={12} sm={6} md={4} key={data.id || data._id}>
                 <Tile
                   Id={data.id || data._id}
-                  title={data.notificationName} // Update the property name
-                  description={data.notificationDescription} // Update the property name
+                  title={data.notificationName}
+                  description={data.notificationDescription}
                   isToggled={data.isActive}
                   onUpdateClick={() => handleUpdateClick(data)}
                   onDeleteClick={() => handleDeleteClick(data.id || data._id)}
                   onToggleClick={() => handleToggleClick(data.id || data._id)}
-                  onTileClick={() =>
-                    onNotificationTileClick(data.id || data._id)
-                  } // Pass the Id to the parent component
+                  onTileClick={() => handleTileClick(data.id || data._id)}
+                  isClicked={clickedTileIds.has(data.id || data._id)}
                 />
               </Grid>
             ))}
@@ -190,12 +207,12 @@ const Notifications: React.FC<NotificationsProps> = ({
           <NotificationFormComponent
             onCancel={handleCloseDialog}
             onSubmit={handleUpdateAction}
-            message="Update Notification" // Update the message
-            initialName={selectedNotificationData.notificationName} // Update the property name
+            message="Update Notification"
+            initialName={selectedNotificationData.notificationName}
             initialDescription={
               selectedNotificationData.notificationDescription
-            } // Update the property name
-            title={"Edit Notification"} // Update the title
+            }
+            title={"Edit Notification"}
           />
         )}
       </Dialog>

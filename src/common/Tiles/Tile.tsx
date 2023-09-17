@@ -9,7 +9,7 @@ import {
 } from "./TileStyles"; // Import your styled components here
 
 import ButtonGroup from "../ButtonGroup/ButtonGroup";
-import { CardActionArea, CardActions } from "@mui/material";
+import { CardActionArea } from "@mui/material";
 
 interface TileProps {
   Id: string | number; //  to the interface
@@ -20,6 +20,7 @@ interface TileProps {
   onToggleClick: () => void;
   onTileClick: (Id: string | number) => void;
   isToggled: boolean;
+  isClicked: boolean; // New prop for clicked state
 }
 
 const Tile = ({
@@ -31,6 +32,7 @@ const Tile = ({
   onToggleClick,
   isToggled,
   onTileClick, // Add a prop to handle tile click
+  isClicked,
 }: TileProps) => {
   const [toggled, setToggled] = useState<boolean>(isToggled);
 
@@ -45,7 +47,7 @@ const Tile = ({
   };
 
   return (
-    <TileCard>
+    <TileCard className={isClicked ? "clicked" : ""} onClick={handleTileClick}>
       <div style={{ display: "flex" }}>
         <LeftContainer>
           <CardActionArea onClick={handleTileClick}>

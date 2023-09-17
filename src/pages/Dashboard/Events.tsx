@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Tile from "../../common/Tiles/Tile";
+import Tile from "../../common/Tiles/Tile"; // Import the Tile component
 import { Slide, Paper, Grid, IconButton, Dialog } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import {
@@ -23,10 +23,10 @@ interface EventData {
 interface EventsProps {
   searchTerm: string;
   clickedAppId: string | number;
-  onEventTileClick: (eventId: string | number, eventName: string) => void; // Accept eventName as an argument
+  onEventTileClick: (eventId: string | number, eventName: string) => void;
 }
 
-const pageSize = 4;
+const pageSize = 6;
 
 const Events: React.FC<EventsProps> = ({
   searchTerm,
@@ -37,6 +37,11 @@ const Events: React.FC<EventsProps> = ({
   const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
   const [selectedEventData, setSelectedEventData] = useState<EventData | null>(
     null
+  );
+
+  // Define a state variable to track the clicked tile IDs
+  const [clickedTileIds, setClickedTileIds] = useState<Set<string | number>>(
+    new Set()
   );
 
   const {
@@ -74,7 +79,7 @@ const Events: React.FC<EventsProps> = ({
   const handleUpdateClick = (data: EventData) => {
     setSelectedEventData(data);
     setDialogOpen(true);
-  }; //start from here
+  };
 
   const handleCloseDialog = () => {
     setDialogOpen(false);
@@ -132,6 +137,23 @@ const Events: React.FC<EventsProps> = ({
     }
   };
 
+  // Function to handle tile click and update clickedTileIds state
+  const handleTileClick = (tileId: string | number) => {
+    // Create a new Set with the clicked tile ID
+    const newClickedTileIds = new Set(clickedTileIds);
+    newClickedTileIds.clear(); // Clear the previous set
+    newClickedTileIds.add(tileId); // Add the clicked tile ID
+    setClickedTileIds(newClickedTileIds);
+
+    // Call the onEventTileClick function
+    const selectedEvent = TilesData?.events.find(
+      (event: EventData) => event.id === tileId || event._id === tileId
+    );
+    if (selectedEvent) {
+      onEventTileClick(tileId, selectedEvent.eventName);
+    }
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -155,9 +177,8 @@ const Events: React.FC<EventsProps> = ({
                   onUpdateClick={() => handleUpdateClick(data)}
                   onDeleteClick={() => handleDeleteClick(data.id || data._id)}
                   onToggleClick={() => handleToggleClick(data.id || data._id)}
-                  onTileClick={() =>
-                    onEventTileClick(data.id || data._id, data.eventName)
-                  } // Pass both eventId and eventName to the parent component
+                  onTileClick={() => handleTileClick(data.id || data._id)}
+                  isClicked={clickedTileIds.has(data.id || data._id)} // Pass the clicked state to the Tile component
                 />
               </Grid>
             ))}

@@ -3,8 +3,19 @@ import Card from "@mui/material/Card";
 
 export const TileCard = styled(Card)(({ theme }) => ({
   backgroundColor: "white",
-  boxShadow: `0 4px 6px rgba(88, 81, 80, 0.8)`, // Shadow color
-  borderRadius: theme.spacing(2), // Rounded corners
+  boxShadow: `0 4px 6px rgba(88, 81, 80, 0.8)`,
+  borderRadius: theme.spacing(2),
+  transition: "box-shadow 0.3s, transform 0.3s",
+  cursor: "pointer",
+
+  "&:hover": {
+    boxShadow: `0 8px 12px rgba(88, 81, 80, 0.8)`,
+    transform: "translateY(-2px)",
+  },
+  "&.clicked": {
+    boxShadow: `0 8px 12px #3f51b5`,
+    transform: "translateY(-4px)",
+  },
 }));
 
 export const TileHeading = styled("h4")({

@@ -28,7 +28,7 @@ interface DashboardProps {
   sortOrder: string;
 }
 
-const pageSize = 4;
+const pageSize = 6;
 
 const Dashboard: React.FC<DashboardProps> = ({
   onSet,
