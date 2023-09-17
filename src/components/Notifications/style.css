@@ -1,6 +1,11 @@
 /* Existing styles */
 
 /* Add the new styles */
+.custom-mention-container {
+  max-height: 200px; /* Adjust the maximum height as needed */
+  overflow-y: auto;
+  border: 1px solid #ccc; /* Optional: add a border for visual separation */
+}
 
 .custom-mentions-input {
   margin: 'normal';
@@ -33,3 +38,25 @@
 }
 
 /* Add more styles as needed */
+/* 
+.custom-dropdown {
+  position: relative;
+}
+
+.custom-dropdown-menu {
+  position: absolute;
+  max-height: 150px; /* Adjust the maximum height as needed */
+/* overflow-y: auto;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  width: 100%;
+}
+
+.custom-dropdown-item {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.custom-dropdown-item:hover {
+  background-color: #f0f0f0;
+} */

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -6,17 +6,20 @@ import { Styles, LeftBox, RightBox } from './Styles';
 import sanitizeHtml from 'sanitize-html'; // Import sanitize-html
 import { MentionsInput, Mention } from 'react-mentions';
 import './style.css';
+import { useTags } from '../../containers/Tag'; // Assuming useTags is in the Tag file
+// import { TagSharp } from '@mui/icons-material';
 
 interface Tag {
   id: number;
   display: string;
 }
 
-const hardcodedTags: Tag[] = [
-  { id: 1, display: 'John Doe' },
-  { id: 2, display: 'Jane Smith' },
-  // Add more tags as needed
-];
+const transformTags = (tags: string[]): Tag[] => {
+  return tags.map((tag, index) => ({
+    id: index + 1, // Assuming you want 1-based indexing for ids
+    display: tag,
+  }));
+};
 
 interface Props {
   onCancel: () => void;
@@ -30,10 +33,14 @@ interface Props {
 }
 
 const NotificationForm = ({ onCancel, onSubmit, message }: Props) => {
-  const [formData, setFormData] = useState({
-    templatebody: '',
-    tags: hardcodedTags,
-  });
+  const { data: tagData, isLoading, isError } = useTags();
+
+  let transformedTags: Tag[] = [];
+
+  if (tagData && tagData.tags) {
+    transformedTags = transformTags(tagData.tags);
+    console.log(transformedTags);
+  }
 
   const [name, setName] = useState('');
   const [subject, setSubject] = useState('');
@@ -75,7 +82,13 @@ const NotificationForm = ({ onCancel, onSubmit, message }: Props) => {
   const handleCancel = () => {
     onCancel();
   };
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
+  if (isError || !tagData) {
+    return <div>Error fetching tags</div>;
+  }
   return (
     <Grid container justifyContent='center' alignItems='center' height='93vh'>
       <Styles>
@@ -127,7 +140,7 @@ const NotificationForm = ({ onCancel, onSubmit, message }: Props) => {
               >
                 <Mention
                   trigger='{'
-                  data={formData.tags}
+                  data={transformedTags}
                   renderSuggestion={(
                     suggestion,
                     search,
