@@ -1,18 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import apiClient from '../apiServices/serviceClient';
 
 export const fetchTags = async () => {
-  const response = await axios.get('http://localhost:3000/api/tags');
+  const response = await apiClient.get('/tags');
+
   console.log(response);
   return response.data;
 };
 
 export const useTags = () => {
-  return useQuery(
-    ['tags'],
-    fetchTags,
-    {
-      staleTime: 1000,
-    }
-  );
+  return useQuery(['tags'], fetchTags, {
+    staleTime: 1000,
+  });
 };

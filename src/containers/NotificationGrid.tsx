@@ -1,7 +1,5 @@
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
-
-const API_BASE_URL = "http://localhost:3000/api/notifications"; // Replace with your backend URL
+import { useQuery } from '@tanstack/react-query';
+import apiClient from '../apiServices/serviceClient';
 
 interface NotificationData {
   notificationName: string;
@@ -24,19 +22,19 @@ export const fetchNotifications = async (
   });
 
   if (eventId !== null) {
-    params.set("eventId", eventId.toString());
-  } else console.log("it is nullll");
+    params.set('eventId', eventId.toString());
+  } else console.log('it is nullll');
 
   if (searchTerm && searchTerm.length >= 3) {
-    params.set("notificationName", searchTerm);
+    params.set('notificationName', searchTerm);
   }
   // Add sorting parameters to the URL if provided
   if (sortBy && sortOrder) {
-    params.set("sortBy", sortBy);
-    params.set("sortOrder", sortOrder);
+    params.set('sortBy', sortBy);
+    params.set('sortOrder', sortOrder);
   }
   console.log(eventId);
-  const response = await axios.get(`${API_BASE_URL}?${params}`);
+  const response = await apiClient.get(`/notifications/?${params}`);
   return response.data;
 };
 
@@ -50,7 +48,7 @@ export const useNotifications = (
   sortOrder?: string
 ) => {
   return useQuery(
-    ["notifications", eventId, page, pageSize, searchTerm, sortBy, sortOrder],
+    ['notifications', eventId, page, pageSize, searchTerm, sortBy, sortOrder],
     () =>
       fetchNotifications(
         eventId,
@@ -69,17 +67,18 @@ export const useNotifications = (
 export const deleteNotification = async (
   notificationId: string | number
 ): Promise<void> => {
-  const response = await axios.patch(
-    `${API_BASE_URL}/${notificationId}/delete`
+  const response = await apiClient.patch(
+    `/notifications/${notificationId}/delete`
   );
+
   return response.data; // You may handle the response data as needed
 };
 
 export const deactivateNotification = async (
   notificationId: string | number
 ): Promise<void> => {
-  const response = await axios.patch(
-    `${API_BASE_URL}/${notificationId}/deactivate`
+  const response = await apiClient.patch(
+    `/notifications/${notificationId}/deactivate`
   );
   console.log(response);
   return response.data; // You may handle the response data as needed
@@ -90,14 +89,15 @@ export const updateNotification = async (
   data: NotificationData
 ): Promise<void> => {
   try {
-    const response = await axios.put(
-      `${API_BASE_URL}/${notificationId}/update`,
+    const response = await apiClient.put(
+      `/notifications/${notificationId}/update`,
       data
     );
+
     // Handle the response as needed
-    console.log("Notification updated:", response.data);
+    console.log('Notification updated:', response.data);
   } catch (error) {
-    console.error("Error updating notification:", error);
+    console.error('Error updating notification:', error);
     throw error; // You can handle or propagate the error as necessary
   }
 };
@@ -106,10 +106,10 @@ export const addNotification = async (
   data: NotificationData
 ): Promise<void> => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/`, data);
-    console.log("Notification added:", response.data);
+    const response = await apiClient.post('/notifications/', data);
+    console.log('Notification added:', response.data);
   } catch (error) {
-    console.error("Error adding notification:", error);
+    console.error('Error adding notification:', error);
     throw error; // You can handle or propagate the error as necessary
   }
 };

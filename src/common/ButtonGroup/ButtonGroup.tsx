@@ -1,6 +1,7 @@
-import { UpdateButton, DeleteButton, ToggleButton } from "./ButtonStyles";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { UpdateButton, DeleteButton, ToggleButton } from './ButtonStyles';
+import EditIcon from '@mui/icons-material/Edit';
+import Tooltip from '@mui/material/Tooltip'; // Import Tooltip component
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface ButtonGroupProps {
   onUpdateClick: () => void;
@@ -17,19 +18,26 @@ const ButtonGroup = ({
 }: ButtonGroupProps) => {
   return (
     <div>
-      <UpdateButton onClick={onUpdateClick}>
-        <EditIcon />
-      </UpdateButton>
-      <span style={{ margin: "0 8px" }}></span>
-      <DeleteButton onClick={onDeleteClick}>
-        <DeleteIcon />
-      </DeleteButton>
-      <span style={{ margin: "0 8px" }}></span>
-      <ToggleButton
-        checked={isToggled}
-        onChange={onToggleClick}
-        name="toggle"
-      />
+      <Tooltip title='Update'>
+        <UpdateButton onClick={onUpdateClick}>
+          <EditIcon />
+        </UpdateButton>
+      </Tooltip>
+      <span style={{ margin: '0 8px' }}></span>
+      <Tooltip title='Delete'>
+        <DeleteButton onClick={onDeleteClick}>
+          <DeleteIcon />
+        </DeleteButton>
+      </Tooltip>
+
+      <span style={{ margin: '0 8px' }}></span>
+      <Tooltip title='Deactivate'>
+        <ToggleButton
+          checked={isToggled}
+          onChange={onToggleClick}
+          name='toggle'
+        />
+      </Tooltip>
     </div>
   );
 };

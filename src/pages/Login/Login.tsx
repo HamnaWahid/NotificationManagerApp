@@ -1,24 +1,38 @@
-// src/Login.tsx
-
 import React, { useState } from 'react';
 import { Button, Container, Paper, TextField, Typography } from '@mui/material';
+import apiClient from '../../apiServices/serviceClient'; // Adjust the import path for apiClient
+import { useNavigate } from 'react-router-dom';
 
-import logoImage from '../../assets/logo-gosaas.png'; // Import your logo image
+import logoImage from '../../assets/logo-gosaas.png';
+
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref
+) {
+  return <MuiAlert elevation={6} ref={ref} variant='filled' {...props} />;
+});
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
+  const [backendErrorMessage, setBackendErrorMessage] = useState<string | null>(
+    null
+  );
+
+  const navigate = useNavigate();
 
   const validateEmail = (email: string) => {
-    // Basic email validation
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
     return emailRegex.test(email);
   };
 
-  const handleLogin = () => {
-    // Validate email and password
+  const handleLogin = async () => {
     if (!email) {
       setEmailError('Email is required');
     } else if (!validateEmail(email)) {
@@ -33,12 +47,28 @@ const Login: React.FC = () => {
       setPasswordError(null);
     }
 
-    // If both email and password are valid, proceed with login logic
     if (!emailError && !passwordError) {
-      // Handle login logic here (e.g., send a request to the server)
-      console.log('Email:', email);
-      console.log('Password:', password);
+      try {
+        const response = await apiClient.post('/login', { email, password });
+        const token = response.data.token;
+        localStorage.setItem('token', token); // Set the token in local storage
+        console.log('Login successful. Token:', token);
+        navigate('/Dashboard');
+      } catch (error) {
+        console.log(error);
+        console.error('Login failed:', error.response?.data.error);
+        setBackendErrorMessage(
+          error.response?.data.error ||
+            error.response?.data.message ||
+            'An error occurred'
+        );
+        setShowAlert(true);
+      }
     }
+  };
+
+  const handleCloseAlert = () => {
+    setShowAlert(false);
   };
 
   return (
@@ -96,6 +126,22 @@ const Login: React.FC = () => {
         >
           Login
         </Button>
+        {backendErrorMessage && (
+          <Snackbar
+            open={showAlert}
+            autoHideDuration={1500}
+            onClose={handleCloseAlert}
+            style={{
+              top: '20%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <Alert onClose={handleCloseAlert} severity='error'>
+              {backendErrorMessage}
+            </Alert>
+          </Snackbar>
+        )}
       </Paper>
     </Container>
   );
