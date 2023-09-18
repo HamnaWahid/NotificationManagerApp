@@ -146,7 +146,7 @@ const NotificationForm = ({ onCancel, onSubmit, message }: Props) => {
                     search,
                     highlightedDisplay
                   ) => (
-                    <div className='custom-mention'>{highlightedDisplay}</div>
+                    <div className='custom-mention '>{highlightedDisplay}</div>
                   )}
                   displayTransform={(id, display) => `{${display}}`}
                   markup='{__display__}'
