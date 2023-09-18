@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import Tile from "../../common/Tiles/Tile";
-import { Slide, Paper, Grid, IconButton, Dialog } from "@mui/material";
-import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
+import React, { useState } from 'react';
+import Tile from '../../common/Tiles/Tile';
+import { Slide, Paper, Grid, IconButton, Dialog } from '@mui/material';
+import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import {
   useEvents,
   deleteEvent,
   deactivateEvent,
   updateEvent,
-} from "../../containers/EventGrid";
-import EventFormComponent from "../../common/Form/EventFormComponent";
-import { useQueryClient } from "@tanstack/react-query";
-import "./Tiles.css";
+} from '../../containers/EventGrid';
+import EventFormComponent from '../../common/Form/EventFormComponent';
+import { useQueryClient } from '@tanstack/react-query';
+import './Tiles.css';
 
 interface EventData {
   isActive: boolean;
@@ -65,7 +65,7 @@ const Events: React.FC<EventsProps> = ({
   const handleNext = () => {
     if (currentPage < TilesData.totalPages) {
       queryClient.invalidateQueries([
-        "events",
+        'events',
         clickedAppId,
         currentPage + 1,
         pageSize,
@@ -77,7 +77,7 @@ const Events: React.FC<EventsProps> = ({
   const handleBack = () => {
     if (currentPage > 1) {
       queryClient.invalidateQueries([
-        "events",
+        'events',
         clickedAppId,
         currentPage - 1,
         pageSize,
@@ -106,7 +106,7 @@ const Events: React.FC<EventsProps> = ({
           formData
         );
         queryClient.invalidateQueries([
-          "events",
+          'events',
           clickedAppId,
           currentPage,
           pageSize,
@@ -114,7 +114,7 @@ const Events: React.FC<EventsProps> = ({
         ]);
         handleCloseDialog();
       } catch (error) {
-        console.error("Error updating event:", error);
+        console.error('Error updating event:', error);
       }
     }
   };
@@ -123,13 +123,13 @@ const Events: React.FC<EventsProps> = ({
     try {
       await deleteEvent(eventId);
       queryClient.invalidateQueries([
-        "events",
+        'events',
         clickedAppId,
         currentPage,
         pageSize,
       ]);
     } catch (error) {
-      console.error("Error deleting event:", error);
+      console.error('Error deleting event:', error);
     }
   };
 
@@ -137,13 +137,13 @@ const Events: React.FC<EventsProps> = ({
     try {
       await deactivateEvent(eventId);
       queryClient.invalidateQueries([
-        "events",
+        'events',
         clickedAppId,
         currentPage,
         pageSize,
       ]);
     } catch (error) {
-      console.error("Error deactivating event:", error);
+      console.error('Error deactivating event:', error);
     }
   };
 
@@ -171,9 +171,9 @@ const Events: React.FC<EventsProps> = ({
 
   return (
     <>
-      <div className="events">
-        <Slide direction="left" in={true} mountOnEnter unmountOnExit>
-          <Grid container spacing={2} className="gridcontainer">
+      <div className='events'>
+        <Slide direction='left' in={true} mountOnEnter unmountOnExit>
+          <Grid container spacing={2} className='gridcontainer'>
             {TilesData?.events?.map((data: EventData) => (
               <Grid item xs={12} sm={6} md={4} key={data.id || data._id}>
                 <Tile
@@ -194,15 +194,15 @@ const Events: React.FC<EventsProps> = ({
         <Paper elevation={1} square>
           <div
             style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
             <IconButton onClick={handleBack} disabled={currentPage === 1}>
               <ArrowBackIos />
             </IconButton>
-            <span style={{ margin: "0 5px" }}>
+            <span style={{ margin: '0 5px' }}>
               {currentPage} of {TilesData?.totalPages}
             </span>
             <IconButton
@@ -223,10 +223,10 @@ const Events: React.FC<EventsProps> = ({
           <EventFormComponent
             onCancel={handleCloseDialog}
             onSubmit={handleUpdateAction}
-            message="Update Event"
+            message='Update Event'
             initialName={selectedEventData.eventName}
             initialDescription={selectedEventData.eventDescription}
-            title={"Edit Event"}
+            title={'Edit Event'}
           />
         )}
       </Dialog>

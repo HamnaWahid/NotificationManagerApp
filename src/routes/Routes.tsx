@@ -7,11 +7,12 @@ import AddEvent from '../pages/AddEvent';
 import NotificationEdit from '../pages/EditNotification';
 import AddNotification from '../pages/AddNotification';
 import Index from '../pages/Dashboard';
-
+import YourComponent from '../containers/tagFetchTest';
 function App() {
   return (
     <Routes>
       <Route path='/' element={<LoginPage />} />
+      <Route path='/tags' element={<YourComponent />} />
 
       <Route
         path='/Dashboard'
