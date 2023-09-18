@@ -2,6 +2,7 @@
 .curved-appbar {
   border-radius: 10px;
 }
+
 .toolbar-header {
   position: fixed;
   margin-top: 10px;
@@ -9,6 +10,50 @@
   margin-right: auto;
   margin-bottom: 16px;
   max-width: 1500px;
-  background-color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #f9fbff; /* Slightly darker background color */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Dark box shadow */
+  border-radius: 10px; /* Rounded corners */
+  padding: 16px; /* Add some padding */
 }
+
+/* Unique styling for your toolbar */
+.toolbar-header h1 {
+  font-size: 24px;
+  color: #333; /* Text color */
+  margin: 0;
+  padding: 0;
+}
+
+.toolbar-header input[type="text"] {
+  padding: 8px;
+  border: 1px solid #ccc; /* Input border */
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.toolbar-header select {
+  padding: 8px;
+  border: 1px solid #ccc; /* Select border */
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* Add unique styles for your toolbar buttons, adjust as needed */
+.toolbar-header button {
+  padding: 8px 16px;
+  margin-left: 10px;
+  background-color: transparent; /* Remove button background color */
+  color: #333; /* Button text color */
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Dark box shadow */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Change button color on hover */
+.toolbar-header button:hover {
+  background-color: transparent; /* Remove hover background color */
+  color: #3a3635; /* Change hover text color */
+}
+
+/* Add more unique styles as needed */

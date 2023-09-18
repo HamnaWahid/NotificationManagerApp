@@ -24,6 +24,8 @@ interface NotificationsProps {
   searchTerm: string;
   clickedEventId: string | number;
   onNotificationTileClick: (notificationId: string | number) => void;
+  sortBy: string;
+  sortOrder: string;
 }
 
 const pageSize = 6;
@@ -32,6 +34,8 @@ const Notifications: React.FC<NotificationsProps> = ({
   searchTerm,
   clickedEventId,
   onNotificationTileClick,
+  sortBy,
+  sortOrder,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -40,13 +44,20 @@ const Notifications: React.FC<NotificationsProps> = ({
 
   const [clickedTileIds, setClickedTileIds] = useState<Set<string | number>>(
     new Set()
-  ); // State to track clicked tile IDs
+  );
 
   const {
     data: TilesData,
     isLoading,
     isError,
-  } = useNotifications(clickedEventId, currentPage, pageSize, searchTerm);
+  } = useNotifications(
+    clickedEventId,
+    currentPage,
+    pageSize,
+    searchTerm,
+    sortBy,
+    sortOrder
+  );
 
   const queryClient = useQueryClient();
 
@@ -98,6 +109,7 @@ const Notifications: React.FC<NotificationsProps> = ({
           clickedEventId,
           currentPage,
           pageSize,
+          searchTerm,
         ]);
         handleCloseDialog();
       } catch (error) {
@@ -135,7 +147,6 @@ const Notifications: React.FC<NotificationsProps> = ({
   };
 
   const handleTileClick = (tileId: string | number) => {
-    // Toggle the clicked state of the tile
     const updatedClickedTileIds = new Set(clickedTileIds);
     if (updatedClickedTileIds.has(tileId)) {
       updatedClickedTileIds.delete(tileId);
@@ -144,7 +155,6 @@ const Notifications: React.FC<NotificationsProps> = ({
     }
     setClickedTileIds(updatedClickedTileIds);
 
-    // Notify the parent component of the tile click
     onNotificationTileClick(tileId);
   };
 
@@ -198,6 +208,18 @@ const Notifications: React.FC<NotificationsProps> = ({
             >
               <ArrowForwardIos />
             </IconButton>
+          </div>
+          {/* Display the total number of Notifications */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <div style={{ flex: 1, textAlign: "center" }}>
+              Notifications: {TilesData?.totalNotifications}
+            </div>
           </div>
         </Paper>
       </div>

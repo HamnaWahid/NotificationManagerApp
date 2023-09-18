@@ -13,7 +13,9 @@ export const fetchNotifications = async (
   eventId: string | number, // Make sure eventId can be null
   page: number,
   pageSize: number,
-  searchTerm?: string
+  searchTerm?: string,
+  sortBy?: string, // Add sortBy as a parameter
+  sortOrder?: string // Add sortOrder as a parameter
 ) => {
   // Check if eventId is not null before constructing the params
   const params = new URLSearchParams({
@@ -28,6 +30,11 @@ export const fetchNotifications = async (
   if (searchTerm && searchTerm.length >= 3) {
     params.set("notificationName", searchTerm);
   }
+  // Add sorting parameters to the URL if provided
+  if (sortBy && sortOrder) {
+    params.set("sortBy", sortBy);
+    params.set("sortOrder", sortOrder);
+  }
   console.log(eventId);
   const response = await axios.get(`${API_BASE_URL}?${params}`);
   return response.data;
@@ -38,11 +45,21 @@ export const useNotifications = (
   eventId: string | number, // Make sure eventId can be null
   page: number,
   pageSize: number,
-  searchTerm?: string
+  searchTerm?: string,
+  sortBy?: string,
+  sortOrder?: string
 ) => {
   return useQuery(
-    ["notifications", eventId, page, pageSize, searchTerm],
-    () => fetchNotifications(eventId, page, pageSize, searchTerm),
+    ["notifications", eventId, page, pageSize, searchTerm, sortBy, sortOrder],
+    () =>
+      fetchNotifications(
+        eventId,
+        page,
+        pageSize,
+        searchTerm,
+        sortBy,
+        sortOrder
+      ),
     {
       staleTime: 1000,
     }
@@ -64,6 +81,7 @@ export const deactivateNotification = async (
   const response = await axios.patch(
     `${API_BASE_URL}/${notificationId}/deactivate`
   );
+  console.log(response);
   return response.data; // You may handle the response data as needed
 };
 

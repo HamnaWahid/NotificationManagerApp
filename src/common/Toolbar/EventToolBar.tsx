@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import useHandleAddEvent from "./handleAddEvent";
-
 import {
   Toolbar,
   Typography,
@@ -22,6 +21,10 @@ interface EventToolbarHeaderProps {
   clickedAppName: string; // Add clickedAppName to the props
   searchTerm: string;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+  sortBy: string; // Add sortBy prop
+  setSortBy: React.Dispatch<React.SetStateAction<string>>; // Add setSortBy prop
+  sortOrder: string; // Add sortOrder prop
+  setSortOrder: React.Dispatch<React.SetStateAction<string>>; // Add setSortOrder prop
 }
 
 const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
@@ -30,6 +33,8 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
   clickedAppName,
   searchTerm,
   setSearchTerm,
+  setSortBy,
+  setSortOrder,
 }) => {
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
   const [alphaSortAnchorEl, setAlphaSortAnchorEl] =
@@ -59,6 +64,13 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
     setOpenDialog(false);
   };
 
+  const handleSortOptionClick = (option: string) => {
+    setSortBy(option);
+    setSortOrder("asc"); // Reset to default ascending order when a new sort option is selected
+    handleClose();
+
+    // Update the query with the new sorting options
+  };
   // Custom hook to handle adding an application
   const handleAddEvent = useHandleAddEvent();
 
@@ -78,16 +90,18 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
 
   return (
     <Toolbar className="curved-appbar toolbar-header">
-      <Typography variant="h6" style={{ flexGrow: 1, color: "grey" }}>
+      <Typography
+        variant="h6"
+        style={{ flexGrow: 1, color: "#333", fontWeight: "bold" }}
+      >
         {title} -{" "}
         <span
           style={{
-            fontSize: "12px",
+            fontSize: "17px",
             color: "#3f51b5",
-            fontWeight: "bold",
           }}
         >
-          {clickedAppName}
+          {clickedAppName} {/* Use clickedEventName */}
         </span>
       </Typography>
       <div style={{ position: "relative" }}>
@@ -96,7 +110,7 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
         </IconButton>
         <InputBase
           placeholder="Search"
-          style={{ color: "#3f51b5", marginLeft: "10px" }}
+          style={{ marginLeft: "10px" }}
           inputProps={{ "aria-label": "search" }}
           defaultValue={searchTerm}
           onChange={(e) => {
@@ -125,9 +139,15 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
           open={Boolean(alphaSortAnchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={handleClose}>Sort by Name</MenuItem>
-          <MenuItem onClick={handleClose}>Sort by Date</MenuItem>
-          <MenuItem onClick={handleClose}>Sort by Size</MenuItem>
+          <MenuItem onClick={() => handleSortOptionClick("eventName")}>
+            Sort by Name
+          </MenuItem>
+          <MenuItem onClick={() => handleSortOptionClick("dateCreated")}>
+            Sort by Date
+          </MenuItem>
+          <MenuItem onClick={() => handleSortOptionClick("isActive")}>
+            Sort by Active Status
+          </MenuItem>
         </Menu>
       </div>
       <div>
@@ -140,18 +160,21 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
           open={Boolean(sortAnchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={handleClose}>Ascending</MenuItem>
-          <MenuItem onClick={handleClose}>Descending</MenuItem>
+          <MenuItem onClick={() => handleSortOptionClick("asc")}>
+            Ascending
+          </MenuItem>
+          <MenuItem onClick={() => handleSortOptionClick("desc")}>
+            Descending
+          </MenuItem>
         </Menu>
       </div>
       <div>
         <Button
-          variant="contained"
+          variant="outlined"
           color="primary"
           size="small"
           style={{
             marginRight: "5px",
-            backgroundColor: "white",
             color: "#3f51b5",
           }}
           onClick={handleAddClick}

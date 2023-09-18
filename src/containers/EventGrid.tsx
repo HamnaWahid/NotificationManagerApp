@@ -13,7 +13,9 @@ export const fetchEvents = async (
   applicationId: string | number, // Make sure applicationId can be null
   page: number,
   pageSize: number,
-  searchTerm?: string
+  searchTerm?: string,
+  sortBy?: string, // Add sortBy as a parameter
+  sortOrder?: string // Add sortOrder as a parameter
 ) => {
   // Check if applicationId is not null before constructing the params
   const params = new URLSearchParams({
@@ -28,6 +30,12 @@ export const fetchEvents = async (
   if (searchTerm && searchTerm.length >= 3) {
     params.set("eventName", searchTerm);
   }
+
+  // Add sorting parameters to the URL if provided
+  if (sortBy && sortOrder) {
+    params.set("sortBy", sortBy);
+    params.set("sortOrder", sortOrder);
+  }
   console.log(applicationId);
   const response = await axios.get(`${API_BASE_URL}?${params}`);
   return response.data;
@@ -38,11 +46,14 @@ export const useEvents = (
   applicationId: string | number, // Make sure applicationId can be null
   page: number,
   pageSize: number,
-  searchTerm?: string
+  searchTerm?: string,
+  sortBy?: string,
+  sortOrder?: string
 ) => {
   return useQuery(
-    ["events", applicationId, page, pageSize, searchTerm],
-    () => fetchEvents(applicationId, page, pageSize, searchTerm),
+    ["events", applicationId, page, pageSize, searchTerm, sortBy, sortOrder],
+    () =>
+      fetchEvents(applicationId, page, pageSize, searchTerm, sortBy, sortOrder),
     {
       staleTime: 1000,
     }

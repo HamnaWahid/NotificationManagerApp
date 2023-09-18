@@ -169,7 +169,6 @@ const Dashboard: React.FC<DashboardProps> = ({
         <Paper elevation={1} square>
           <div
             style={{
-              display: "flex",
               justifyContent: "center",
               alignItems: "center",
             }}
@@ -188,8 +187,21 @@ const Dashboard: React.FC<DashboardProps> = ({
                 <ArrowForwardIos />
               </IconButton>
             </div>
-            <div style={{ flex: 1, textAlign: "center" }}>
-              Applications: {appTilesData?.totalApplications}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{
+                  textAlign: "center",
+                  flexDirection: "column",
+                }}
+              >
+                Applications: {appTilesData?.totalApplications}
+              </div>
             </div>
           </div>
         </Paper>

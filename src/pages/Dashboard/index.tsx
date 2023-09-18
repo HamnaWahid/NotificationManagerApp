@@ -14,7 +14,7 @@ const Index: React.FC = () => {
   const [clickedEventName, setClickedEventName] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("appName"); // Initialize with default sort option
   const [sortOrder, setSortOrder] = useState<string>("asc"); // Initialize with default sort order
-
+  const [showNotifications, setShowNotifications] = useState<boolean>(false); // Track whether to show notificatio
   const [clickedNotificationId, setClickedNotificationId] = useState<
     string | number
   >("");
@@ -22,6 +22,9 @@ const Index: React.FC = () => {
   const handleAppTileClick = (appId: string | number, appName: string) => {
     setClickedAppId(appId);
     setClickedAppName(appName);
+    setClickedEventId(""); // Reset clickedEventId when a new app is clicked
+    setClickedEventName(""); // Reset clickedEventName when a new app is clicked
+    setShowNotifications(false); // Hide notifications when a new app is clicked
     console.log("Clicked App ID:", appId);
     console.log("Clicked App Name:", appName);
   };
@@ -32,6 +35,7 @@ const Index: React.FC = () => {
   ) => {
     setClickedEventId(eventId);
     setClickedEventName(eventName);
+    setShowNotifications(true); // Show notifications when an event is clicked
     console.log("Clicked Event ID:", eventId);
     console.log("Clicked Event Name:", eventName);
   };
@@ -68,10 +72,16 @@ const Index: React.FC = () => {
             clickedAppId={clickedAppId}
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
+            sortBy={sortBy}
+            sortOrder={sortOrder} // Pass sortOrder to ToolbarHeader
+            setSortBy={setSortBy} // Pass setSortBy to ToolbarHeader
+            setSortOrder={setSortOrder} // Pass setSortOrder to ToolbarHeader
           />
           <Events
             searchTerm={searchTerm}
             clickedAppId={clickedAppId}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
             onEventTileClick={handleEventTileClick}
           />
         </>
@@ -82,7 +92,7 @@ const Index: React.FC = () => {
       )}
 
       {/* Conditionally render Notification components */}
-      {clickedEventId ? (
+      {showNotifications && clickedEventId ? (
         <>
           <NotificationToolbarHeader
             title="Notifications"
@@ -90,10 +100,16 @@ const Index: React.FC = () => {
             clickedEventName={clickedEventName}
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
+            sortBy={sortBy}
+            sortOrder={sortOrder} // Pass sortOrder to ToolbarHeader
+            setSortBy={setSortBy} // Pass setSortBy to ToolbarHeader
+            setSortOrder={setSortOrder} // Pass setSortOrder to ToolbarHeader
           />
           <Notifications
             searchTerm={searchTerm}
             clickedEventId={clickedEventId}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
             onNotificationTileClick={handleNotificationTileClick}
           />
         </>

@@ -18,6 +18,8 @@ interface NotificationToolbarHeaderProps {
   clickedEventName: string; // Added clickedEventName
   searchTerm: string;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+  setSortBy: React.Dispatch<React.SetStateAction<string>>; // Add setSortBy prop
+  setSortOrder: React.Dispatch<React.SetStateAction<string>>; // Add setSortOrder prop
 }
 
 const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
@@ -26,6 +28,8 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
   clickedEventName,
   searchTerm,
   setSearchTerm,
+  setSortBy,
+  setSortOrder,
 }) => {
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
   const [alphaSortAnchorEl, setAlphaSortAnchorEl] =
@@ -45,15 +49,25 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
     setAlphaSortAnchorEl(null);
   };
 
+  const handleSortOptionClick = (option: string) => {
+    setSortBy(option);
+    setSortOrder("asc"); // Reset to default ascending order when a new sort option is selected
+    handleClose();
+
+    // Update the query with the new sorting options
+  };
+
   return (
     <Toolbar className="curved-appbar toolbar-header">
-      <Typography variant="h6" style={{ flexGrow: 1, color: "grey" }}>
+      <Typography
+        variant="h6"
+        style={{ flexGrow: 1, color: "#333", fontWeight: "bold" }}
+      >
         {title} -{" "}
         <span
           style={{
-            fontSize: "12px",
+            fontSize: "17px",
             color: "#3f51b5",
-            fontWeight: "bold",
           }}
         >
           {clickedEventName} {/* Use clickedEventName */}
@@ -65,7 +79,14 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
         </IconButton>
         <InputBase
           placeholder="Search"
-          style={{ color: "#3f51b5", marginLeft: "10px" }}
+          style={{
+            color: "#3f51b5",
+            marginLeft: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "5px",
+            fontSize: "16px",
+            padding: "8px",
+          }}
           inputProps={{ "aria-label": "search" }}
           defaultValue={searchTerm}
           onChange={(e) => {
@@ -94,9 +115,15 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
           open={Boolean(alphaSortAnchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={handleClose}>Sort by Name</MenuItem>
-          <MenuItem onClick={handleClose}>Sort by Date</MenuItem>
-          <MenuItem onClick={handleClose}>Sort by Size</MenuItem>
+          <MenuItem onClick={() => handleSortOptionClick("notificationName")}>
+            Sort by Name
+          </MenuItem>
+          <MenuItem onClick={() => handleSortOptionClick("dateCreated")}>
+            Sort by Date
+          </MenuItem>
+          <MenuItem onClick={() => handleSortOptionClick("isActive")}>
+            Sort by Active Status
+          </MenuItem>
         </Menu>
       </div>
       <div>
@@ -109,18 +136,21 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
           open={Boolean(sortAnchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={handleClose}>Ascending</MenuItem>
-          <MenuItem onClick={handleClose}>Descending</MenuItem>
+          <MenuItem onClick={() => handleSortOptionClick("asc")}>
+            Ascending
+          </MenuItem>
+          <MenuItem onClick={() => handleSortOptionClick("desc")}>
+            Descending
+          </MenuItem>
         </Menu>
       </div>
       <div>
         <Button
-          variant="contained"
+          variant="outlined"
           color="primary"
           size="small"
           style={{
             marginRight: "5px",
-            backgroundColor: "white",
             color: "#3f51b5",
           }}
           onClick={() => {}}

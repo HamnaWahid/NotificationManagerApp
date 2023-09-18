@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Tile from "../../common/Tiles/Tile"; // Import the Tile component
+import Tile from "../../common/Tiles/Tile";
 import { Slide, Paper, Grid, IconButton, Dialog } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import {
@@ -24,6 +24,8 @@ interface EventsProps {
   searchTerm: string;
   clickedAppId: string | number;
   onEventTileClick: (eventId: string | number, eventName: string) => void;
+  sortBy: string;
+  sortOrder: string;
 }
 
 const pageSize = 6;
@@ -32,6 +34,8 @@ const Events: React.FC<EventsProps> = ({
   searchTerm,
   clickedAppId,
   onEventTileClick,
+  sortBy,
+  sortOrder,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -39,7 +43,6 @@ const Events: React.FC<EventsProps> = ({
     null
   );
 
-  // Define a state variable to track the clicked tile IDs
   const [clickedTileIds, setClickedTileIds] = useState<Set<string | number>>(
     new Set()
   );
@@ -48,7 +51,14 @@ const Events: React.FC<EventsProps> = ({
     data: TilesData,
     isLoading,
     isError,
-  } = useEvents(clickedAppId, currentPage, pageSize, searchTerm);
+  } = useEvents(
+    clickedAppId,
+    currentPage,
+    pageSize,
+    searchTerm,
+    sortBy,
+    sortOrder
+  );
 
   const queryClient = useQueryClient();
 
@@ -137,15 +147,12 @@ const Events: React.FC<EventsProps> = ({
     }
   };
 
-  // Function to handle tile click and update clickedTileIds state
   const handleTileClick = (tileId: string | number) => {
-    // Create a new Set with the clicked tile ID
     const newClickedTileIds = new Set(clickedTileIds);
-    newClickedTileIds.clear(); // Clear the previous set
-    newClickedTileIds.add(tileId); // Add the clicked tile ID
+    newClickedTileIds.clear();
+    newClickedTileIds.add(tileId);
     setClickedTileIds(newClickedTileIds);
 
-    // Call the onEventTileClick function
     const selectedEvent = TilesData?.events.find(
       (event: EventData) => event.id === tileId || event._id === tileId
     );
@@ -178,7 +185,7 @@ const Events: React.FC<EventsProps> = ({
                   onDeleteClick={() => handleDeleteClick(data.id || data._id)}
                   onToggleClick={() => handleToggleClick(data.id || data._id)}
                   onTileClick={() => handleTileClick(data.id || data._id)}
-                  isClicked={clickedTileIds.has(data.id || data._id)} // Pass the clicked state to the Tile component
+                  isClicked={clickedTileIds.has(data.id || data._id)}
                 />
               </Grid>
             ))}
@@ -204,6 +211,9 @@ const Events: React.FC<EventsProps> = ({
             >
               <ArrowForwardIos />
             </IconButton>
+          </div>
+          <div style={{ flex: 1, textAlign: "center" }}>
+            Events: {TilesData?.totalEvents}
           </div>
         </Paper>
       </div>
