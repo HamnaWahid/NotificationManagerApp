@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import { FormContainer } from "./FormStyles";
-import Grid from "@mui/material/Grid";
+import React, { useState } from 'react';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import { FormContainer } from './FormStyles';
+import Grid from '@mui/material/Grid';
 
 interface NotificationFormComponentProps {
   onCancel: () => void;
@@ -23,9 +23,9 @@ const NotificationFormComponent = ({
   initialName,
   initialDescription,
 }: NotificationFormComponentProps) => {
-  const [notificationName, setName] = useState(initialName || "");
+  const [notificationName, setName] = useState(initialName || '');
   const [notificationDescription, setDescription] = useState(
-    initialDescription || ""
+    initialDescription || ''
   );
   const [nameError, setNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
@@ -33,23 +33,23 @@ const NotificationFormComponent = ({
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
     setName(newName);
-    setNameError(newName.trim() === ""); // Check if name is empty
+    setNameError(newName.trim() === ''); // Check if name is empty
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDescription = e.target.value;
     setDescription(newDescription);
-    setDescriptionError(newDescription.trim() === ""); // Check if description is empty
+    setDescriptionError(newDescription.trim() === ''); // Check if description is empty
   };
 
   const handleSubmit = () => {
     if (
-      notificationName.trim() === "" ||
-      notificationDescription.trim() === ""
+      notificationName.trim() === '' ||
+      notificationDescription.trim() === ''
     ) {
       // If either field is empty, set error states
-      setNameError(notificationName.trim() === "");
-      setDescriptionError(notificationDescription.trim() === "");
+      setNameError(notificationName.trim() === '');
+      setDescriptionError(notificationDescription.trim() === '');
     } else {
       onSubmit({ notificationName, notificationDescription });
     }
@@ -60,15 +60,15 @@ const NotificationFormComponent = ({
   };
 
   return (
-    <Grid container justifyContent="center" alignItems="center">
+    <Grid container justifyContent='center' alignItems='center'>
       <FormContainer>
         {title && (
-          <div className="message">
+          <div className='message'>
             <p
               style={{
-                fontSize: "35px",
-                fontFamily: "Arial, sans-serif",
-                fontWeight: "bold",
+                fontSize: '35px',
+                fontFamily: 'Arial, sans-serif',
+                fontWeight: 'bold',
               }}
             >
               {title}
@@ -76,40 +76,42 @@ const NotificationFormComponent = ({
           </div>
         )}
         <TextField
-          label="Notification Name"
+          label='Notification Name'
           value={notificationName}
           onChange={handleNameChange}
           fullWidth
-          margin="normal"
-          variant="outlined"
+          margin='normal'
+          variant='outlined'
           required // Make the field required
           error={nameError}
-          helperText={nameError ? "Name is required" : ""}
+          helperText={nameError ? 'Name is required' : ''}
         />
         <TextField
-          label="Notification Description"
+          label='Notification Description'
           value={notificationDescription}
           onChange={handleDescriptionChange}
           fullWidth
-          margin="normal"
-          variant="outlined"
+          margin='normal'
+          variant='outlined'
+          multiline // Allow multiline input
+          rows={4}
           required // Make the field required
           error={descriptionError}
-          helperText={descriptionError ? "Description is required" : ""}
+          helperText={descriptionError ? 'Description is required' : ''}
         />
-        <div className="button-container">
+        <div className='button-container'>
           <Button
-            variant="contained"
+            variant='contained'
             onClick={handleSubmit}
-            className="submit-button"
+            className='submit-button'
           >
             Submit
           </Button>
           <Button
-            variant="contained"
+            variant='contained'
             onClick={handleCancel}
-            className="cancel-button"
-            style={{ marginLeft: "10px", backgroundColor: "red" }}
+            className='cancel-button'
+            style={{ marginLeft: '10px', backgroundColor: 'red' }}
           >
             Cancel
           </Button>

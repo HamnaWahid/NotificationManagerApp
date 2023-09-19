@@ -85,6 +85,8 @@ const FormComponent = ({
           fullWidth
           margin='normal'
           variant='outlined'
+          multiline // Allow multiline input
+          rows={4} // Set the number of rows for multiline
           required // Make the field required
           error={descriptionError}
           helperText={descriptionError ? 'Description is required' : ''}

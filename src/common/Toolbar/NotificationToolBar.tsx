@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Toolbar,
   Typography,
@@ -7,10 +7,11 @@ import {
   Menu,
   MenuItem,
   Button,
-} from "@mui/material";
-import { Search, Sort, SortByAlpha, Add } from "@mui/icons-material";
-import "./ToolbarStyles.css";
-import { useQueryClient } from "@tanstack/react-query";
+} from '@mui/material';
+import { Search, Sort, SortByAlpha, Add } from '@mui/icons-material';
+import './ToolbarStyles.css';
+import { useQueryClient } from '@tanstack/react-query';
+import Tooltip from '@mui/material/Tooltip';
 
 interface NotificationToolbarHeaderProps {
   title: string;
@@ -51,63 +52,67 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
 
   const handleSortOptionClick = (option: string) => {
     setSortBy(option);
-    setSortOrder("asc"); // Reset to default ascending order when a new sort option is selected
+    setSortOrder('asc'); // Reset to default ascending order when a new sort option is selected
     handleClose();
 
     // Update the query with the new sorting options
   };
 
   return (
-    <Toolbar className="curved-appbar toolbar-header">
+    <Toolbar className='curved-appbar toolbar-header'>
       <Typography
-        variant="h6"
-        style={{ flexGrow: 1, color: "#333", fontWeight: "bold" }}
+        variant='h6'
+        style={{ flexGrow: 1, color: '#333', fontWeight: 'bold' }}
       >
-        {title} -{" "}
+        {title} -{' '}
         <span
           style={{
-            fontSize: "17px",
-            color: "#3f51b5",
+            fontSize: '17px',
+            color: '#3f51b5',
           }}
         >
           {clickedEventName} {/* Use clickedEventName */}
         </span>
       </Typography>
-      <div style={{ position: "relative" }}>
-        <IconButton>
-          <Search />
-        </IconButton>
+      <div style={{ position: 'relative' }}>
+        <Tooltip title='Search'>
+          <IconButton>
+            <Search />
+          </IconButton>
+        </Tooltip>
         <InputBase
-          placeholder="Search"
+          placeholder='Search'
           style={{
-            color: "#3f51b5",
-            marginLeft: "10px",
-            border: "1px solid #ccc",
-            borderRadius: "5px",
-            fontSize: "16px",
-            padding: "8px",
+            color: '#3f51b5',
+            marginLeft: '10px',
+            border: '1px solid #ccc',
+            borderRadius: '5px',
+            fontSize: '16px',
+            padding: '8px',
           }}
-          inputProps={{ "aria-label": "search" }}
+          inputProps={{ 'aria-label': 'search' }}
           defaultValue={searchTerm}
           onChange={(e) => {
             const v = e.target.value;
 
             if (v.length >= 3) {
               setSearchTerm(v);
-              queryClient.invalidateQueries(["notifications", searchTerm]);
+              queryClient.invalidateQueries(['notifications', searchTerm]);
             }
 
             if (v.length === 0) {
-              setSearchTerm("");
+              setSearchTerm('');
             }
           }}
         />
       </div>
       <div>
-        <div style={{ display: "flex" }}>
-          <IconButton onClick={handleClickSortByAlpha}>
-            <SortByAlpha />
-          </IconButton>
+        <div style={{ display: 'flex' }}>
+          <Tooltip title='Sort By'>
+            <IconButton onClick={handleClickSortByAlpha}>
+              <SortByAlpha />
+            </IconButton>
+          </Tooltip>
         </div>
         <Menu
           anchorEl={alphaSortAnchorEl}
@@ -115,48 +120,52 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
           open={Boolean(alphaSortAnchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={() => handleSortOptionClick("notificationName")}>
+          <MenuItem onClick={() => handleSortOptionClick('notificationName')}>
             Sort by Name
           </MenuItem>
-          <MenuItem onClick={() => handleSortOptionClick("dateCreated")}>
+          <MenuItem onClick={() => handleSortOptionClick('dateCreated')}>
             Sort by Date
           </MenuItem>
-          <MenuItem onClick={() => handleSortOptionClick("isActive")}>
+          <MenuItem onClick={() => handleSortOptionClick('isActive')}>
             Sort by Active Status
           </MenuItem>
         </Menu>
       </div>
       <div>
-        <IconButton onClick={handleClickSort}>
-          <Sort />
-        </IconButton>
+        <Tooltip title='Sort Order`'>
+          <IconButton onClick={handleClickSort}>
+            <Sort />
+          </IconButton>
+        </Tooltip>
         <Menu
           anchorEl={sortAnchorEl}
           keepMounted
           open={Boolean(sortAnchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={() => handleSortOptionClick("asc")}>
+          <MenuItem onClick={() => handleSortOptionClick('asc')}>
             Ascending
           </MenuItem>
-          <MenuItem onClick={() => handleSortOptionClick("desc")}>
+          <MenuItem onClick={() => handleSortOptionClick('desc')}>
             Descending
           </MenuItem>
         </Menu>
       </div>
       <div>
-        <Button
-          variant="outlined"
-          color="primary"
-          size="small"
-          style={{
-            marginRight: "5px",
-            color: "#3f51b5",
-          }}
-          onClick={() => {}}
-        >
-          <Add />
-        </Button>
+        <Tooltip title='Add'>
+          <Button
+            variant='outlined'
+            color='primary'
+            size='small'
+            style={{
+              marginRight: '5px',
+              color: '#3f51b5',
+            }}
+            onClick={() => {}}
+          >
+            <Add />
+          </Button>
+        </Tooltip>
       </div>
     </Toolbar>
   );

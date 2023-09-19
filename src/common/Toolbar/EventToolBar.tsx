@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import useHandleAddEvent from "./handleAddEvent";
+import React, { useState } from 'react';
+import useHandleAddEvent from './handleAddEvent';
 import {
   Toolbar,
   Typography,
@@ -9,11 +9,12 @@ import {
   MenuItem,
   Button,
   Dialog,
-} from "@mui/material";
-import { Search, Sort, SortByAlpha, Add } from "@mui/icons-material";
-import EventFormComponent from "../Form/EventFormComponent"; // Import the EventFormComponent
-import "./ToolbarStyles.css";
-import { useQueryClient } from "@tanstack/react-query";
+} from '@mui/material';
+import { Search, Sort, SortByAlpha, Add } from '@mui/icons-material';
+import EventFormComponent from '../Form/EventFormComponent'; // Import the EventFormComponent
+import './ToolbarStyles.css';
+import { useQueryClient } from '@tanstack/react-query';
+import Tooltip from '@mui/material/Tooltip';
 
 interface EventToolbarHeaderProps {
   title: string;
@@ -66,7 +67,7 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
 
   const handleSortOptionClick = (option: string) => {
     setSortBy(option);
-    setSortOrder("asc"); // Reset to default ascending order when a new sort option is selected
+    setSortOrder('asc'); // Reset to default ascending order when a new sort option is selected
     handleClose();
 
     // Update the query with the new sorting options
@@ -89,49 +90,53 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
   };
 
   return (
-    <Toolbar className="curved-appbar toolbar-header">
+    <Toolbar className='curved-appbar toolbar-header'>
       <Typography
-        variant="h6"
-        style={{ flexGrow: 1, color: "#333", fontWeight: "bold" }}
+        variant='h6'
+        style={{ flexGrow: 1, color: '#333', fontWeight: 'bold' }}
       >
-        {title} -{" "}
+        {title} -{' '}
         <span
           style={{
-            fontSize: "17px",
-            color: "#3f51b5",
+            fontSize: '17px',
+            color: '#3f51b5',
           }}
         >
           {clickedAppName} {/* Use clickedEventName */}
         </span>
       </Typography>
-      <div style={{ position: "relative" }}>
-        <IconButton>
-          <Search />
-        </IconButton>
+      <div style={{ position: 'relative' }}>
+        <Tooltip title='Search'>
+          <IconButton>
+            <Search />
+          </IconButton>
+        </Tooltip>
         <InputBase
-          placeholder="Search"
-          style={{ marginLeft: "10px" }}
-          inputProps={{ "aria-label": "search" }}
+          placeholder='Search'
+          style={{ marginLeft: '10px' }}
+          inputProps={{ 'aria-label': 'search' }}
           defaultValue={searchTerm}
           onChange={(e) => {
             const v = e.target.value;
 
             if (v.length >= 3) {
               setSearchTerm(v);
-              queryClient.invalidateQueries(["events", searchTerm]);
+              queryClient.invalidateQueries(['events', searchTerm]);
             }
 
             if (v.length === 0) {
-              setSearchTerm("");
+              setSearchTerm('');
             }
           }}
         />
       </div>
       <div>
-        <div style={{ display: "flex" }}>
-          <IconButton onClick={handleClickSortByAlpha}>
-            <SortByAlpha />
-          </IconButton>
+        <div style={{ display: 'flex' }}>
+          <Tooltip title='Sort By'>
+            <IconButton onClick={handleClickSortByAlpha}>
+              <SortByAlpha />
+            </IconButton>
+          </Tooltip>
         </div>
         <Menu
           anchorEl={alphaSortAnchorEl}
@@ -139,51 +144,55 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
           open={Boolean(alphaSortAnchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={() => handleSortOptionClick("eventName")}>
+          <MenuItem onClick={() => handleSortOptionClick('eventName')}>
             Sort by Name
           </MenuItem>
-          <MenuItem onClick={() => handleSortOptionClick("dateCreated")}>
+          <MenuItem onClick={() => handleSortOptionClick('dateCreated')}>
             Sort by Date
           </MenuItem>
-          <MenuItem onClick={() => handleSortOptionClick("isActive")}>
+          <MenuItem onClick={() => handleSortOptionClick('isActive')}>
             Sort by Active Status
           </MenuItem>
         </Menu>
       </div>
       <div>
-        <IconButton onClick={handleClickSort}>
-          <Sort />
-        </IconButton>
+        <Tooltip title='Sort Order'>
+          <IconButton onClick={handleClickSort}>
+            <Sort />
+          </IconButton>
+        </Tooltip>
         <Menu
           anchorEl={sortAnchorEl}
           keepMounted
           open={Boolean(sortAnchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={() => handleSortOptionClick("asc")}>
+          <MenuItem onClick={() => handleSortOptionClick('asc')}>
             Ascending
           </MenuItem>
-          <MenuItem onClick={() => handleSortOptionClick("desc")}>
+          <MenuItem onClick={() => handleSortOptionClick('desc')}>
             Descending
           </MenuItem>
         </Menu>
       </div>
       <div>
-        <Button
-          variant="outlined"
-          color="primary"
-          size="small"
-          style={{
-            marginRight: "5px",
-            color: "#3f51b5",
-          }}
-          onClick={handleAddClick}
-        >
-          <Add />
-        </Button>
+        <Tooltip title='Add'>
+          <Button
+            variant='outlined'
+            color='primary'
+            size='small'
+            style={{
+              marginRight: '5px',
+              color: '#3f51b5',
+            }}
+            onClick={handleAddClick}
+          >
+            <Add />
+          </Button>
+        </Tooltip>
         <Dialog open={openDialog} onClose={handleDialogClose}>
           <EventFormComponent
-            title="Add Event"
+            title='Add Event'
             onCancel={handleDialogClose}
             onSubmit={handleFormSubmit}
           />
