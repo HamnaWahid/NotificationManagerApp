@@ -25,8 +25,6 @@ const Index: React.FC = () => {
     setClickedEventId(""); // Reset clickedEventId when a new app is clicked
     setClickedEventName(""); // Reset clickedEventName when a new app is clicked
     setShowNotifications(false); // Hide notifications when a new app is clicked
-    console.log("Clicked App ID:", appId);
-    console.log("Clicked App Name:", appName);
   };
 
   const handleEventTileClick = (
@@ -36,13 +34,10 @@ const Index: React.FC = () => {
     setClickedEventId(eventId);
     setClickedEventName(eventName);
     setShowNotifications(true); // Show notifications when an event is clicked
-    console.log("Clicked Event ID:", eventId);
-    console.log("Clicked Event Name:", eventName);
   };
 
   const handleNotificationTileClick = (notificationId: string | number) => {
     setClickedNotificationId(notificationId);
-    console.log("Clicked Notification ID Schcccc:", notificationId);
   };
 
   return (

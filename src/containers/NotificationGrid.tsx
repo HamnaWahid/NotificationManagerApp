@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import apiClient from "../apiServices/serviceClient";
-import { PropsData } from "../components/Notifications/NotificationForm";
+import { useQuery } from '@tanstack/react-query';
+import apiClient from '../apiServices/serviceClient';
+import { PropsData } from '../components/Notifications/NotificationForm';
 
 interface NotificationData {
   notificationName: string;
@@ -23,16 +23,16 @@ export const fetchNotifications = async (
   });
 
   if (eventId !== null) {
-    params.set("eventId", eventId.toString());
-  } else console.log("it is nullll");
+    params.set('eventId', eventId.toString());
+  } else console.log('it is nullll');
 
   if (searchTerm && searchTerm.length >= 3) {
-    params.set("notificationName", searchTerm);
+    params.set('notificationName', searchTerm);
   }
   // Add sorting parameters to the URL if provided
   if (sortBy && sortOrder) {
-    params.set("sortBy", sortBy);
-    params.set("sortOrder", sortOrder);
+    params.set('sortBy', sortBy);
+    params.set('sortOrder', sortOrder);
   }
   console.log(eventId);
   const response = await apiClient.get(`/notifications/?${params}`);
@@ -49,7 +49,7 @@ export const useNotifications = (
   sortOrder?: string
 ) => {
   return useQuery(
-    ["notifications", eventId, page, pageSize, searchTerm, sortBy, sortOrder],
+    ['notifications', eventId, page, pageSize, searchTerm, sortBy, sortOrder],
     () =>
       fetchNotifications(
         eventId,
@@ -96,9 +96,9 @@ export const updateNotification = async (
     );
 
     // Handle the response as needed
-    console.log("Notification updated:", response.data);
+    console.log('Notification updated:', response.data);
   } catch (error) {
-    console.error("Error updating notification:", error);
+    console.error('Error updating notification:', error);
     throw error; // You can handle or propagate the error as necessary
   }
 };
@@ -107,10 +107,10 @@ export const addNotification = async (
   data: NotificationData
 ): Promise<void> => {
   try {
-    const response = await apiClient.post("/notifications/", data);
-    console.log("Notification added:", response.data);
+    const response = await apiClient.post('/notifications', data);
+    console.log('Notification added:', response.data);
   } catch (error) {
-    console.error("Error adding notification:", error);
+    console.error('Error adding notification:', error);
     throw error; // You can handle or propagate the error as necessary
   }
 };
@@ -126,7 +126,7 @@ export const fetchNotificationById = async (
 
     return response.data;
   } catch (error) {
-    console.error("Error fetching notification by ID:", error);
+    console.error('Error fetching notification by ID:', error);
     throw error; // You can handle or propagate the error as necessary
   }
 };
@@ -135,7 +135,7 @@ export const useNotificationById = (
   eventId: string | number,
   notificationId: string | number
 ) => {
-  return useQuery(["notification", eventId, notificationId], () =>
+  return useQuery(['notification', eventId, notificationId], () =>
     fetchNotificationById(eventId, notificationId)
   );
 };
@@ -150,9 +150,9 @@ export const updateNotification2 = async (
     );
 
     // Handle the response as needed
-    console.log("Notification updated:", response.data);
+    console.log('Notification updated:', response.data);
   } catch (error) {
-    console.error("Error updating notification:", error);
+    console.error('Error updating notification:', error);
     throw error; // You can handle or propagate the error as necessary
   }
 };

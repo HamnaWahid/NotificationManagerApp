@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../apiServices/serviceClient';
 
-const API_BASE_URL = 'http://localhost:3000/api/events'; // Replace with your backend URL
 
 interface EventData {
   eventName: string;
@@ -25,7 +24,7 @@ export const fetchEvents = async (
 
   if (applicationId !== null) {
     params.set('applicationId', applicationId.toString());
-  } else console.log('it is nullll');
+  }
 
   if (searchTerm && searchTerm.length >= 3) {
     params.set('eventName', searchTerm);
@@ -36,7 +35,6 @@ export const fetchEvents = async (
     params.set('sortBy', sortBy);
     params.set('sortOrder', sortOrder);
   }
-  console.log(applicationId);
   const response = await apiClient.get(`/events/?${params}`);
 
   return response.data;
@@ -62,8 +60,6 @@ export const useEvents = (
 };
 
 export const deleteEvent = async (eventId: string | number): Promise<void> => {
-  console.log('eventId in delete', eventId);
-  console.log(`${API_BASE_URL}/${eventId}/delete`);
   const response = await apiClient.patch(`/events/${eventId}/delete`);
   console.log('responseeee', response);
   return response.data; // You may handle the response data as needed

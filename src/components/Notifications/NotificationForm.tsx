@@ -54,7 +54,6 @@ const NotificationForm = ({
 
   if (tagData && tagData.tags) {
     transformedTags = transformTags(tagData.tags);
-    console.log(transformedTags);
   }
 
   const [name, setName] = useState("");
