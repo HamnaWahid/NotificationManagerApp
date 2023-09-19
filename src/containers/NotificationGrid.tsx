@@ -89,7 +89,7 @@ export const updateNotification = async (
   notificationId: string | number,
   data: NotificationData
 ): Promise<void> => {
-  try {
+  // try {
     const response = await apiClient.put(
       `/notifications/${notificationId}/update`,
       data
@@ -97,10 +97,10 @@ export const updateNotification = async (
 
     // Handle the response as needed
     console.log('Notification updated:', response.data);
-  } catch (error) {
-    console.error('Error updating notification:', error);
-    throw error; // You can handle or propagate the error as necessary
-  }
+  // } catch (error) {
+  //   console.error('Error updating notification:', error);
+  //   throw error; // You can handle or propagate the error as necessary
+  // }
 };
 
 export const addNotification = async (

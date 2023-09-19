@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Grid from "@mui/material/Grid";
-import { Styles, LeftBox, RightBox } from "./Styles";
-import sanitizeHtml from "sanitize-html"; // Import sanitize-html
-import { MentionsInput, Mention } from "react-mentions";
-import "./style.css";
-import { useTags } from "../../containers/Tag"; // Assuming useTags is in the Tag file
-import { useNotificationById } from "../../containers/NotificationGrid"; // Import the useNotificationById hook
+import React, { useState, useEffect } from 'react';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import { Styles, LeftBox, RightBox } from './Styles';
+import sanitizeHtml from 'sanitize-html'; // Import sanitize-html
+import { MentionsInput, Mention } from 'react-mentions';
+import './style.css';
+import { useTags } from '../../containers/Tag'; // Assuming useTags is in the Tag file
+import { useNotificationById } from '../../containers/NotificationGrid'; // Import the useNotificationById hook
 
 // import { TagSharp } from '@mui/icons-material';
 
@@ -56,11 +56,11 @@ const NotificationForm = ({
     transformedTags = transformTags(tagData.tags);
   }
 
-  const [name, setName] = useState("");
-  const [subject, setSubject] = useState("");
-  const [description, setDescription] = useState("");
-  const [body, setBody] = useState("");
-  const [preview, setPreview] = useState("");
+  const [name, setName] = useState('');
+  const [subject, setSubject] = useState('');
+  const [description, setDescription] = useState('');
+  const [body, setBody] = useState('');
+  const [preview, setPreview] = useState('');
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -125,18 +125,18 @@ const NotificationForm = ({
     return <div>Error fetching tags</div>;
   }
   return (
-    <Grid container justifyContent="center" alignItems="center" height="93vh">
+    <Grid container justifyContent='center' alignItems='center' height='93vh'>
       <Styles>
-        <Grid container spacing={2} justifyContent="center">
+        <Grid container spacing={2} justifyContent='center'>
           <Grid item xs={12} md={6}>
             <LeftBox>
               {message && (
-                <div className="message">
+                <div className='message'>
                   <p
                     style={{
-                      fontSize: "35px",
-                      fontFamily: "Arial, sans-serif",
-                      fontWeight: "bold",
+                      fontSize: '35px',
+                      fontFamily: 'Arial, sans-serif',
+                      fontWeight: 'bold',
                     }}
                   >
                     {message}
@@ -144,68 +144,71 @@ const NotificationForm = ({
                 </div>
               )}
               <TextField
-                label="Name"
+                label='Name'
                 value={name}
                 onChange={handleNameChange}
                 fullWidth
-                margin="normal"
-                variant="outlined"
+                margin='normal'
+                variant='outlined'
+                required
               />
               <TextField
-                label="Subject"
+                label='Subject'
                 value={subject}
                 onChange={handleSubjectChange}
                 fullWidth
-                margin="normal"
-                variant="outlined"
+                margin='normal'
+                variant='outlined'
+                required
               />
               <TextField
-                label="Description"
+                label='Description'
                 value={description}
                 onChange={handleDescriptionChange}
                 fullWidth
-                margin="normal"
-                variant="outlined"
+                margin='normal'
+                variant='outlined'
+                required
               />
               <MentionsInput
-                className="custom-mentions-input"
+                className='custom-mentions-input'
                 value={body}
                 onChange={(e) => handleBodyChange(e)}
-                placeholder="Body"
+                placeholder='Body'
               >
                 <Mention
-                  trigger="{"
+                  trigger='{'
                   data={transformedTags}
                   renderSuggestion={(
                     suggestion,
                     search,
                     highlightedDisplay
                   ) => (
-                    <div className="custom-mention ">{highlightedDisplay}</div>
+                    <div className='custom-mention '>{highlightedDisplay}</div>
                   )}
                   displayTransform={(id, display) => `{${display}}`}
-                  markup="{__display__}"
+                  markup='{__display__}'
                 />
               </MentionsInput>
-              <div className="button-container">
+              <div className='button-container'>
                 <Button
-                  variant="contained"
+                  variant='contained'
                   onClick={handleSubmit}
-                  className="submit-button"
+                  className='submit-button'
                   style={{
-                    marginTop: "10px",
+                    marginTop: '10px',
                   }}
                 >
                   Submit
                 </Button>
                 <Button
-                  variant="contained"
+                  variant='contained'
                   onClick={handleCancel}
-                  className="cancel-button"
+                  className='cancel-button'
                   style={{
-                    marginLeft: "10px",
-                    backgroundColor: "red",
-                    marginTop: "10px",
+                    marginLeft: '10px',
+                    backgroundColor: 'red',
+                    marginTop: '10px',
                   }}
                 >
                   Cancel
@@ -216,14 +219,14 @@ const NotificationForm = ({
 
           <Grid item xs={12} md={6}>
             <RightBox>
-              <div className="preview-label-container">
-                <div className="preview-label">PREVIEW</div>
+              <div className='preview-label-container'>
+                <div className='preview-label'>PREVIEW</div>
               </div>
               <div
                 dangerouslySetInnerHTML={{ __html: preview }}
                 style={{
-                  whiteSpace: "pre-wrap",
-                  overflowWrap: "break-word",
+                  whiteSpace: 'pre-wrap',
+                  overflowWrap: 'break-word',
                 }}
               ></div>
             </RightBox>
