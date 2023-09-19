@@ -25,7 +25,7 @@ export const fetchNotifications = async (
 
   if (eventId !== null) {
     params.set("eventId", eventId.toString());
-  }
+  } else console.log("it is nullll");
 
   if (searchTerm && searchTerm.length >= 3) {
     params.set("notificationName", searchTerm);
@@ -107,23 +107,23 @@ export const updateNotification = async (
   notificationId: string | number,
   data: NotificationData
 ): Promise<void> => {
-  try {
-    const response = await apiClient.put(
-      `/notifications/${notificationId}/update`,
-      data
-    );
+  // try {
+  const response = await apiClient.put(
+    `/notifications/${notificationId}/update`,
+    data
+  );
 
-    // Handle the response as needed
-    console.log("Notification updated:", response.data);
-  } catch (error) {
-    console.error("Error updating notification:", error);
-    throw error; // You can handle or propagate the error as necessary
-  }
+  // Handle the response as needed
+  console.log("Notification updated:", response.data);
+  // } catch (error) {
+  //   console.error('Error updating notification:', error);
+  //   throw error; // You can handle or propagate the error as necessary
+  // }
 };
 
 export const addNotification = async (data: PropsData): Promise<void> => {
   try {
-    const response = await apiClient.post("/notifications/", data);
+    const response = await apiClient.post("/notifications", data);
     console.log("Notification added:", response.data);
   } catch (error) {
     console.error("Error adding notification:", error);

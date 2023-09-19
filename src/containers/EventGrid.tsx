@@ -1,8 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "../apiServices/serviceClient";
 
-const API_BASE_URL = "http://localhost:3000/api/events"; // Replace with your backend URL
-
 interface EventData {
   eventName: string;
   eventDescription: string;
@@ -86,8 +84,6 @@ export const useEvents = (
 };
 
 export const deleteEvent = async (eventId: string | number): Promise<void> => {
-  console.log("eventId in delete", eventId);
-  console.log(`${API_BASE_URL}/${eventId}/delete`);
   const response = await apiClient.patch(`/events/${eventId}/delete`);
   console.log("responseeee", response);
   return response.data; // You may handle the response data as needed

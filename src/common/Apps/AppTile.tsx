@@ -36,7 +36,6 @@ const AppTile = ({
     onToggleClick();
   };
   const handleCardClick = () => {
-    console.log("Clicked App ID:", applicationId);
     onSelected(applicationId); // Call the onClick prop to pass the applicationId to the parent
   };
   return (

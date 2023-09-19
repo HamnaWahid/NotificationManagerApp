@@ -57,7 +57,6 @@ const NotificationForm = ({
 
   if (tagData && tagData.tags) {
     transformedTags = transformTags(tagData.tags);
-    console.log(transformedTags);
   }
 
   const [name, setName] = useState("");
@@ -172,6 +171,7 @@ const NotificationForm = ({
                 fullWidth
                 margin="normal"
                 variant="outlined"
+                required
               />
               <TextField
                 label="Subject"
@@ -180,6 +180,7 @@ const NotificationForm = ({
                 fullWidth
                 margin="normal"
                 variant="outlined"
+                required
               />
               <TextField
                 label="Description"
@@ -188,6 +189,7 @@ const NotificationForm = ({
                 fullWidth
                 margin="normal"
                 variant="outlined"
+                required
               />
               <MentionsInput
                 className="custom-mentions-input"

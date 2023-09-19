@@ -51,6 +51,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   const [clickedApplicationIds, setClickedApplicationIds] = useState<
     Set<string | number>
   >(new Set());
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
