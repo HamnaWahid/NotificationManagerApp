@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import { Styles, LeftBox, RightBox } from './Styles';
-import sanitizeHtml from 'sanitize-html'; // Import sanitize-html
-import { MentionsInput, Mention } from 'react-mentions';
-import './style.css';
-import { useTags } from '../../containers/Tag'; // Assuming useTags is in the Tag file
+import React, { useState, useEffect } from "react";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import { Styles, LeftBox, RightBox } from "./Styles";
+import sanitizeHtml from "sanitize-html"; // Import sanitize-html
+import { MentionsInput, Mention } from "react-mentions";
+import "./style.css";
+import { useTags } from "../../containers/Tag"; // Assuming useTags is in the Tag file
+import { useNotificationById } from "../../containers/NotificationGrid"; // Import the useNotificationById hook
+
 // import { TagSharp } from '@mui/icons-material';
 
 interface Tag {
@@ -21,20 +23,33 @@ const transformTags = (tags: string[]): Tag[] => {
   }));
 };
 
-interface Props {
-  onCancel: () => void;
-  onSubmit: (formData: {
-    name: string;
-    subject: string;
-    description: string;
-    body: string;
-  }) => void;
-  message?: string;
+export interface PropsData {
+  notificationName: string;
+  templateSubject: string;
+  notificationDescription: string;
+  templateBody: string;
 }
 
-const NotificationForm = ({ onCancel, onSubmit, message }: Props) => {
-  const { data: tagData, isLoading, isError } = useTags();
+interface Props {
+  data: PropsData | null;
+  onCancel: () => void;
+  onSubmit: (formData: PropsData) => void;
+  message?: string;
+  notificationId: string | number; // Add notificationId prop
+  eventId?: string | number; // Add eventId prop
+}
 
+const NotificationForm = ({
+  data,
+  onCancel,
+  onSubmit,
+  message,
+  notificationId,
+  eventId,
+}: Props) => {
+  const { data: tagData, isLoading, isError } = useTags();
+  const { data: notificationData, isLoading: notificationLoading } =
+    useNotificationById(eventId, notificationId);
   let transformedTags: Tag[] = [];
 
   if (tagData && tagData.tags) {
@@ -42,11 +57,11 @@ const NotificationForm = ({ onCancel, onSubmit, message }: Props) => {
     console.log(transformedTags);
   }
 
-  const [name, setName] = useState('');
-  const [subject, setSubject] = useState('');
-  const [description, setDescription] = useState('');
-  const [body, setBody] = useState('');
-  const [preview, setPreview] = useState('');
+  const [name, setName] = useState("");
+  const [subject, setSubject] = useState("");
+  const [description, setDescription] = useState("");
+  const [body, setBody] = useState("");
+  const [preview, setPreview] = useState("");
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -75,8 +90,29 @@ const NotificationForm = ({ onCancel, onSubmit, message }: Props) => {
     setPreview(previewText);
   }, [name, subject, description, body]);
 
+  useEffect(() => {
+    if (data) {
+      // If data is provided, populate the form fields
+      setName(data.notificationName);
+      setSubject(data.templateSubject);
+      setDescription(data.notificationDescription);
+      setBody(data.templateBody);
+    } else if (!notificationLoading && notificationData) {
+      // If notification data is loaded, populate the form fields
+      setName(notificationData.name);
+      setSubject(notificationData.subject);
+      setDescription(notificationData.description);
+      setBody(notificationData.body);
+    }
+  }, [data, notificationLoading, notificationData]);
+
   const handleSubmit = () => {
-    onSubmit({ name, subject, description, body });
+    onSubmit({
+      notificationName: name,
+      templateSubject: subject,
+      notificationDescription: description,
+      templateBody: body,
+    });
   };
 
   const handleCancel = () => {
@@ -90,18 +126,18 @@ const NotificationForm = ({ onCancel, onSubmit, message }: Props) => {
     return <div>Error fetching tags</div>;
   }
   return (
-    <Grid container justifyContent='center' alignItems='center' height='93vh'>
+    <Grid container justifyContent="center" alignItems="center" height="93vh">
       <Styles>
-        <Grid container spacing={2} justifyContent='center'>
+        <Grid container spacing={2} justifyContent="center">
           <Grid item xs={12} md={6}>
             <LeftBox>
               {message && (
-                <div className='message'>
+                <div className="message">
                   <p
                     style={{
-                      fontSize: '35px',
-                      fontFamily: 'Arial, sans-serif',
-                      fontWeight: 'bold',
+                      fontSize: "35px",
+                      fontFamily: "Arial, sans-serif",
+                      fontWeight: "bold",
                     }}
                   >
                     {message}
@@ -109,68 +145,68 @@ const NotificationForm = ({ onCancel, onSubmit, message }: Props) => {
                 </div>
               )}
               <TextField
-                label='Name'
+                label="Name"
                 value={name}
                 onChange={handleNameChange}
                 fullWidth
-                margin='normal'
-                variant='outlined'
+                margin="normal"
+                variant="outlined"
               />
               <TextField
-                label='Subject'
+                label="Subject"
                 value={subject}
                 onChange={handleSubjectChange}
                 fullWidth
-                margin='normal'
-                variant='outlined'
+                margin="normal"
+                variant="outlined"
               />
               <TextField
-                label='Description'
+                label="Description"
                 value={description}
                 onChange={handleDescriptionChange}
                 fullWidth
-                margin='normal'
-                variant='outlined'
+                margin="normal"
+                variant="outlined"
               />
               <MentionsInput
-                className='custom-mentions-input'
+                className="custom-mentions-input"
                 value={body}
                 onChange={(e) => handleBodyChange(e)}
-                placeholder='Body'
+                placeholder="Body"
               >
                 <Mention
-                  trigger='{'
+                  trigger="{"
                   data={transformedTags}
                   renderSuggestion={(
                     suggestion,
                     search,
                     highlightedDisplay
                   ) => (
-                    <div className='custom-mention '>{highlightedDisplay}</div>
+                    <div className="custom-mention ">{highlightedDisplay}</div>
                   )}
                   displayTransform={(id, display) => `{${display}}`}
-                  markup='{__display__}'
+                  markup="{__display__}"
                 />
               </MentionsInput>
-              <div className='button-container'>
+              <div className="button-container">
                 <Button
-                  variant='contained'
+                  variant="contained"
                   onClick={handleSubmit}
-                  className='submit-button'
+                  className="submit-button"
                   style={{
-                    marginTop: '10px',
+                    marginTop: "10px",
                   }}
                 >
                   Submit
                 </Button>
                 <Button
-                  variant='contained'
+                  variant="contained"
                   onClick={handleCancel}
-                  className='cancel-button'
+                  className="cancel-button"
                   style={{
-                    marginLeft: '10px',
-                    backgroundColor: 'red',
-                    marginTop: '10px',
+                    marginLeft: "10px",
+                    backgroundColor: "red",
+                    marginTop: "10px",
                   }}
                 >
                   Cancel
@@ -181,14 +217,14 @@ const NotificationForm = ({ onCancel, onSubmit, message }: Props) => {
 
           <Grid item xs={12} md={6}>
             <RightBox>
-              <div className='preview-label-container'>
-                <div className='preview-label'>PREVIEW</div>
+              <div className="preview-label-container">
+                <div className="preview-label">PREVIEW</div>
               </div>
               <div
                 dangerouslySetInnerHTML={{ __html: preview }}
                 style={{
-                  whiteSpace: 'pre-wrap',
-                  overflowWrap: 'break-word',
+                  whiteSpace: "pre-wrap",
+                  overflowWrap: "break-word",
                 }}
               ></div>
             </RightBox>

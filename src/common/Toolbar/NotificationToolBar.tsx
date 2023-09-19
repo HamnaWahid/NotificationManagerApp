@@ -11,6 +11,7 @@ import {
 import { Search, Sort, SortByAlpha, Add } from "@mui/icons-material";
 import "./ToolbarStyles.css";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 interface NotificationToolbarHeaderProps {
   title: string;
@@ -34,6 +35,8 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
   const [alphaSortAnchorEl, setAlphaSortAnchorEl] =
     useState<null | HTMLElement>(null);
+
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const handleClickSort = (event: React.MouseEvent<HTMLElement>) => {
@@ -153,7 +156,9 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
             marginRight: "5px",
             color: "#3f51b5",
           }}
-          onClick={() => {}}
+          onClick={() => {
+            navigate(`/add-notification/${clickedEventId}`);
+          }}
         >
           <Add />
         </Button>

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-
+import { PropsData } from "../components/Notifications/NotificationForm";
 const API_BASE_URL = "http://localhost:3000/api/notifications"; // Replace with your backend URL
 
 interface NotificationData {
@@ -110,6 +110,46 @@ export const addNotification = async (
     console.log("Notification added:", response.data);
   } catch (error) {
     console.error("Error adding notification:", error);
+    throw error; // You can handle or propagate the error as necessary
+  }
+};
+// Define a function to fetch a notification by ID
+export const fetchNotificationById = async (
+  eventId: string | number,
+  notificationId: string | number
+) => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/?eventId=${eventId}&notificationId=${notificationId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching notification by ID:", error);
+    throw error; // You can handle or propagate the error as necessary
+  }
+};
+// Create a React Query hook to fetch a notification by ID
+export const useNotificationById = (
+  eventId: string | number,
+  notificationId: string | number | undefined
+) => {
+  return useQuery(["notification", eventId, notificationId], () =>
+    fetchNotificationById(eventId, notificationId)
+  );
+};
+export const updateNotification2 = async (
+  notificationId: string | number,
+  data: PropsData
+): Promise<void> => {
+  try {
+    const response = await axios.put(
+      `${API_BASE_URL}/${notificationId}/update`,
+      data
+    );
+    // Handle the response as needed
+    console.log("Notification updated:", response.data);
+  } catch (error) {
+    console.error("Error updating notification:", error);
     throw error; // You can handle or propagate the error as necessary
   }
 };

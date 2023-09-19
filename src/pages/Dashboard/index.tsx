@@ -42,7 +42,7 @@ const Index: React.FC = () => {
 
   const handleNotificationTileClick = (notificationId: string | number) => {
     setClickedNotificationId(notificationId);
-    console.log("Clicked Notification ID:", notificationId);
+    console.log("Clicked Notification ID Schcccc:", notificationId);
   };
 
   return (

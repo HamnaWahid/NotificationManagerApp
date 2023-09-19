@@ -11,6 +11,7 @@ import {
 import NotificationFormComponent from "../../common/Form/NotificationFormComponent";
 import { useQueryClient } from "@tanstack/react-query";
 import "./Tiles.css";
+import { useNavigate } from "react-router-dom";
 
 interface NotificationData {
   isActive: boolean;
@@ -45,6 +46,8 @@ const Notifications: React.FC<NotificationsProps> = ({
   const [clickedTileIds, setClickedTileIds] = useState<Set<string | number>>(
     new Set()
   );
+
+  const navigate = useNavigate();
 
   const {
     data: TilesData,
@@ -156,6 +159,8 @@ const Notifications: React.FC<NotificationsProps> = ({
     setClickedTileIds(updatedClickedTileIds);
 
     onNotificationTileClick(tileId);
+
+    navigate(`/edit-notification/${clickedEventId}/${tileId}`);
   };
 
   if (isLoading) {
