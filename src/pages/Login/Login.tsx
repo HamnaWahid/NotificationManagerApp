@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Container, Paper, TextField, Typography } from '@mui/material';
 import apiClient from '../../apiServices/serviceClient'; // Adjust the import path for apiClient
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,7 @@ import logoImage from '../../assets/logo-gosaas.png';
 
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import Loading from '../../common/Loading';
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -66,6 +67,14 @@ const Login: React.FC = () => {
       }
     }
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      <Loading />;
+      navigate('/dashboard');
+    }
+  }, [navigate]);
 
   const handleCloseAlert = () => {
     setShowAlert(false);
