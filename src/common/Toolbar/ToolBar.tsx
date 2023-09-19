@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import useHandleAddApplication from './handleAddApplication';
+import React, { useState } from "react";
+import useHandleAddApplication from "./handleAddApplication";
 import {
   Toolbar,
   Typography,
@@ -9,12 +9,12 @@ import {
   MenuItem,
   Button,
   Dialog,
-} from '@mui/material';
-import { Search, Sort, SortByAlpha, Add } from '@mui/icons-material';
-import FormComponent from '../Form/FormComponent';
-import './ToolbarStyles.css'; // Import the CSS class for styling
-import { useQueryClient } from '@tanstack/react-query';
-import Tooltip from '@mui/material/Tooltip';
+} from "@mui/material";
+import { Search, Sort, SortByAlpha, Add, FilterAlt } from "@mui/icons-material";
+import FormComponent from "../Form/FormComponent";
+import "./ToolbarStyles.css"; // Import the CSS class for styling
+import { useQueryClient } from "@tanstack/react-query";
+import Tooltip from "@mui/material/Tooltip";
 
 interface ToolbarHeaderProps {
   title: string;
@@ -24,6 +24,8 @@ interface ToolbarHeaderProps {
   sortOrder: string;
   setSortBy: React.Dispatch<React.SetStateAction<string>>;
   setSortOrder: React.Dispatch<React.SetStateAction<string>>;
+  isActive: boolean | null; // Add isActive prop
+  setIsActive: React.Dispatch<React.SetStateAction<boolean | null>>; // Add setIsActive prop
 }
 
 const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
@@ -32,12 +34,14 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
   setSearchTerm,
   setSortBy,
   setSortOrder,
+  setIsActive, // Add isActive and setIsActive props
 }) => {
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
   const [alphaSortAnchorEl, setAlphaSortAnchorEl] =
     useState<null | HTMLElement>(null);
   const [openDialog, setOpenDialog] = useState(false);
-
+  const [statusMenuAnchorEl, setStatusMenuAnchorEl] =
+    useState<null | HTMLElement>(null); // Add state for status menu
   const queryClient = useQueryClient();
 
   const handleClickSort = (event: React.MouseEvent<HTMLElement>) => {
@@ -51,11 +55,12 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
   const handleClose = () => {
     setSortAnchorEl(null);
     setAlphaSortAnchorEl(null);
+    setStatusMenuAnchorEl(null); // Add this line to reset statusMenuAnchorEl
   };
 
   const handleSortOptionClick = (option: string) => {
     setSortBy(option);
-    setSortOrder('asc');
+    setSortOrder("asc");
     handleClose();
   };
 
@@ -76,41 +81,45 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
     handleAddApplication(formData);
     setOpenDialog(false);
   };
+  // Function to handle opening the status filter menu
+  const handleClickStatusFilter = (event: React.MouseEvent<HTMLElement>) => {
+    setStatusMenuAnchorEl(event.currentTarget);
+  };
 
   return (
-    <Toolbar className='curved-appbar toolbar-header'>
+    <Toolbar className="curved-appbar toolbar-header">
       <Typography
-        variant='h6'
-        style={{ flexGrow: 1, color: '#333', fontWeight: 'bold' }}
+        variant="h6"
+        style={{ flexGrow: 1, color: "#333", fontWeight: "bold" }}
       >
         {title}
       </Typography>
-      <div style={{ position: 'relative' }}>
-        <Tooltip title='Search'>
+      <div style={{ position: "relative" }}>
+        <Tooltip title="Search">
           <IconButton>
             <Search />
           </IconButton>
         </Tooltip>
         <InputBase
-          placeholder='Search'
-          style={{ color: '#3f51b5', marginLeft: '10px' }}
-          inputProps={{ 'aria-label': 'search' }}
+          placeholder="Search"
+          style={{ color: "#3f51b5", marginLeft: "10px" }}
+          inputProps={{ "aria-label": "search" }}
           defaultValue={searchTerm}
           onChange={(e) => {
             const v = e.target.value;
             if (v.length >= 3) {
               setSearchTerm(v);
-              queryClient.invalidateQueries(['applications', searchTerm]);
+              queryClient.invalidateQueries(["applications", searchTerm]);
             }
             if (v.length === 0) {
-              setSearchTerm('');
+              setSearchTerm("");
             }
           }}
         />
       </div>
       <div>
-        <div style={{ display: 'flex' }}>
-          <Tooltip title='Sort By'>
+        <div style={{ display: "flex" }}>
+          <Tooltip title="Sort By">
             <IconButton onClick={handleClickSortByAlpha}>
               <SortByAlpha />
             </IconButton>
@@ -122,19 +131,19 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
           open={Boolean(alphaSortAnchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={() => handleSortOptionClick('appName')}>
+          <MenuItem onClick={() => handleSortOptionClick("appName")}>
             Sort by Name
           </MenuItem>
-          <MenuItem onClick={() => handleSortOptionClick('dateCreated')}>
+          <MenuItem onClick={() => handleSortOptionClick("dateCreated")}>
             Sort by Date
           </MenuItem>
-          <MenuItem onClick={() => handleSortOptionClick('isActive')}>
+          <MenuItem onClick={() => handleSortOptionClick("isActive")}>
             Sort by Status
           </MenuItem>
         </Menu>
       </div>
       <div>
-        <Tooltip title='Sort Order'>
+        <Tooltip title="Sort Order">
           <IconButton onClick={handleClickSort}>
             <Sort />
           </IconButton>
@@ -147,7 +156,7 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
         >
           <MenuItem
             onClick={() => {
-              setSortOrder('asc');
+              setSortOrder("asc");
               handleClose();
             }}
           >
@@ -155,7 +164,7 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
           </MenuItem>
           <MenuItem
             onClick={() => {
-              setSortOrder('desc');
+              setSortOrder("desc");
               handleClose();
             }}
           >
@@ -164,14 +173,54 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
         </Menu>
       </div>
       <div>
-        <Tooltip title='Add'>
+        <Tooltip title="Status Filter">
+          <IconButton onClick={handleClickStatusFilter}>
+            <FilterAlt />
+          </IconButton>
+        </Tooltip>
+        <Menu
+          anchorEl={statusMenuAnchorEl}
+          keepMounted
+          open={Boolean(statusMenuAnchorEl)}
+          onClose={handleClose}
+        >
+          <MenuItem
+            onClick={() => {
+              setIsActive(true);
+              handleClose();
+            }}
+          >
+            Active
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              setIsActive(false);
+              handleClose();
+            }}
+          >
+            Inactive
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              setIsActive(null);
+              handleClose();
+            }}
+          >
+            All
+          </MenuItem>
+        </Menu>
+      </div>
+      <div>
+        <Tooltip title="Add">
           <Button
-            variant='outlined'
-            color='primary'
-            size='small'
+            variant="outlined"
+            color="primary"
+            size="small"
             style={{
-              marginRight: '5px',
-              color: '#3f51b5',
+              marginRight: "5px",
+              color: "#3f51b5",
             }}
             onClick={handleAddClick}
           >
@@ -180,7 +229,7 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
         </Tooltip>
         <Dialog open={openDialog} onClose={handleDialogClose}>
           <FormComponent
-            title='Add Application'
+            title="Add Application"
             onCancel={handleDialogClose}
             onSubmit={handleFormSubmit}
           />

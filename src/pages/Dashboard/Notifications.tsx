@@ -27,6 +27,8 @@ interface NotificationsProps {
   onNotificationTileClick: (notificationId: string | number) => void;
   sortBy: string;
   sortOrder: string;
+  isActive: boolean | null; // Add isActive prop
+  setIsActive: React.Dispatch<React.SetStateAction<boolean | null>>;
 }
 
 const pageSize = 6;
@@ -37,6 +39,7 @@ const Notifications: React.FC<NotificationsProps> = ({
   onNotificationTileClick,
   sortBy,
   sortOrder,
+  isActive,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -59,7 +62,8 @@ const Notifications: React.FC<NotificationsProps> = ({
     pageSize,
     searchTerm,
     sortBy,
-    sortOrder
+    sortOrder,
+    isActive
   );
 
   const queryClient = useQueryClient();

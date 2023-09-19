@@ -50,7 +50,10 @@ const NotificationForm = ({
   const { data: tagData, isLoading, isError } = useTags();
   const { data: notificationData, isLoading: notificationLoading } =
     useNotificationById(eventId, notificationId);
+
   let transformedTags: Tag[] = [];
+
+  console.log("check undef", notificationData);
 
   if (tagData && tagData.tags) {
     transformedTags = transformTags(tagData.tags);
@@ -86,8 +89,16 @@ const NotificationForm = ({
       allowedAttributes: {}, // Allow no HTML attributes
     });
 
-    const previewText = `<strong>${sanitizedSubject}</strong>\n\n${body}`;
-    setPreview(previewText);
+    if (body || sanitizedSubject) {
+      let b = body;
+
+      if (!b) b = "";
+
+      const previewText = `<strong>${sanitizedSubject}</strong>\n\n${b}`;
+      setPreview(previewText);
+    } else {
+      setPreview("");
+    }
   }, [name, subject, description, body]);
 
   useEffect(() => {
@@ -97,12 +108,21 @@ const NotificationForm = ({
       setSubject(data.templateSubject);
       setDescription(data.notificationDescription);
       setBody(data.templateBody);
-    } else if (!notificationLoading && notificationData) {
-      // If notification data is loaded, populate the form fields
-      setName(notificationData.name);
-      setSubject(notificationData.subject);
-      setDescription(notificationData.description);
-      setBody(notificationData.body);
+    } else if (!notificationLoading) {
+      // If notification data is loaded and valid, populate the form fields
+      if (notificationData) {
+        setName(notificationData.name);
+        setSubject(notificationData.subject);
+        setDescription(notificationData.description);
+        setBody(notificationData.body);
+      } else {
+        // If notificationData is undefined, set form fields to empty
+        setName("");
+        setSubject("");
+        setDescription("");
+        setBody("");
+        setPreview("");
+      }
     }
   }, [data, notificationLoading, notificationData]);
 
@@ -125,6 +145,7 @@ const NotificationForm = ({
   if (isError || !tagData) {
     return <div>Error fetching tags</div>;
   }
+
   return (
     <Grid container justifyContent="center" alignItems="center" height="93vh">
       <Styles>
@@ -220,13 +241,15 @@ const NotificationForm = ({
               <div className="preview-label-container">
                 <div className="preview-label">PREVIEW</div>
               </div>
-              <div
-                dangerouslySetInnerHTML={{ __html: preview }}
-                style={{
-                  whiteSpace: "pre-wrap",
-                  overflowWrap: "break-word",
-                }}
-              ></div>
+              {preview !== "" && (
+                <div
+                  dangerouslySetInnerHTML={{ __html: preview }}
+                  style={{
+                    whiteSpace: "pre-wrap",
+                    overflowWrap: "break-word",
+                  }}
+                ></div>
+              )}
             </RightBox>
           </Grid>
         </Grid>

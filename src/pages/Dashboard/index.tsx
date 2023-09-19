@@ -5,19 +5,56 @@ import NotificationToolbarHeader from "../../common/Toolbar/NotificationToolBar"
 import Events from "./Events";
 import Dashboard from "./Dashboard";
 import Notifications from "./Notifications";
+import { useBetween } from "use-between";
 
-const Index: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [clickedAppId, setClickedAppId] = useState<string | number>("");
+export const IndexState = () => {
   const [clickedAppName, setClickedAppName] = useState<string>("");
-  const [clickedEventId, setClickedEventId] = useState<string | number>("");
   const [clickedEventName, setClickedEventName] = useState<string>("");
-  const [sortBy, setSortBy] = useState<string>("appName"); // Initialize with default sort option
-  const [sortOrder, setSortOrder] = useState<string>("asc"); // Initialize with default sort order
+  const [clickedAppId, setClickedAppId] = useState<string | number>("");
+  const [clickedEventId, setClickedEventId] = useState<string | number>("");
   const [showNotifications, setShowNotifications] = useState<boolean>(false); // Track whether to show notificatio
   const [clickedNotificationId, setClickedNotificationId] = useState<
     string | number
   >("");
+
+  return {
+    clickedAppName,
+    setClickedAppName,
+    clickedEventName,
+    setClickedEventName,
+    clickedAppId,
+    setClickedAppId,
+    clickedEventId,
+    setClickedEventId,
+    showNotifications,
+    setShowNotifications,
+    clickedNotificationId,
+    setClickedNotificationId,
+  };
+};
+
+const Index: React.FC = () => {
+  const {
+    clickedAppName,
+    setClickedAppName,
+    clickedEventName,
+    setClickedEventName,
+    clickedAppId,
+    setClickedAppId,
+    clickedEventId,
+    setClickedEventId,
+    showNotifications,
+    setShowNotifications,
+    clickedNotificationId,
+    setClickedNotificationId,
+  } = useBetween(IndexState);
+
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [sortBy, setSortBy] = useState<string>("appName"); // Initialize with default sort option
+  const [sortOrder, setSortOrder] = useState<string>("asc"); // Initialize with default sort order
+  const [isActive, setIsActive] = useState<null | boolean>(null); // Initialize isActive with null
+  const [isActive2, setIsActive2] = useState<null | boolean>(null); // Initialize isActive with null
+  const [isActive3, setIsActive3] = useState<null | boolean>(null); // Initialize isActive with null
 
   const handleAppTileClick = (appId: string | number, appName: string) => {
     setClickedAppId(appId);
@@ -55,12 +92,16 @@ const Index: React.FC = () => {
         sortOrder={sortOrder} // Pass sortOrder to ToolbarHeader
         setSortBy={setSortBy} // Pass setSortBy to ToolbarHeader
         setSortOrder={setSortOrder} // Pass setSortOrder to ToolbarHeader
+        isActive={isActive} // Pass isActive
+        setIsActive={setIsActive} // Pass setIsActive
       />
       <Dashboard
         searchTerm={searchTerm}
         sortBy={sortBy}
         sortOrder={sortOrder}
         onSet={handleAppTileClick}
+        isActive={isActive} // Pass isActive
+        setIsActive={setIsActive} // Pass setIsActive
       />
 
       {/* Conditionally render Event components */}
@@ -76,6 +117,8 @@ const Index: React.FC = () => {
             sortOrder={sortOrder} // Pass sortOrder to ToolbarHeader
             setSortBy={setSortBy} // Pass setSortBy to ToolbarHeader
             setSortOrder={setSortOrder} // Pass setSortOrder to ToolbarHeader
+            isActive={isActive2} // Pass isActive
+            setIsActive={setIsActive2} // Pass setIsActive
           />
           <Events
             searchTerm={searchTerm}
@@ -83,6 +126,8 @@ const Index: React.FC = () => {
             sortBy={sortBy}
             sortOrder={sortOrder}
             onEventTileClick={handleEventTileClick}
+            isActive={isActive2} // Pass isActive
+            setIsActive={setIsActive2} // Pass setIsActive
           />
         </>
       ) : (
@@ -104,6 +149,8 @@ const Index: React.FC = () => {
             sortOrder={sortOrder} // Pass sortOrder to ToolbarHeader
             setSortBy={setSortBy} // Pass setSortBy to ToolbarHeader
             setSortOrder={setSortOrder} // Pass setSortOrder to ToolbarHeader
+            isActive={isActive3} // Pass isActive
+            setIsActive={setIsActive3} // Pass setIsActive
           />
           <Notifications
             searchTerm={searchTerm}
@@ -111,6 +158,8 @@ const Index: React.FC = () => {
             sortBy={sortBy}
             sortOrder={sortOrder}
             onNotificationTileClick={handleNotificationTileClick}
+            isActive={isActive3} // Pass isActive
+            setIsActive={setIsActive3} // Pass setIsActive
           />
         </>
       ) : (

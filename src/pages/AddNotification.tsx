@@ -24,7 +24,6 @@ const AddNotification = () => {
 
   const handleFormCancel = () => {
     console.log("AddNotification - Form Cancelled");
-    // Navigate back to the previous page using window.location
     window.history.back(); // Go back one step in the browser history
   };
 

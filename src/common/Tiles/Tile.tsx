@@ -42,12 +42,11 @@ const Tile = ({
   };
 
   const handleTileClick = () => {
-    // Call the onTileClick prop to pass the clicked Id
     onTileClick(Id);
   };
 
   return (
-    <TileCard className={isClicked ? "clicked" : ""} onClick={handleTileClick}>
+    <TileCard className={isClicked ? "clicked" : ""}>
       <div style={{ display: "flex" }}>
         <LeftContainer>
           <CardActionArea onClick={handleTileClick}>

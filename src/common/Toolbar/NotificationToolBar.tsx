@@ -8,7 +8,7 @@ import {
   MenuItem,
   Button,
 } from "@mui/material";
-import { Search, Sort, SortByAlpha, Add } from "@mui/icons-material";
+import { Search, Sort, SortByAlpha, Add, FilterAlt } from "@mui/icons-material";
 import "./ToolbarStyles.css";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +23,8 @@ interface NotificationToolbarHeaderProps {
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
   setSortBy: React.Dispatch<React.SetStateAction<string>>; // Add setSortBy prop
   setSortOrder: React.Dispatch<React.SetStateAction<string>>; // Add setSortOrder prop
+  isActive: boolean | null; // Add isActive prop
+  setIsActive: React.Dispatch<React.SetStateAction<boolean | null>>; // Add setIsActive prop
 }
 
 const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
@@ -33,11 +35,13 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
   setSearchTerm,
   setSortBy,
   setSortOrder,
+  setIsActive, // Add isActive and setIsActive props
 }) => {
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
   const [alphaSortAnchorEl, setAlphaSortAnchorEl] =
     useState<null | HTMLElement>(null);
-
+  const [statusMenuAnchorEl, setStatusMenuAnchorEl] =
+    useState<null | HTMLElement>(null); // Add state for status menu
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -52,6 +56,7 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
   const handleClose = () => {
     setSortAnchorEl(null);
     setAlphaSortAnchorEl(null);
+    setStatusMenuAnchorEl(null); // Add this line to reset statusMenuAnchorEl
   };
 
   const handleSortOptionClick = (option: string) => {
@@ -61,7 +66,10 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
 
     // Update the query with the new sorting options
   };
-
+  // Function to handle opening the status filter menu
+  const handleClickStatusFilter = (event: React.MouseEvent<HTMLElement>) => {
+    setStatusMenuAnchorEl(event.currentTarget);
+  };
   return (
     <Toolbar className="curved-appbar toolbar-header">
       <Typography
@@ -152,6 +160,46 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
           </MenuItem>
           <MenuItem onClick={() => handleSortOptionClick("desc")}>
             Descending
+          </MenuItem>
+        </Menu>
+      </div>
+      <div>
+        <Tooltip title="Status Filter">
+          <IconButton onClick={handleClickStatusFilter}>
+            <FilterAlt />
+          </IconButton>
+        </Tooltip>
+        <Menu
+          anchorEl={statusMenuAnchorEl}
+          keepMounted
+          open={Boolean(statusMenuAnchorEl)}
+          onClose={handleClose}
+        >
+          <MenuItem
+            onClick={() => {
+              setIsActive(true);
+              handleClose();
+            }}
+          >
+            Active
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              setIsActive(false);
+              handleClose();
+            }}
+          >
+            Inactive
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              setIsActive(null);
+              handleClose();
+            }}
+          >
+            All
           </MenuItem>
         </Menu>
       </div>

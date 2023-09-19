@@ -1,7 +1,7 @@
-/* styles.css */
+styles.css */
 .curved-appbar {
   border-radius: 10px;
-}
+} 
 
 .toolbar-header {
   position: fixed;
@@ -13,7 +13,8 @@
   background-color: #f9fbff; /* Slightly darker background color */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Dark box shadow */
   border-radius: 10px; /* Rounded corners */
-  padding: 16px; /* Add some padding */
+  padding: 0px; /* Add some padding */
+  max-height: 50px; /* Adjust the height as needed */
 }
 
 /* Unique styling for your toolbar */
@@ -56,4 +57,4 @@
   color: #3a3635; /* Change hover text color */
 }
 
-/* Add more unique styles as needed */
+/* Add more unique styles as needed

@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import apiClient from '../apiServices/serviceClient';
+import { useQuery } from "@tanstack/react-query";
+import apiClient from "../apiServices/serviceClient";
 // const API_BASE_URL = 'http://localhost:3000/api/applications'; // Replace with your backend URL
 interface ApplicationData {
   appName: string;
@@ -14,9 +14,9 @@ export const updateApplication = async (
       `/applications/${applicationId}/update`,
       data
     );
-    console.log('Application updated:', response.data);
+    console.log("Application updated:", response.data);
   } catch (error) {
-    console.error('Error updating application:', error);
+    console.error("Error updating application:", error);
     throw error; // You can handle or propagate the error as necessary
   }
 };
@@ -26,8 +26,9 @@ export const fetchApplications = async (
   page: number,
   pageSize: number,
   searchTerm?: string,
-  sortBy?: string, // Add sortBy as a parameter
-  sortOrder?: string // Add sortOrder as a parameter
+  sortBy?: string,
+  sortOrder?: string,
+  isActive?: boolean | null // Add isActive parameter
 ) => {
   const params = new URLSearchParams({
     page: page.toString(),
@@ -35,13 +36,18 @@ export const fetchApplications = async (
   });
 
   if (searchTerm && searchTerm.length >= 3) {
-    params.set('appName', searchTerm);
+    params.set("appName", searchTerm);
   }
 
   // Add sorting parameters to the URL if provided
   if (sortBy && sortOrder) {
-    params.set('sortBy', sortBy);
-    params.set('sortOrder', sortOrder);
+    params.set("sortBy", sortBy);
+    params.set("sortOrder", sortOrder);
+  }
+
+  // Add isActive parameter to the URL if provided and not null
+  if (isActive !== undefined && isActive !== null) {
+    params.set("isActive", isActive.toString());
   }
 
   const response = await apiClient.get(`/applications/?${params}`);
@@ -55,12 +61,21 @@ export const useApplications = (
   pageSize: number,
   searchTerm?: string,
   sortBy?: string,
-  sortOrder?: string
+  sortOrder?: string,
+  isActive?: boolean | null // Add isActive parameter
 ) => {
   return useQuery(
-    // Update the query key to include searchTerm, sortBy, and sortOrder
-    ['applications', page, pageSize, searchTerm, sortBy, sortOrder],
-    () => fetchApplications(page, pageSize, searchTerm, sortBy, sortOrder), // Pass all parameters to fetchApplications
+    // Update the query key to include searchTerm, sortBy, sortOrder, and isActive
+    ["applications", page, pageSize, searchTerm, sortBy, sortOrder, isActive],
+    () =>
+      fetchApplications(
+        page,
+        pageSize,
+        searchTerm,
+        sortBy,
+        sortOrder,
+        isActive
+      ), // Pass all parameters to fetchApplications
     {
       staleTime: 1000,
     }
@@ -89,10 +104,10 @@ export const deactivateApplication = async (
 
 export const addApplication = async (data: ApplicationData): Promise<void> => {
   try {
-    const response = await apiClient.post('/applications/', data);
-    console.log('Application added:', response.data);
+    const response = await apiClient.post("/applications/", data);
+    console.log("Application added:", response.data);
   } catch (error) {
-    console.error('Error adding application:', error);
+    console.error("Error adding application:", error);
     throw error; // You can handle or propagate the error as necessary
   }
 };

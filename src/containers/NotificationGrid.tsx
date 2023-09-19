@@ -9,12 +9,13 @@ interface NotificationData {
 
 // Define a function to fetch the notifications
 export const fetchNotifications = async (
-  eventId: string | number, // Make sure eventId can be null
+  eventId: string | number | null, // Make sure eventId can be null
   page: number,
   pageSize: number,
   searchTerm?: string,
   sortBy?: string, // Add sortBy as a parameter
-  sortOrder?: string // Add sortOrder as a parameter
+  sortOrder?: string, // Add sortOrder as a parameter
+  isActive?: boolean | null // Add isActive parameter
 ) => {
   // Check if eventId is not null before constructing the params
   const params = new URLSearchParams({
@@ -24,32 +25,48 @@ export const fetchNotifications = async (
 
   if (eventId !== null) {
     params.set("eventId", eventId.toString());
-  } else console.log("it is nullll");
+  }
 
   if (searchTerm && searchTerm.length >= 3) {
     params.set("notificationName", searchTerm);
   }
+
   // Add sorting parameters to the URL if provided
   if (sortBy && sortOrder) {
     params.set("sortBy", sortBy);
     params.set("sortOrder", sortOrder);
   }
-  console.log(eventId);
+
+  // Add isActive parameter to the URL if provided and not null
+  if (isActive !== undefined && isActive !== null) {
+    params.set("isActive", isActive.toString());
+  }
+
   const response = await apiClient.get(`/notifications/?${params}`);
   return response.data;
 };
 
 // Create a React Query hook to fetch the notifications
 export const useNotifications = (
-  eventId: string | number, // Make sure eventId can be null
+  eventId: string | number | null, // Make sure eventId can be null
   page: number,
   pageSize: number,
   searchTerm?: string,
   sortBy?: string,
-  sortOrder?: string
+  sortOrder?: string,
+  isActive?: boolean | null // Add isActive parameter
 ) => {
   return useQuery(
-    ["notifications", eventId, page, pageSize, searchTerm, sortBy, sortOrder],
+    [
+      "notifications",
+      eventId,
+      page,
+      pageSize,
+      searchTerm,
+      sortBy,
+      sortOrder,
+      isActive,
+    ],
     () =>
       fetchNotifications(
         eventId,
@@ -57,7 +74,8 @@ export const useNotifications = (
         pageSize,
         searchTerm,
         sortBy,
-        sortOrder
+        sortOrder,
+        isActive
       ),
     {
       staleTime: 1000,
@@ -103,9 +121,7 @@ export const updateNotification = async (
   }
 };
 
-export const addNotification = async (
-  data: NotificationData
-): Promise<void> => {
+export const addNotification = async (data: PropsData): Promise<void> => {
   try {
     const response = await apiClient.post("/notifications/", data);
     console.log("Notification added:", response.data);
