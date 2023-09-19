@@ -1,7 +1,6 @@
-import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
-
-const API_BASE_URL = 'http://localhost:3000/api/applications'; // Replace with your backend URL
+import apiClient from '../apiServices/serviceClient';
+// const API_BASE_URL = 'http://localhost:3000/api/applications'; // Replace with your backend URL
 interface ApplicationData {
   appName: string;
   appDescription: string;
@@ -11,11 +10,10 @@ export const updateApplication = async (
   data: ApplicationData
 ): Promise<void> => {
   try {
-    const response = await axios.put(
-      `${API_BASE_URL}/${applicationId}/update`,
+    const response = await apiClient.put(
+      `/applications/${applicationId}/update`,
       data
     );
-    // Handle the response as needed
     console.log('Application updated:', response.data);
   } catch (error) {
     console.error('Error updating application:', error);
@@ -46,7 +44,8 @@ export const fetchApplications = async (
     params.set('sortOrder', sortOrder);
   }
 
-  const response = await axios.get(`${API_BASE_URL}?${params}`);
+  const response = await apiClient.get(`/applications/?${params}`);
+
   return response.data;
 };
 
@@ -71,22 +70,26 @@ export const useApplications = (
 export const deleteApplication = async (
   applicationId: string | number
 ): Promise<void> => {
-  const response = await axios.patch(`${API_BASE_URL}/${applicationId}/delete`);
+  const response = await apiClient.patch(
+    `/applications/${applicationId}/delete`
+  );
+
   return response.data; // You may handle the response data as needed
 };
 
 export const deactivateApplication = async (
   applicationId: string | number
 ): Promise<void> => {
-  const response = await axios.patch(
-    `${API_BASE_URL}/${applicationId}/deactivate`
+  const response = await apiClient.patch(
+    `/applications/${applicationId}/deactivate`
   );
+
   return response.data; // You may handle the response data as needed
 };
 
 export const addApplication = async (data: ApplicationData): Promise<void> => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/`, data);
+    const response = await apiClient.post('/applications/', data);
     console.log('Application added:', response.data);
   } catch (error) {
     console.error('Error adding application:', error);

@@ -13,6 +13,8 @@ import "./ToolbarStyles.css";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
+import Tooltip from "@mui/material/Tooltip";
+
 interface NotificationToolbarHeaderProps {
   title: string;
   clickedEventId: string | number; // Changed to clickedEventId
@@ -77,9 +79,11 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
         </span>
       </Typography>
       <div style={{ position: "relative" }}>
-        <IconButton>
-          <Search />
-        </IconButton>
+        <Tooltip title="Search">
+          <IconButton>
+            <Search />
+          </IconButton>
+        </Tooltip>
         <InputBase
           placeholder="Search"
           style={{
@@ -108,9 +112,11 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
       </div>
       <div>
         <div style={{ display: "flex" }}>
-          <IconButton onClick={handleClickSortByAlpha}>
-            <SortByAlpha />
-          </IconButton>
+          <Tooltip title="Sort By">
+            <IconButton onClick={handleClickSortByAlpha}>
+              <SortByAlpha />
+            </IconButton>
+          </Tooltip>
         </div>
         <Menu
           anchorEl={alphaSortAnchorEl}
@@ -130,9 +136,11 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
         </Menu>
       </div>
       <div>
-        <IconButton onClick={handleClickSort}>
-          <Sort />
-        </IconButton>
+        <Tooltip title="Sort Order`">
+          <IconButton onClick={handleClickSort}>
+            <Sort />
+          </IconButton>
+        </Tooltip>
         <Menu
           anchorEl={sortAnchorEl}
           keepMounted
@@ -148,20 +156,22 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
         </Menu>
       </div>
       <div>
-        <Button
-          variant="outlined"
-          color="primary"
-          size="small"
-          style={{
-            marginRight: "5px",
-            color: "#3f51b5",
-          }}
-          onClick={() => {
-            navigate(`/add-notification/${clickedEventId}`);
-          }}
-        >
-          <Add />
-        </Button>
+        <Tooltip title="Add">
+          <Button
+            variant="outlined"
+            color="primary"
+            size="small"
+            style={{
+              marginRight: "5px",
+              color: "#3f51b5",
+            }}
+            onClick={() => {
+              navigate(`/add-notification/${clickedEventId}`);
+            }}
+          >
+            <Add />
+          </Button>
+        </Tooltip>
       </div>
     </Toolbar>
   );
