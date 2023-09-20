@@ -1,21 +1,21 @@
-import React, { useState } from "react";
-import ToolbarHeader from "../../common/Toolbar/ToolBar";
-import EventToolbarHeader from "../../common/Toolbar/EventToolBar";
-import NotificationToolbarHeader from "../../common/Toolbar/NotificationToolBar";
-import Events from "./Events";
-import Dashboard from "./Dashboard";
-import Notifications from "./Notifications";
-import { useBetween } from "use-between";
-
+import React, { useState } from 'react';
+import ToolbarHeader from '../../common/Toolbar/ToolBar';
+import EventToolbarHeader from '../../common/Toolbar/EventToolBar';
+import NotificationToolbarHeader from '../../common/Toolbar/NotificationToolBar';
+import Events from './Events';
+import Dashboard from './Dashboard';
+import Notifications from './Notifications';
+import { useBetween } from 'use-between';
+import { Alert } from '@mui/material';
 export const IndexState = () => {
-  const [clickedAppName, setClickedAppName] = useState<string>("");
-  const [clickedEventName, setClickedEventName] = useState<string>("");
-  const [clickedAppId, setClickedAppId] = useState<string | number>("");
-  const [clickedEventId, setClickedEventId] = useState<string | number>("");
+  const [clickedAppName, setClickedAppName] = useState<string>('');
+  const [clickedEventName, setClickedEventName] = useState<string>('');
+  const [clickedAppId, setClickedAppId] = useState<string | number>('');
+  const [clickedEventId, setClickedEventId] = useState<string | number>('');
   const [showNotifications, setShowNotifications] = useState<boolean>(false); // Track whether to show notificatio
   const [clickedNotificationId, setClickedNotificationId] = useState<
     string | number
-  >("");
+  >('');
 
   return {
     clickedAppName,
@@ -34,6 +34,9 @@ export const IndexState = () => {
 };
 
 const Index: React.FC = () => {
+  const [showAppAlert, setShowAppAlert] = useState(false);
+  const [showEventAlert, setShowEventAlert] = useState(false);
+
   const {
     clickedAppName,
     setClickedAppName,
@@ -49,9 +52,9 @@ const Index: React.FC = () => {
     setClickedNotificationId,
   } = useBetween(IndexState);
 
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [sortBy, setSortBy] = useState<string>("appName"); // Initialize with default sort option
-  const [sortOrder, setSortOrder] = useState<string>("asc"); // Initialize with default sort order
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string>('appName'); // Initialize with default sort option
+  const [sortOrder, setSortOrder] = useState<string>('asc'); // Initialize with default sort order
   const [isActive, setIsActive] = useState<null | boolean>(null); // Initialize isActive with null
   const [isActive2, setIsActive2] = useState<null | boolean>(null); // Initialize isActive with null
   const [isActive3, setIsActive3] = useState<null | boolean>(null); // Initialize isActive with null
@@ -59,9 +62,10 @@ const Index: React.FC = () => {
   const handleAppTileClick = (appId: string | number, appName: string) => {
     setClickedAppId(appId);
     setClickedAppName(appName);
-    setClickedEventId(""); // Reset clickedEventId when a new app is clicked
-    setClickedEventName(""); // Reset clickedEventName when a new app is clicked
+    setClickedEventId(''); // Reset clickedEventId when a new app is clicked
+    setClickedEventName(''); // Reset clickedEventName when a new app is clicked
     setShowNotifications(false); // Hide notifications when a new app is clicked
+    setShowAppAlert(false);
   };
 
   const handleEventTileClick = (
@@ -75,12 +79,13 @@ const Index: React.FC = () => {
 
   const handleNotificationTileClick = (notificationId: string | number) => {
     setClickedNotificationId(notificationId);
+    setShowAppAlert(false);
   };
 
   return (
     <div>
       <ToolbarHeader
-        title="Application"
+        title='Application'
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         sortBy={sortBy}
@@ -103,7 +108,7 @@ const Index: React.FC = () => {
       {clickedAppId ? (
         <>
           <EventToolbarHeader
-            title="Events"
+            title='Events'
             clickedAppName={clickedAppName}
             clickedAppId={clickedAppId}
             searchTerm={searchTerm}
@@ -126,8 +131,10 @@ const Index: React.FC = () => {
           />
         </>
       ) : (
-        <div>
-          <p>Alert: Please select an App.</p>
+        <div style={{ marginTop: '2px' }}>
+          <Alert severity='warning'>
+            Please select an Application to view events.
+          </Alert>
         </div>
       )}
 
@@ -135,7 +142,7 @@ const Index: React.FC = () => {
       {showNotifications && clickedEventId ? (
         <>
           <NotificationToolbarHeader
-            title="Notifications"
+            title='Notifications'
             clickedEventId={clickedEventId}
             clickedEventName={clickedEventName}
             searchTerm={searchTerm}
@@ -158,8 +165,10 @@ const Index: React.FC = () => {
           />
         </>
       ) : (
-        <div>
-          <p>Alert: Please select an Event.</p>
+        <div style={{ marginTop: '20px' }}>
+          <Alert severity='warning'>
+            Please select an Event to view notifications.
+          </Alert>
         </div>
       )}
     </div>
