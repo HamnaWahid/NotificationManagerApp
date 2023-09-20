@@ -37,6 +37,7 @@ const AppTileCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.spacing(2),
   transition: "box-shadow 0.3s, transform 0.3s",
   cursor: "pointer",
+  minHeight: "15vh",
 
   "&:hover": {
     boxShadow: `0 8px 12px rgba(88, 81, 80, 0.8)`,
