@@ -19,6 +19,8 @@ interface NotificationData {
   _id: string;
   notificationName: string;
   notificationDescription: string;
+  dateCreated: string;
+  dateUpdated: string;
 }
 
 interface NotificationsProps {
@@ -186,6 +188,8 @@ const Notifications: React.FC<NotificationsProps> = ({
                   Id={data.id || data._id}
                   title={data.notificationName}
                   description={data.notificationDescription}
+                  dateCreated={data.dateCreated}
+                  dateUpdated={data.dateUpdated}
                   isToggled={data.isActive}
                   onUpdateClick={() => handleUpdateClick(data)}
                   onDeleteClick={() => handleDeleteClick(data.id || data._id)}

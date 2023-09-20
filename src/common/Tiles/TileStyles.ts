@@ -25,11 +25,18 @@ export const TileHeading = styled("h4")({
 export const TileDescription = styled("p")({
   color: "#585150",
 });
-
+export const FlipHeading = styled("h4")({
+  color: "black",
+  fontWeight: "bold",
+});
 export const TileContent = styled("div")(({ theme }) => ({
   padding: theme.spacing(0), // Add padding for spacing
 }));
-
+export const InfoIconContainer = styled("div")({
+  position: "absolute",
+  top: 10, // Adjust this value as needed to position the icon vertically
+  right: 10, // Adjust this value as needed to position the icon horizontally
+});
 export const ButtonGroupContainer = styled("div")(({ theme }) => ({
   display: "flex", // Added display flex to align items horizontally
   alignItems: "center", // Center items horizontally

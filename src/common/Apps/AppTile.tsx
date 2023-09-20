@@ -1,9 +1,17 @@
-import { useState } from "react";
-import { AppTileCard, Heading, Description } from "./AppTileStyles";
+import React, { useState } from "react";
+import {
+  AppTileCard,
+  Heading,
+  Description,
+  InfoIconContainer,
+  FlipHeading,
+} from "./AppTileStyles";
 import ButtonGroup from "../ButtonGroup/ButtonGroup";
-import CardActionArea from "@mui/material/CardActionArea"; // Import CardActionArea
+import CardActionArea from "@mui/material/CardActionArea";
 import CardContent from "@mui/material/CardContent";
 import { CardActions } from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info";
+import ReactCardFlip from "react-card-flip";
 
 interface AppTileProps {
   title: string;
@@ -13,9 +21,10 @@ interface AppTileProps {
   onToggleClick: () => void;
   isToggled: boolean;
   applicationId: string | number;
-  ///check
-  onSelected: (applicationId: string | number) => void; // Add a new prop for handling the click event
-  isClicked: boolean; // New prop for clicked state
+  onSelected: (applicationId: string | number) => void;
+  isClicked: boolean;
+  dateCreated: string; // Add dateCreated prop
+  dateUpdated: string; // Add dateUpdated prop
 }
 
 const AppTile = ({
@@ -27,35 +36,64 @@ const AppTile = ({
   isToggled,
   applicationId,
   onSelected,
-  isClicked, // Ensure the correct prop name
+  isClicked,
+  dateCreated, // Destructure dateCreated prop
+  dateUpdated, // Destructure dateUpdated prop
 }: AppTileProps) => {
   const [toggled, setToggled] = useState<boolean>(isToggled);
+  const [isFlipped, setIsFlipped] = useState<boolean>(false);
 
   const handleToggleClick = () => {
     setToggled(!toggled);
     onToggleClick();
   };
   const handleCardClick = () => {
-    onSelected(applicationId); // Call the onClick prop to pass the applicationId to the parent
+    onSelected(applicationId);
   };
+  const handleFlipClick = () => {
+    setIsFlipped(!isFlipped);
+  };
+
   return (
     <>
-      <AppTileCard className={isClicked ? "clicked" : ""}>
-        <CardActionArea onClick={handleCardClick}>
-          <CardContent>
-            <Heading>{title}</Heading>
-            <Description>{description}</Description>
-          </CardContent>
-        </CardActionArea>
-        <CardActions sx={{ justifyContent: "center" }}>
-          <ButtonGroup
-            onUpdateClick={onUpdateClick}
-            onDeleteClick={onDeleteClick}
-            onToggleClick={handleToggleClick}
-            isToggled={toggled}
-          />
-        </CardActions>
-      </AppTileCard>
+      <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal">
+        <AppTileCard className={isClicked ? "clicked" : ""}>
+          <CardActionArea>
+            <div onClick={handleCardClick}>
+              <CardContent>
+                <Heading>{title}</Heading>
+                <Description>{description}</Description>
+              </CardContent>
+            </div>
+            <InfoIconContainer onClick={handleFlipClick}>
+              <InfoIcon />
+            </InfoIconContainer>
+          </CardActionArea>
+          <CardActions sx={{ justifyContent: "center" }}>
+            <ButtonGroup
+              onUpdateClick={onUpdateClick}
+              onDeleteClick={onDeleteClick}
+              onToggleClick={handleToggleClick}
+              isToggled={toggled}
+            />
+          </CardActions>
+        </AppTileCard>
+        <AppTileCard className={isClicked ? "clicked" : ""}>
+          <CardActionArea>
+            <div onClick={handleCardClick}>
+              <CardContent>
+                <FlipHeading>Description</FlipHeading>
+                <Description>{description}</Description>
+                <div>Date Created: {dateCreated}</div>
+                <div>Date Updated: {dateUpdated}</div>
+              </CardContent>
+            </div>
+            <InfoIconContainer onClick={handleFlipClick}>
+              <InfoIcon />
+            </InfoIconContainer>
+          </CardActionArea>
+        </AppTileCard>
+      </ReactCardFlip>
     </>
   );
 };

@@ -18,6 +18,8 @@ interface EventData {
   _id: string;
   eventName: string;
   eventDescription: string;
+  dateCreated: string;
+  dateUpdated: string;
 }
 
 interface EventsProps {
@@ -184,6 +186,8 @@ const Events: React.FC<EventsProps> = ({
                   Id={data.id || data._id}
                   title={data.eventName}
                   description={data.eventDescription}
+                  dateCreated={data.dateCreated}
+                  dateUpdated={data.dateUpdated}
                   isToggled={data.isActive}
                   onUpdateClick={() => handleUpdateClick(data)}
                   onDeleteClick={() => handleDeleteClick(data.id || data._id)}

@@ -6,13 +6,16 @@ import {
   TileContent,
   ButtonGroupContainer,
   LeftContainer,
+  InfoIconContainer,
 } from "./TileStyles"; // Import your styled components here
 
 import ButtonGroup from "../ButtonGroup/ButtonGroup";
 import { CardActionArea } from "@mui/material";
+import InfoIcon from "@mui/icons-material/Info"; // Import the InfoIcon
+import ReactCardFlip from "react-card-flip";
 
 interface TileProps {
-  Id: string | number; //  to the interface
+  Id: string | number;
   title: string;
   description: string;
   onUpdateClick: () => void;
@@ -20,7 +23,9 @@ interface TileProps {
   onToggleClick: () => void;
   onTileClick: (Id: string | number) => void;
   isToggled: boolean;
-  isClicked: boolean; // New prop for clicked state
+  isClicked: boolean;
+  dateCreated: string; // Add dateCreated prop
+  dateUpdated: string; // Add dateUpdated prop
 }
 
 const Tile = ({
@@ -31,10 +36,13 @@ const Tile = ({
   onDeleteClick,
   onToggleClick,
   isToggled,
-  onTileClick, // Add a prop to handle tile click
+  onTileClick,
   isClicked,
+  dateCreated, // Destructure dateCreated prop
+  dateUpdated, // Destructure dateUpdated prop
 }: TileProps) => {
   const [toggled, setToggled] = useState<boolean>(isToggled);
+  const [isFlipped, setIsFlipped] = useState<boolean>(false); // Add isFlipped state
 
   const handleToggleClick = () => {
     setToggled(!toggled);
@@ -45,29 +53,79 @@ const Tile = ({
     onTileClick(Id);
   };
 
+  const handleFlipCard = () => {
+    setIsFlipped(!isFlipped); // Toggle the isFlipped state
+  };
+
   return (
-    <TileCard className={isClicked ? "clicked" : ""}>
-      <div style={{ display: "flex" }}>
-        <LeftContainer>
-          <CardActionArea onClick={handleTileClick}>
-            <TileContent>
-              <div>
-                <TileHeading>{title}</TileHeading>
-                <TileDescription>{description}</TileDescription>
-              </div>
-            </TileContent>
-          </CardActionArea>
-        </LeftContainer>
-        <ButtonGroupContainer>
-          <ButtonGroup
-            onUpdateClick={onUpdateClick}
-            onDeleteClick={onDeleteClick}
-            onToggleClick={handleToggleClick}
-            isToggled={toggled}
-          />
-        </ButtonGroupContainer>
-      </div>
-    </TileCard>
+    <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal">
+      {/* Front side */}
+      <TileCard className={isClicked ? "clicked" : ""}>
+        <div style={{ display: "flex" }}>
+          <LeftContainer>
+            <CardActionArea onClick={handleTileClick}>
+              <TileContent>
+                <div>
+                  <TileHeading>{title}</TileHeading>
+                  <TileDescription>
+                    {" "}
+                    {description.length > 40
+                      ? description.slice(0, 40) + "..."
+                      : description}
+                  </TileDescription>
+                </div>
+              </TileContent>
+            </CardActionArea>
+          </LeftContainer>
+          <ButtonGroupContainer>
+            <ButtonGroup
+              onUpdateClick={onUpdateClick}
+              onDeleteClick={onDeleteClick}
+              onToggleClick={handleToggleClick}
+              isToggled={toggled}
+            />
+            <InfoIconContainer onClick={handleFlipCard}>
+              <InfoIcon />
+            </InfoIconContainer>
+          </ButtonGroupContainer>
+        </div>
+      </TileCard>
+
+      {/* Back side */}
+      <TileCard className={isClicked ? "clicked" : ""}>
+        <div style={{ display: "flex" }}>
+          <LeftContainer>
+            <CardActionArea onClick={handleTileClick}>
+              <TileContent>
+                <div>
+                  <TileDescription>
+                    <span style={{ fontWeight: "bold", color: "black" }}>
+                      Description:
+                    </span>{" "}
+                    {description}
+                    <br />
+                    <span style={{ fontWeight: "bold", color: "black" }}>
+                      Date Created:
+                    </span>{" "}
+                    {dateCreated}
+                    <br />
+                    <span style={{ fontWeight: "bold", color: "black" }}>
+                      Date Updated:
+                    </span>{" "}
+                    {dateUpdated}
+                  </TileDescription>
+                </div>
+              </TileContent>
+            </CardActionArea>
+          </LeftContainer>
+          <ButtonGroupContainer>
+            <InfoIconContainer onClick={handleFlipCard}>
+              <InfoIcon />
+            </InfoIconContainer>
+          </ButtonGroupContainer>
+        </div>
+      </TileCard>
+    </ReactCardFlip>
   );
 };
 

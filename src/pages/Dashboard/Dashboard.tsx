@@ -21,6 +21,8 @@ interface ApplicationData {
   _id: string;
   appName: string;
   appDescription: string;
+  dateCreated: string;
+  dateUpdated: string;
 }
 
 interface DashboardProps {
@@ -73,7 +75,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     isActive
   ); // Pass sortBy and sortOrder
   const queryClient = useQueryClient();
-
+  console.log("dataaaaa checkkkkk", appTilesData);
   const handleNext = () => {
     if (currentPage < appTilesData.totalPages) {
       queryClient.invalidateQueries([
@@ -174,6 +176,8 @@ const Dashboard: React.FC<DashboardProps> = ({
                   applicationId={data.id || data._id}
                   title={data.appName}
                   description={data.appDescription}
+                  dateCreated={data.dateCreated}
+                  dateUpdated={data.dateUpdated}
                   isToggled={data.isActive}
                   onUpdateClick={() => handleUpdateClick(data)}
                   onDeleteClick={() => handleDeleteClick(data.id || data._id)}
