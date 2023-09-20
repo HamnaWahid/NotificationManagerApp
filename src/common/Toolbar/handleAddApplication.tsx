@@ -1,5 +1,5 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { addApplication } from "../../containers/AppTiles";
+import { useQueryClient } from '@tanstack/react-query';
+import { addApplication } from '../../containers/AppTiles';
 
 // Custom hook to handle adding an application and query invalidation
 const useHandleAddApplication = () => {
@@ -13,9 +13,10 @@ const useHandleAddApplication = () => {
       await addApplication(formData);
 
       // Invalidate the 'applications' query when an application is added
-      queryClient.invalidateQueries(["applications"]);
+      queryClient.invalidateQueries(['applications']);
     } catch (error) {
-      console.error("Error adding application:", error);
+      console.error('Error adding application:', error);
+      throw error;
     }
   };
 

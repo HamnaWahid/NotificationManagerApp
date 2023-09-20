@@ -36,7 +36,6 @@ const NotificationEdit = () => {
       setShowSnackbar(true);
       window.history.back();
     } catch (error) {
-      console.error();
       setAlertMessage(
         `Error updating notification: ${
           error.response?.data.error || error.response.data

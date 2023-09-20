@@ -1,5 +1,7 @@
-import React, { useState } from "react";
-import useHandleAddEvent from "./handleAddEvent";
+import React, { useState } from 'react';
+import useHandleAddEvent from './handleAddEvent';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import {
   Toolbar,
   Typography,
@@ -9,25 +11,29 @@ import {
   MenuItem,
   Button,
   Dialog,
-} from "@mui/material";
-import { Search, Sort, SortByAlpha, Add, FilterAlt } from "@mui/icons-material";
-import EventFormComponent from "../Form/EventFormComponent"; // Import the EventFormComponent
-import "./ToolbarStyles.css";
-import { useQueryClient } from "@tanstack/react-query";
-import Tooltip from "@mui/material/Tooltip";
+} from '@mui/material';
+import { Search, Sort, SortByAlpha, Add, FilterAlt } from '@mui/icons-material';
+import EventFormComponent from '../Form/EventFormComponent';
+import './ToolbarStyles.css';
+import { useQueryClient } from '@tanstack/react-query';
+import Tooltip from '@mui/material/Tooltip';
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>((props, ref) => {
+  return <MuiAlert elevation={6} ref={ref} variant='filled' {...props} />;
+});
 
 interface EventToolbarHeaderProps {
   title: string;
   clickedAppId: string | number;
-  clickedAppName: string; // Add clickedAppName to the props
+  clickedAppName: string;
   searchTerm: string;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
-  sortBy: string; // Add sortBy prop
-  setSortBy: React.Dispatch<React.SetStateAction<string>>; // Add setSortBy prop
-  sortOrder: string; // Add sortOrder prop
-  setSortOrder: React.Dispatch<React.SetStateAction<string>>; // Add setSortOrder prop
-  isActive: boolean | null; // Add isActive prop
-  setIsActive: React.Dispatch<React.SetStateAction<boolean | null>>; // Add setIsActive prop
+  sortBy: string;
+  setSortBy: React.Dispatch<React.SetStateAction<string>>;
+  sortOrder: string;
+  setSortOrder: React.Dispatch<React.SetStateAction<string>>;
+  isActive: boolean | null;
+  setIsActive: React.Dispatch<React.SetStateAction<boolean | null>>;
 }
 
 const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
@@ -38,15 +44,22 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
   setSearchTerm,
   setSortBy,
   setSortOrder,
-  setIsActive, // Add isActive and setIsActive props
+  setIsActive,
 }) => {
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
   const [alphaSortAnchorEl, setAlphaSortAnchorEl] =
     useState<null | HTMLElement>(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [statusMenuAnchorEl, setStatusMenuAnchorEl] =
-    useState<null | HTMLElement>(null); // Add state for status menu
+    useState<null | HTMLElement>(null);
   const queryClient = useQueryClient();
+  const [showSnackbar, setShowSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState<string>('');
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string>('');
+  const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>(
+    'success'
+  );
 
   const handleClickSort = (event: React.MouseEvent<HTMLElement>) => {
     setSortAnchorEl(event.currentTarget);
@@ -59,7 +72,7 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
   const handleClose = () => {
     setSortAnchorEl(null);
     setAlphaSortAnchorEl(null);
-    setStatusMenuAnchorEl(null); // Add this line to reset statusMenuAnchorEl
+    setStatusMenuAnchorEl(null);
   };
 
   const handleAddClick = () => {
@@ -72,74 +85,85 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
 
   const handleSortOptionClick = (option: string) => {
     setSortBy(option);
-    setSortOrder("asc"); // Reset to default ascending order when a new sort option is selected
+    setSortOrder('asc');
     handleClose();
-
-    // Update the query with the new sorting options
   };
-  // Custom hook to handle adding an application
+
   const handleAddEvent = useHandleAddEvent();
 
-  const handleFormSubmit = (formData: {
+  const handleFormSubmit = async (formData: {
     eventName: string;
     eventDescription: string;
   }) => {
-    // Add the clickedAppId to the formData object
-    const formDataWithAppId = {
-      ...formData,
-      applicationId: clickedAppId,
-    };
+    try {
+      const formDataWithAppId = {
+        ...formData,
+        applicationId: clickedAppId,
+      };
 
-    handleAddEvent(formDataWithAppId);
-    setOpenDialog(false); // Close the dialog after submission
+      await handleAddEvent(formDataWithAppId);
+      setOpenDialog(false); // Close the dialog after successful submission
+    } catch (error) {
+      console.error('Error adding event:', error);
+      setAlertMessage(
+        `Error adding event: ${
+          error.response?.data.error || error.response.data
+        }`
+      );
+      setAlertSeverity('error');
+      setShowAlert(true);
+      // You can handle the error state or other logic here if needed
+    }
   };
+
   const handleClickStatusFilter = (event: React.MouseEvent<HTMLElement>) => {
     setStatusMenuAnchorEl(event.currentTarget);
   };
+
   return (
-    <Toolbar className="curved-appbar toolbar-header">
+    <Toolbar className='curved-appbar toolbar-header'>
       <Typography
-        variant="h6"
-        style={{ flexGrow: 1, color: "#333", fontWeight: "bold" }}
+        variant='h6'
+        style={{ flexGrow: 1, color: '#333', fontWeight: 'bold' }}
       >
-        {title} -{" "}
+        {title} -{' '}
         <span
           style={{
-            fontSize: "17px",
-            color: "#3f51b5",
+            fontSize: '17px',
+            color: '#3f51b5',
           }}
         >
           {clickedAppName} {/* Use clickedEventName */}
         </span>
       </Typography>
-      <div style={{ position: "relative" }}>
-        <Tooltip title="Search">
+      <div style={{ position: 'relative' }}>
+        <Tooltip title='Search'>
           <IconButton>
             <Search />
           </IconButton>
         </Tooltip>
         <InputBase
-          placeholder="Search"
-          style={{ marginLeft: "10px" }}
-          inputProps={{ "aria-label": "search" }}
+          placeholder='Search'
+          style={{ marginLeft: '10px' }}
+          inputProps={{ 'aria-label': 'search' }}
           defaultValue={searchTerm}
           onChange={(e) => {
             const v = e.target.value;
 
             if (v.length >= 3) {
               setSearchTerm(v);
-              queryClient.invalidateQueries(["events", searchTerm]);
+              queryClient.invalidateQueries(['events', searchTerm]);
             }
 
             if (v.length === 0) {
-              setSearchTerm("");
+              setSearchTerm('');
             }
           }}
         />
       </div>
       <div>
-        <div style={{ display: "flex" }}>
-          <Tooltip title="Sort By">
+        <div style={{ display: 'flex' }}>
+          <Tooltip title='Sort By'>
             <IconButton onClick={handleClickSortByAlpha}>
               <SortByAlpha />
             </IconButton>
@@ -151,19 +175,19 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
           open={Boolean(alphaSortAnchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={() => handleSortOptionClick("eventName")}>
+          <MenuItem onClick={() => handleSortOptionClick('eventName')}>
             Sort by Name
           </MenuItem>
-          <MenuItem onClick={() => handleSortOptionClick("dateCreated")}>
+          <MenuItem onClick={() => handleSortOptionClick('dateCreated')}>
             Sort by Date
           </MenuItem>
-          <MenuItem onClick={() => handleSortOptionClick("isActive")}>
+          <MenuItem onClick={() => handleSortOptionClick('isActive')}>
             Sort by Active Status
           </MenuItem>
         </Menu>
       </div>
       <div>
-        <Tooltip title="Sort Order">
+        <Tooltip title='Sort Order'>
           <IconButton onClick={handleClickSort}>
             <Sort />
           </IconButton>
@@ -174,16 +198,16 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
           open={Boolean(sortAnchorEl)}
           onClose={handleClose}
         >
-          <MenuItem onClick={() => handleSortOptionClick("asc")}>
+          <MenuItem onClick={() => handleSortOptionClick('asc')}>
             Ascending
           </MenuItem>
-          <MenuItem onClick={() => handleSortOptionClick("desc")}>
+          <MenuItem onClick={() => handleSortOptionClick('desc')}>
             Descending
           </MenuItem>
         </Menu>
       </div>
       <div>
-        <Tooltip title="Status Filter">
+        <Tooltip title='Status Filter'>
           <IconButton onClick={handleClickStatusFilter}>
             <FilterAlt />
           </IconButton>
@@ -222,15 +246,16 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
           </MenuItem>
         </Menu>
       </div>
+
       <div>
-        <Tooltip title="Add">
+        <Tooltip title='Add'>
           <Button
-            variant="outlined"
-            color="primary"
-            size="small"
+            variant='outlined'
+            color='primary'
+            size='small'
             style={{
-              marginRight: "5px",
-              color: "#3f51b5",
+              marginRight: '5px',
+              color: '#3f51b5',
             }}
             onClick={handleAddClick}
           >
@@ -239,11 +264,39 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
         </Tooltip>
         <Dialog open={openDialog} onClose={handleDialogClose}>
           <EventFormComponent
-            title="Add Event"
+            title='Add Event'
             onCancel={handleDialogClose}
             onSubmit={handleFormSubmit}
           />
         </Dialog>
+        {showSnackbar && (
+          <Snackbar
+            open={showSnackbar}
+            autoHideDuration={1300}
+            onClose={() => setShowSnackbar(false)}
+          >
+            <Alert severity='success' onClose={() => setShowSnackbar(false)}>
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
+        )}
+
+        {showAlert && (
+          <Snackbar
+            open={showAlert}
+            autoHideDuration={1300}
+            onClose={() => setShowAlert(false)}
+            style={{
+              top: '20%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <Alert severity={alertSeverity} onClose={() => setShowAlert(false)}>
+              {alertMessage}
+            </Alert>
+          </Snackbar>
+        )}
       </div>
     </Toolbar>
   );

@@ -168,6 +168,7 @@ export const updateNotification2 = async (
     // Handle the response as needed
     console.log("Notification updated:", response.data);
   } catch (error) {
+    
     console.error("Error updating notification:", error);
     throw error; // You can handle or propagate the error as necessary
   }
