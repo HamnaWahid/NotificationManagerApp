@@ -3,15 +3,10 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { FormContainer } from './FormStyles';
 import Grid from '@mui/material/Grid';
+import { z } from 'zod';
 
-interface EventFormComponentProps {
-  onCancel: () => void;
-  onSubmit: (formData: { eventName: string; eventDescription: string }) => void;
-  message?: string;
-  title?: string;
-  initialName?: string;
-  initialDescription?: string;
-}
+const eventNameSchema = z.string().min(4).max(50);
+const eventDescriptionSchema = z.string().min(4).max(50);
 
 const EventFormComponent = ({
   onCancel,
@@ -20,30 +15,43 @@ const EventFormComponent = ({
   initialName,
   initialDescription,
 }: EventFormComponentProps) => {
-  const [eventName, setName] = useState(initialName || '');
-  const [eventDescription, setDescription] = useState(initialDescription || '');
+  const [eventName, setEventName] = useState(initialName || '');
+  const [eventDescription, setEventDescription] = useState(
+    initialDescription || ''
+  );
   const [nameError, setNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
-    setName(newName);
-    setNameError(newName.trim() === ''); // Check if name is empty
+    setEventName(newName);
+    try {
+      eventNameSchema.parse(newName); // Validate using Zod schema
+      setNameError(false);
+    } catch (error) {
+      setNameError(true);
+    }
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDescription = e.target.value;
-    setDescription(newDescription);
-    setDescriptionError(newDescription.trim() === ''); // Check if description is empty
+    setEventDescription(newDescription);
+    try {
+      eventDescriptionSchema.parse(newDescription); // Validate using Zod schema
+      setDescriptionError(false);
+    } catch (error) {
+      setDescriptionError(true);
+    }
   };
 
   const handleSubmit = () => {
-    if (eventName.trim() === '' || eventDescription.trim() === '') {
-      // If either field is empty, set error states
-      setNameError(eventName.trim() === '');
-      setDescriptionError(eventDescription.trim() === '');
-    } else {
+    try {
+      eventNameSchema.parse(eventName);
+      eventDescriptionSchema.parse(eventDescription);
       onSubmit({ eventName, eventDescription });
+    } catch (error) {
+      // Handle validation errors
+      console.error('Validation error:', error.errors);
     }
   };
 
@@ -74,9 +82,14 @@ const EventFormComponent = ({
           fullWidth
           margin='normal'
           variant='outlined'
-          required // Make the field required
+          required
           error={nameError}
-          helperText={nameError ? 'Event Name is required' : ''}
+          helperText={
+            nameError ? 'Event Name should be between 3 and 50 characters' : ''
+          }
+          inputProps={{
+            maxLength: 50,
+          }}
         />
         <TextField
           label='Event Description'
@@ -84,12 +97,19 @@ const EventFormComponent = ({
           onChange={handleDescriptionChange}
           fullWidth
           margin='normal'
-          multiline // Allow multiline input
+          multiline
           rows={4}
           variant='outlined'
-          required // Make the field required
+          required
           error={descriptionError}
-          helperText={descriptionError ? 'Event Description is required' : ''}
+          helperText={
+            descriptionError
+              ? 'Event Description should be between 3 and 50 characters'
+              : ''
+          }
+          inputProps={{
+            maxLength: 50,
+          }}
         />
         <div className='button-container'>
           <Button

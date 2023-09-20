@@ -3,6 +3,10 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { FormContainer } from './FormStyles';
 import Grid from '@mui/material/Grid';
+import { z } from 'zod';
+
+const appNameSchema = z.string().min(4).max(50);
+const appDescriptionSchema = z.string().min(4).max(50);
 
 interface FormComponentProps {
   onCancel: () => void;
@@ -20,30 +24,43 @@ const FormComponent = ({
   initialName,
   initialDescription,
 }: FormComponentProps) => {
-  const [appName, setName] = useState(initialName || '');
-  const [appDescription, setDescription] = useState(initialDescription || '');
+  const [appName, setAppName] = useState(initialName || '');
+  const [appDescription, setAppDescription] = useState(
+    initialDescription || ''
+  );
   const [nameError, setNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
-    setName(newName);
-    setNameError(newName.trim() === ''); // Check if name is empty
+    setAppName(newName);
+    try {
+      appNameSchema.parse(newName); // Validate using Zod schema
+      setNameError(false);
+    } catch (error) {
+      setNameError(true);
+    }
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDescription = e.target.value;
-    setDescription(newDescription);
-    setDescriptionError(newDescription.trim() === ''); // Check if description is empty
+    setAppDescription(newDescription);
+    try {
+      appDescriptionSchema.parse(newDescription); // Validate using Zod schema
+      setDescriptionError(false);
+    } catch (error) {
+      setDescriptionError(true);
+    }
   };
 
   const handleSubmit = () => {
-    if (appName.trim() === '' || appDescription.trim() === '') {
-      // If either field is empty, set error states
-      setNameError(appName.trim() === '');
-      setDescriptionError(appDescription.trim() === '');
-    } else {
+    try {
+      appNameSchema.parse(appName);
+      appDescriptionSchema.parse(appDescription);
       onSubmit({ appName, appDescription });
+    } catch (error) {
+      // Handle validation errors
+      console.error('Validation error:', error.errors);
     }
   };
 
@@ -74,9 +91,14 @@ const FormComponent = ({
           fullWidth
           margin='normal'
           variant='outlined'
-          required // Make the field required
+          required
           error={nameError}
-          helperText={nameError ? 'Name is required' : ''}
+          helperText={
+            nameError ? 'Name should be between 4 and 50 characters' : ''
+          }
+          inputProps={{
+            maxLength: 50,
+          }}
         />
         <TextField
           label='Description'
@@ -85,11 +107,18 @@ const FormComponent = ({
           fullWidth
           margin='normal'
           variant='outlined'
-          multiline // Allow multiline input
-          rows={4} // Set the number of rows for multiline
-          required // Make the field required
+          multiline
+          rows={4}
+          required
           error={descriptionError}
-          helperText={descriptionError ? 'Description is required' : ''}
+          helperText={
+            descriptionError
+              ? 'Description should be between 4 and 50 characters'
+              : ''
+          }
+          inputProps={{
+            maxLength: 50,
+          }}
         />
         <div className='button-container'>
           <Button

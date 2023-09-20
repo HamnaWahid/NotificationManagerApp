@@ -3,6 +3,10 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { FormContainer } from './FormStyles';
 import Grid from '@mui/material/Grid';
+import { z } from 'zod';
+
+const notificationNameSchema = z.string().min(4).max(50);
+const notificationDescriptionSchema = z.string().min(4).max(50);
 
 interface NotificationFormComponentProps {
   onCancel: () => void;
@@ -23,8 +27,8 @@ const NotificationFormComponent = ({
   initialName,
   initialDescription,
 }: NotificationFormComponentProps) => {
-  const [notificationName, setName] = useState(initialName || '');
-  const [notificationDescription, setDescription] = useState(
+  const [notificationName, setNotificationName] = useState(initialName || '');
+  const [notificationDescription, setNotificationDescription] = useState(
     initialDescription || ''
   );
   const [nameError, setNameError] = useState(false);
@@ -32,26 +36,35 @@ const NotificationFormComponent = ({
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
-    setName(newName);
-    setNameError(newName.trim() === ''); // Check if name is empty
+    setNotificationName(newName);
+    try {
+      notificationNameSchema.parse(newName); // Validate using Zod schema
+      setNameError(false);
+    } catch (error) {
+      setNameError(true);
+    }
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDescription = e.target.value;
-    setDescription(newDescription);
-    setDescriptionError(newDescription.trim() === ''); // Check if description is empty
+    setNotificationDescription(newDescription);
+    try {
+      notificationDescriptionSchema.parse(newDescription); // Validate using Zod schema
+      setDescriptionError(false);
+    } catch (error) {
+      setDescriptionError(true);
+    }
   };
 
   const handleSubmit = () => {
-    if (
-      notificationName.trim() === '' ||
-      notificationDescription.trim() === ''
-    ) {
-      // If either field is empty, set error states
-      setNameError(notificationName.trim() === '');
-      setDescriptionError(notificationDescription.trim() === '');
-    } else {
+    try {
+      notificationNameSchema.parse(notificationName);
+      notificationDescriptionSchema.parse(notificationDescription);
+      // Additionally, you can validate templateSubject and templateBody here if needed
       onSubmit({ notificationName, notificationDescription });
+    } catch (error) {
+      // Handle validation errors
+      console.error('Validation error:', error.errors);
     }
   };
 
@@ -82,9 +95,16 @@ const NotificationFormComponent = ({
           fullWidth
           margin='normal'
           variant='outlined'
-          required // Make the field required
+          required
           error={nameError}
-          helperText={nameError ? 'Name is required' : ''}
+          helperText={
+            nameError
+              ? 'Notification Name should be between 4 and 50 characters'
+              : ''
+          }
+          inputProps={{
+            maxLength: 100,
+          }}
         />
         <TextField
           label='Notification Description'
@@ -93,11 +113,18 @@ const NotificationFormComponent = ({
           fullWidth
           margin='normal'
           variant='outlined'
-          multiline // Allow multiline input
+          multiline
           rows={4}
-          required // Make the field required
+          required
           error={descriptionError}
-          helperText={descriptionError ? 'Description is required' : ''}
+          helperText={
+            descriptionError
+              ? 'Notification Description should be between 4 and 50 characters'
+              : ''
+          }
+          inputProps={{
+            maxLength: 200,
+          }}
         />
         <div className='button-container'>
           <Button
