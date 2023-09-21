@@ -8,6 +8,7 @@ import { MentionsInput, Mention } from 'react-mentions';
 import './style.css';
 import { useTags } from '../../containers/Tag'; // Assuming useTags is in the Tag file
 import { useNotificationById } from '../../containers/NotificationGrid'; // Import the useNotificationById hook
+import Loading from '../../common/Loading';
 
 // import { TagSharp } from '@mui/icons-material';
 
@@ -138,7 +139,7 @@ const NotificationForm = ({
     onCancel();
   };
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (isError || !tagData) {
@@ -195,11 +196,12 @@ const NotificationForm = ({
                 className='custom-mentions-input'
                 value={body}
                 onChange={(e) => handleBodyChange(e)}
-                placeholder='Body'
+                placeholder='Body *'
               >
                 <Mention
                   trigger='{'
                   data={transformedTags}
+                  
                   renderSuggestion={(
                     suggestion,
                     search,

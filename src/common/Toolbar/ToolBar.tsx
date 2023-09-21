@@ -93,6 +93,7 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
     try {
       await handleAddApplication(formData);
       setOpenDialog(false); // Close the dialog on successful addition
+      queryClient.invalidateQueries(['applications', 1, pageSize, searchTerm]);
     } catch (error) {
       // Handle the error here if needed
       console.error('Error adding application:', error);

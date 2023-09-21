@@ -4,7 +4,7 @@ import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import { useNavigate } from 'react-router-dom';
 import AppTile from '../../common/Apps/AppTile';
 import './Dashboard.css';
-import { Slide, Paper, Grid, IconButton, Dialog } from '@mui/material';
+import { Slide, Paper, Grid, IconButton, Dialog, Tooltip } from '@mui/material';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import {
   useApplications,
@@ -33,6 +33,7 @@ interface ApplicationData {
 
 interface DashboardProps {
   onSet: (applicationId: string | number, appName: string) => void;
+  page: number;
   searchTerm: string; // Add searchTerm to the interface
   sortBy: string;
   sortOrder: string;
@@ -44,12 +45,17 @@ const pageSize = 4;
 
 const Dashboard: React.FC<DashboardProps> = ({
   onSet,
+  page,
   searchTerm,
   sortBy,
   sortOrder,
   isActive,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  if (searchTerm && searchTerm.length >= 3) {
+    setCurrentPage;
+  }
+  console.log('current ', currentPage);
   const navigate = useNavigate();
 
   const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -66,6 +72,11 @@ const Dashboard: React.FC<DashboardProps> = ({
   const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>(
     'success'
   );
+  useEffect(() => {
+    if (searchTerm && searchTerm.length >= 3 && !appTilesData > 4) {
+      setCurrentPage(1); // Reset the page to 1 on search
+    }
+  }, [searchTerm]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -88,7 +99,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     isActive
   ); // Pass sortBy and sortOrder
   const queryClient = useQueryClient();
-  console.log("dataaaaa checkkkkk", appTilesData);
+  console.log('dataaaaa checkkkkk', appTilesData);
   const handleNext = () => {
     if (currentPage < appTilesData.totalPages) {
       queryClient.invalidateQueries([
@@ -240,18 +251,22 @@ const Dashboard: React.FC<DashboardProps> = ({
             }}
           >
             <div style={{ flex: 1 }}>
-              <IconButton onClick={handleBack} disabled={currentPage === 1}>
-                <ArrowBackIos />
-              </IconButton>
+              <Tooltip title='Back'>
+                <IconButton onClick={handleBack} disabled={currentPage === 1}>
+                  <ArrowBackIos />
+                </IconButton>
+              </Tooltip>
               <span style={{ margin: '0 5px' }}>
-                {currentPage} of {appTilesData?.totalPages}
+                {currentPage || 1} of {appTilesData?.totalPages || 1}
               </span>
-              <IconButton
-                onClick={handleNext}
-                disabled={currentPage === appTilesData?.totalPages}
-              >
-                <ArrowForwardIos />
-              </IconButton>
+              <Tooltip title='Next'>
+                <IconButton
+                  onClick={handleNext}
+                  disabled={currentPage === appTilesData?.totalPages}
+                >
+                  <ArrowForwardIos />
+                </IconButton>
+              </Tooltip>
             </div>
             <div
               style={{

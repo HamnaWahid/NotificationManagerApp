@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import apiClient from "../apiServices/serviceClient";
+import { useQuery } from '@tanstack/react-query';
+import apiClient from '../apiServices/serviceClient';
 // const API_BASE_URL = 'http://localhost:3000/api/applications'; // Replace with your backend URL
 interface ApplicationData {
   appName: string;
@@ -14,68 +14,71 @@ export const updateApplication = async (
       `/applications/${applicationId}/update`,
       data
     );
-    console.log("Application updated:", response.data);
+    console.log('Application updated:', response.data);
   } catch (error) {
-    console.error("Error updating application:", error);
+    console.error('Error updating application:', error);
     throw error; // You can handle or propagate the error as necessary
   }
 };
-
-// Define a function to fetch the applications
 export const fetchApplications = async (
   page: number,
   pageSize: number,
   searchTerm?: string,
   sortBy?: string,
   sortOrder?: string,
-  isActive?: boolean | null // Add isActive parameter
+  isActive?: boolean | null
 ) => {
-  const params = new URLSearchParams({
-    page: page.toString(),
-    pageSize: pageSize.toString(),
-  });
+  const params = new URLSearchParams();
+
+  params.set('page', page.toString());
+  params.set('pageSize', pageSize.toString());
+
+  if (sortBy && sortOrder) {
+    params.set('sortBy', sortBy);
+    params.set('sortOrder', sortOrder);
+  }
+
+  if (isActive !== undefined && isActive !== null) {
+    params.set('isActive', isActive.toString());
+  }
 
   if (searchTerm && searchTerm.length >= 3) {
-    params.set("appName", searchTerm);
+    params.set('appName', searchTerm);
+  } else {
+    params.set('appName', '');
   }
 
-  // Add sorting parameters to the URL if provided
-  if (sortBy && sortOrder) {
-    params.set("sortBy", sortBy);
-    params.set("sortOrder", sortOrder);
-  }
-
-  // Add isActive parameter to the URL if provided and not null
-  if (isActive !== undefined && isActive !== null) {
-    params.set("isActive", isActive.toString());
-  }
-
-  const response = await apiClient.get(`/applications/?${params}`);
-
+  const response = await apiClient.get(`/applications/?${params.toString()}`);
   return response.data;
 };
 
-// Create a React Query hook to fetch the applications
 export const useApplications = (
   page: number,
   pageSize: number,
   searchTerm?: string,
   sortBy?: string,
   sortOrder?: string,
-  isActive?: boolean | null // Add isActive parameter
+  isActive?: boolean | null
 ) => {
   return useQuery(
-    // Update the query key to include searchTerm, sortBy, sortOrder, and isActive
-    ["applications", page, pageSize, searchTerm, sortBy, sortOrder, isActive],
-    () =>
-      fetchApplications(
-        page,
+    ['applications', page, pageSize, searchTerm, sortBy, sortOrder, isActive],
+    async () => {
+      // Reset page to 1 only when the searchTerm changes and meets the length requirement
+      const resetPage = searchTerm && searchTerm.length >= 3 ? 1 : page;
+
+      const data = await fetchApplications(
+        resetPage,
         pageSize,
         searchTerm,
         sortBy,
         sortOrder,
         isActive
-      ), // Pass all parameters to fetchApplications
+      );
+      return {
+        ...data,
+        currentPage: resetPage, // Ensure we use the correct page in case of reset
+      };
+    },
     {
       staleTime: 1000,
     }
@@ -104,10 +107,10 @@ export const deactivateApplication = async (
 
 export const addApplication = async (data: ApplicationData): Promise<void> => {
   try {
-    const response = await apiClient.post("/applications/", data);
-    console.log("Application added:", response.data);
+    const response = await apiClient.post('/applications/', data);
+    console.log('Application added:', response.data);
   } catch (error) {
-    console.error("Error adding application:", error);
+    console.error('Error adding application:', error);
     throw error; // You can handle or propagate the error as necessary
   }
 };
