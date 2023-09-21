@@ -39,6 +39,7 @@ interface DashboardProps {
   sortOrder: string;
   isActive: boolean | null; // Add isActive prop
   setIsActive: React.Dispatch<React.SetStateAction<boolean | null>>;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const pageSize = 4;
@@ -46,16 +47,14 @@ const pageSize = 4;
 const Dashboard: React.FC<DashboardProps> = ({
   onSet,
   page,
+  setPage,
   searchTerm,
   sortBy,
   sortOrder,
   isActive,
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  if (searchTerm && searchTerm.length >= 3) {
-    setCurrentPage;
-  }
-  console.log('current ', currentPage);
+
   const navigate = useNavigate();
 
   const [isDialogOpen, setDialogOpen] = useState<boolean>(false);
@@ -74,9 +73,10 @@ const Dashboard: React.FC<DashboardProps> = ({
   );
   useEffect(() => {
     if (searchTerm && searchTerm.length >= 3 && !appTilesData > 4) {
-      setCurrentPage(1); // Reset the page to 1 on search
+      setCurrentPage(1);
+      setPage(1);
     }
-  }, [searchTerm]);
+  }, [searchTerm, page]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -90,35 +90,27 @@ const Dashboard: React.FC<DashboardProps> = ({
     data: appTilesData,
     isLoading,
     isError,
-  } = useApplications(
-    currentPage,
-    pageSize,
-    searchTerm,
-    sortBy,
-    sortOrder,
-    isActive
-  ); // Pass sortBy and sortOrder
+  } = useApplications(page, pageSize, searchTerm, sortBy, sortOrder, isActive); // Pass sortBy and sortOrder
   const queryClient = useQueryClient();
   console.log('dataaaaa checkkkkk', appTilesData);
   const handleNext = () => {
-    if (currentPage < appTilesData.totalPages) {
+    if (page < appTilesData.totalPages) {
       queryClient.invalidateQueries([
         'applications',
         currentPage + 1,
+
         pageSize,
       ]);
+      setPage(page + 1);
       setCurrentPage(currentPage + 1);
     }
   };
 
   const handleBack = () => {
-    if (currentPage > 1) {
-      queryClient.invalidateQueries([
-        'applications',
-        currentPage - 1,
-        pageSize,
-      ]);
+    if (page > 1) {
+      queryClient.invalidateQueries(['applications', page - 1, pageSize]);
       setCurrentPage(currentPage - 1);
+      setPage(page - 1);
     }
   };
 
@@ -160,6 +152,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     try {
       await deleteApplication(applicationId);
       queryClient.invalidateQueries(['applications', currentPage, pageSize]);
+      setPage(1);
     } catch (error) {
       console.error('Error deleting application:', error);
       setAlertMessage(
@@ -175,7 +168,12 @@ const Dashboard: React.FC<DashboardProps> = ({
   const handleToggleClick = async (applicationId: string | number) => {
     try {
       await deactivateApplication(applicationId);
-      queryClient.invalidateQueries(['applications', currentPage, pageSize]);
+      queryClient.invalidateQueries([
+        'applications',
+        page,
+        currentPage,
+        pageSize,
+      ]);
     } catch (error) {
       console.error('Error deactivating application:', error);
       setAlertMessage(
@@ -252,17 +250,17 @@ const Dashboard: React.FC<DashboardProps> = ({
           >
             <div style={{ flex: 1 }}>
               <Tooltip title='Back'>
-                <IconButton onClick={handleBack} disabled={currentPage === 1}>
+                <IconButton onClick={handleBack} disabled={page === 1}>
                   <ArrowBackIos />
                 </IconButton>
               </Tooltip>
               <span style={{ margin: '0 5px' }}>
-                {currentPage || 1} of {appTilesData?.totalPages || 1}
+                {page || 1} of {appTilesData?.totalPages || 1}
               </span>
               <Tooltip title='Next'>
                 <IconButton
                   onClick={handleNext}
-                  disabled={currentPage === appTilesData?.totalPages}
+                  disabled={page === appTilesData?.totalPages}
                 >
                   <ArrowForwardIos />
                 </IconButton>

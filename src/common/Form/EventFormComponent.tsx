@@ -3,10 +3,6 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { FormContainer } from './FormStyles';
 import Grid from '@mui/material/Grid';
-import { z } from 'zod';
-
-const eventNameSchema = z.string().min(4).max(50);
-const eventDescriptionSchema = z.string().min(4).max(50);
 
 const EventFormComponent = ({
   onCancel,
@@ -26,7 +22,6 @@ const EventFormComponent = ({
     const newName = e.target.value;
     setEventName(newName);
     try {
-      eventNameSchema.parse(newName); // Validate using Zod schema
       setNameError(false);
     } catch (error) {
       setNameError(true);
@@ -37,7 +32,6 @@ const EventFormComponent = ({
     const newDescription = e.target.value;
     setEventDescription(newDescription);
     try {
-      eventDescriptionSchema.parse(newDescription); // Validate using Zod schema
       setDescriptionError(false);
     } catch (error) {
       setDescriptionError(true);
@@ -46,8 +40,8 @@ const EventFormComponent = ({
 
   const handleSubmit = () => {
     try {
-      eventNameSchema.parse(eventName);
-      eventDescriptionSchema.parse(eventDescription);
+      // eventNameSchema.parse(eventName);
+      // eventDescriptionSchema.parse(eventDescription);
       onSubmit({ eventName, eventDescription });
     } catch (error) {
       // Handle validation errors

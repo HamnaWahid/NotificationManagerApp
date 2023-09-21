@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Tile from '../../common/Tiles/Tile';
 import {
   Slide,
@@ -38,6 +38,8 @@ interface NotificationData {
 }
 
 interface NotificationsProps {
+  setPage: React.Dispatch<React.SetStateAction<number>>;
+  page: number;
   searchTerm: string;
   clickedEventId: string | number;
   onNotificationTileClick: (notificationId: string | number) => void;
@@ -52,6 +54,8 @@ const pageSize = 6;
 const Notifications: React.FC<NotificationsProps> = ({
   searchTerm,
   clickedEventId,
+  page,
+  setPage,
   onNotificationTileClick,
   sortBy,
   sortOrder,
@@ -72,6 +76,13 @@ const Notifications: React.FC<NotificationsProps> = ({
   const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>(
     'success'
   );
+  useEffect(() => {
+    if (searchTerm && searchTerm.length >= 3) {
+      setCurrentPage(1);
+      setPage(1);
+    }
+  }, [searchTerm, page]);
+
   const navigate = useNavigate();
 
   const {
@@ -80,7 +91,7 @@ const Notifications: React.FC<NotificationsProps> = ({
     isError,
   } = useNotifications(
     clickedEventId,
-    currentPage,
+    page,
     pageSize,
     searchTerm,
     sortBy,
@@ -91,26 +102,30 @@ const Notifications: React.FC<NotificationsProps> = ({
   const queryClient = useQueryClient();
 
   const handleNext = () => {
-    if (currentPage < TilesData.totalPages) {
+    if (page < TilesData.totalPages) {
       queryClient.invalidateQueries([
         'notifications',
         clickedEventId,
         currentPage + 1,
         pageSize,
       ]);
+      setPage(page + 1);
+
       setCurrentPage(currentPage + 1);
     }
   };
 
   const handleBack = () => {
-    if (currentPage > 1) {
+    if (page > 1) {
       queryClient.invalidateQueries([
         'notifications',
         clickedEventId,
-        currentPage - 1,
+        page - 1,
         pageSize,
       ]);
+
       setCurrentPage(currentPage - 1);
+      setPage(page - 1);
     }
   };
 
@@ -163,6 +178,7 @@ const Notifications: React.FC<NotificationsProps> = ({
         currentPage,
         pageSize,
       ]);
+      setPage(1);
     } catch (error) {
       console.error('Error deleting notification:', error);
       setAlertMessage(
@@ -181,6 +197,7 @@ const Notifications: React.FC<NotificationsProps> = ({
       queryClient.invalidateQueries([
         'notifications',
         clickedEventId,
+        page,
         currentPage,
         pageSize,
       ]);
@@ -265,17 +282,17 @@ const Notifications: React.FC<NotificationsProps> = ({
               }}
             >
               <Tooltip title='Back'>
-                <IconButton onClick={handleBack} disabled={currentPage === 1}>
+                <IconButton onClick={handleBack} disabled={page === 1}>
                   <ArrowBackIos />
                 </IconButton>
               </Tooltip>
               <span style={{ margin: '0 5px' }}>
-                {currentPage} of {TilesData?.totalPages}
+                {page || 1} of {TilesData?.totalPages || 1}
               </span>
               <Tooltip title='Next'>
                 <IconButton
                   onClick={handleNext}
-                  disabled={currentPage === TilesData?.totalPages}
+                  disabled={page === TilesData?.totalPages}
                 >
                   <ArrowForwardIos />
                 </IconButton>

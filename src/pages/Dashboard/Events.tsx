@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Tile from '../../common/Tiles/Tile';
 import {
   Slide,
@@ -37,10 +37,12 @@ interface EventData {
 }
 
 interface EventsProps {
+  page: number;
   searchTerm: string;
   clickedAppId: string | number;
   onEventTileClick: (eventId: string | number, eventName: string) => void;
   sortBy: string;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
   sortOrder: string;
   isActive: boolean | null; // Add isActive prop
   setIsActive: React.Dispatch<React.SetStateAction<boolean | null>>;
@@ -52,6 +54,8 @@ const Events: React.FC<EventsProps> = ({
   searchTerm,
   clickedAppId,
   onEventTileClick,
+  setPage,
+  page,
   sortBy,
   sortOrder,
   isActive,
@@ -68,6 +72,13 @@ const Events: React.FC<EventsProps> = ({
   const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>(
     'success'
   );
+  useEffect(() => {
+    if (searchTerm && searchTerm.length >= 3) {
+      setCurrentPage(1);
+      setPage(1);
+    }
+  }, [searchTerm, page]);
+
   const [clickedTileIds, setClickedTileIds] = useState<Set<string | number>>(
     new Set()
   );
@@ -78,7 +89,7 @@ const Events: React.FC<EventsProps> = ({
     isError,
   } = useEvents(
     clickedAppId,
-    currentPage,
+    page,
     pageSize,
     searchTerm,
     sortBy,
@@ -89,26 +100,29 @@ const Events: React.FC<EventsProps> = ({
   const queryClient = useQueryClient();
   console.log('dattaaaaa', TilesData);
   const handleNext = () => {
-    if (currentPage < TilesData.totalPages) {
+    if (page < TilesData.totalPages) {
       queryClient.invalidateQueries([
         'events',
         clickedAppId,
         currentPage + 1,
         pageSize,
       ]);
+      setPage(page + 1);
+
       setCurrentPage(currentPage + 1);
     }
   };
 
   const handleBack = () => {
-    if (currentPage > 1) {
+    if (page > 1) {
       queryClient.invalidateQueries([
         'events',
         clickedAppId,
-        currentPage - 1,
+        page - 1,
         pageSize,
       ]);
       setCurrentPage(currentPage - 1);
+      setPage(page - 1);
     }
   };
 
@@ -161,6 +175,7 @@ const Events: React.FC<EventsProps> = ({
         currentPage,
         pageSize,
       ]);
+      setPage(1);
     } catch (error) {
       console.error('Error deleting event:', error);
       setAlertMessage(
@@ -264,17 +279,17 @@ const Events: React.FC<EventsProps> = ({
               }}
             >
               <Tooltip title='Back'>
-                <IconButton onClick={handleBack} disabled={currentPage === 1}>
+                <IconButton onClick={handleBack} disabled={page === 1}>
                   <ArrowBackIos />
                 </IconButton>
               </Tooltip>
               <span style={{ margin: '0 5px' }}>
-                {currentPage} of {TilesData?.totalPages}
+                {page||1} of {TilesData?.totalPages||1}
               </span>
               <Tooltip title='Next'>
                 <IconButton
                   onClick={handleNext}
-                  disabled={currentPage === TilesData?.totalPages}
+                  disabled={page === TilesData?.totalPages}
                 >
                   <ArrowForwardIos />
                 </IconButton>

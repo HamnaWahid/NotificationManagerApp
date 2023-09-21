@@ -3,10 +3,6 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { FormContainer } from './FormStyles';
 import Grid from '@mui/material/Grid';
-import { z } from 'zod';
-
-const notificationNameSchema = z.string().min(4).max(50);
-const notificationDescriptionSchema = z.string().min(4).max(50);
 
 interface NotificationFormComponentProps {
   onCancel: () => void;
@@ -38,7 +34,6 @@ const NotificationFormComponent = ({
     const newName = e.target.value;
     setNotificationName(newName);
     try {
-      notificationNameSchema.parse(newName); // Validate using Zod schema
       setNameError(false);
     } catch (error) {
       setNameError(true);
@@ -49,7 +44,6 @@ const NotificationFormComponent = ({
     const newDescription = e.target.value;
     setNotificationDescription(newDescription);
     try {
-      notificationDescriptionSchema.parse(newDescription); // Validate using Zod schema
       setDescriptionError(false);
     } catch (error) {
       setDescriptionError(true);
@@ -58,8 +52,6 @@ const NotificationFormComponent = ({
 
   const handleSubmit = () => {
     try {
-      notificationNameSchema.parse(notificationName);
-      notificationDescriptionSchema.parse(notificationDescription);
       // Additionally, you can validate templateSubject and templateBody here if needed
       onSubmit({ notificationName, notificationDescription });
     } catch (error) {

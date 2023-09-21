@@ -24,9 +24,11 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>((props, ref) => {
 
 interface EventToolbarHeaderProps {
   title: string;
+  page: number;
   clickedAppId: string | number;
   clickedAppName: string;
   searchTerm: string;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
   sortBy: string;
   setSortBy: React.Dispatch<React.SetStateAction<string>>;
@@ -40,6 +42,8 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
   title,
   clickedAppId,
   clickedAppName,
+  page,
+  setPage,
   searchTerm,
   setSearchTerm,
   setSortBy,
@@ -151,12 +155,15 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
             const v = e.target.value;
 
             if (v.length >= 3) {
+              setPage(1);
               setSearchTerm(v);
-              queryClient.invalidateQueries(['events', searchTerm]);
+              queryClient.invalidateQueries(['events', page, searchTerm]);
             }
 
             if (v.length === 0) {
+              setPage(1);
               setSearchTerm('');
+              queryClient.invalidateQueries(['events', searchTerm]);
             }
           }}
         />

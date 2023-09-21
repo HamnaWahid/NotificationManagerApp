@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
-import apiClient from "../apiServices/serviceClient";
-import { PropsData } from "../components/Notifications/NotificationForm";
+import { useQuery } from '@tanstack/react-query';
+import apiClient from '../apiServices/serviceClient';
+import { PropsData } from '../components/Notifications/NotificationForm';
 
 interface NotificationData {
   notificationName: string;
@@ -24,22 +24,22 @@ export const fetchNotifications = async (
   });
 
   if (eventId !== null) {
-    params.set("eventId", eventId.toString());
-  } else console.log("it is nullll");
+    params.set('eventId', eventId.toString());
+  } else console.log('it is nullll');
 
   if (searchTerm && searchTerm.length >= 3) {
-    params.set("notificationName", searchTerm);
+    params.set('notificationName', searchTerm);
   }
 
   // Add sorting parameters to the URL if provided
   if (sortBy && sortOrder) {
-    params.set("sortBy", sortBy);
-    params.set("sortOrder", sortOrder);
+    params.set('sortBy', sortBy);
+    params.set('sortOrder', sortOrder);
   }
 
   // Add isActive parameter to the URL if provided and not null
   if (isActive !== undefined && isActive !== null) {
-    params.set("isActive", isActive.toString());
+    params.set('isActive', isActive.toString());
   }
 
   const response = await apiClient.get(`/notifications/?${params}`);
@@ -58,7 +58,7 @@ export const useNotifications = (
 ) => {
   return useQuery(
     [
-      "notifications",
+      'notifications',
       eventId,
       page,
       pageSize,
@@ -67,8 +67,8 @@ export const useNotifications = (
       sortOrder,
       isActive,
     ],
-    () =>
-      fetchNotifications(
+    async () => {
+      const data = await fetchNotifications(
         eventId,
         page,
         pageSize,
@@ -76,7 +76,12 @@ export const useNotifications = (
         sortBy,
         sortOrder,
         isActive
-      ),
+      );
+      return {
+        ...data,
+        currentPage: page,
+      };
+    },
     {
       staleTime: 1000,
     }
@@ -114,7 +119,7 @@ export const updateNotification = async (
   );
 
   // Handle the response as needed
-  console.log("Notification updated:", response.data);
+  console.log('Notification updated:', response.data);
   // } catch (error) {
   //   console.error('Error updating notification:', error);
   //   throw error; // You can handle or propagate the error as necessary
@@ -123,10 +128,10 @@ export const updateNotification = async (
 
 export const addNotification = async (data: PropsData): Promise<void> => {
   try {
-    const response = await apiClient.post("/notifications", data);
-    console.log("Notification added:", response.data);
+    const response = await apiClient.post('/notifications', data);
+    console.log('Notification added:', response.data);
   } catch (error) {
-    console.error("Error adding notification:", error);
+    console.error('Error adding notification:', error);
     throw error; // You can handle or propagate the error as necessary
   }
 };
@@ -142,7 +147,7 @@ export const fetchNotificationById = async (
 
     return response.data;
   } catch (error) {
-    console.error("Error fetching notification by ID:", error);
+    console.error('Error fetching notification by ID:', error);
     throw error; // You can handle or propagate the error as necessary
   }
 };
@@ -151,7 +156,7 @@ export const useNotificationById = (
   eventId: string | number,
   notificationId: string | number
 ) => {
-  return useQuery(["notification", eventId, notificationId], () =>
+  return useQuery(['notification', eventId, notificationId], () =>
     fetchNotificationById(eventId, notificationId)
   );
 };
@@ -166,10 +171,9 @@ export const updateNotification2 = async (
     );
 
     // Handle the response as needed
-    console.log("Notification updated:", response.data);
+    console.log('Notification updated:', response.data);
   } catch (error) {
-    
-    console.error("Error updating notification:", error);
+    console.error('Error updating notification:', error);
     throw error; // You can handle or propagate the error as necessary
   }
 };

@@ -193,6 +193,18 @@ const NotificationForm = ({
                 required
               />
               <MentionsInput
+                customSuggestionsContainer={(highlightedDisplay) => (
+                  <div
+                    style={{
+                      overflow: 'auto',
+                      maxHeight: 200,
+                      position: 'absolute',
+                      zIndex: 1,
+                    }}
+                  >
+                    {highlightedDisplay}
+                  </div>
+                )}
                 className='custom-mentions-input'
                 value={body}
                 onChange={(e) => handleBodyChange(e)}
@@ -201,18 +213,18 @@ const NotificationForm = ({
                 <Mention
                   trigger='{'
                   data={transformedTags}
-                  
                   renderSuggestion={(
                     suggestion,
                     search,
                     highlightedDisplay
                   ) => (
-                    <div className='custom-mention '>{highlightedDisplay}</div>
+                    <div className='custom-mention'>{highlightedDisplay}</div>
                   )}
                   displayTransform={(id, display) => `{${display}}`}
                   markup='{__display__}'
                 />
               </MentionsInput>
+
               <div className='button-container'>
                 <Button
                   variant='contained'

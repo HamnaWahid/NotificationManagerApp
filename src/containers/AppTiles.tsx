@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../apiServices/serviceClient';
-// const API_BASE_URL = 'http://localhost:3000/api/applications'; // Replace with your backend URL
 interface ApplicationData {
   appName: string;
   appDescription: string;
@@ -64,10 +63,9 @@ export const useApplications = (
     ['applications', page, pageSize, searchTerm, sortBy, sortOrder, isActive],
     async () => {
       // Reset page to 1 only when the searchTerm changes and meets the length requirement
-      const resetPage = searchTerm && searchTerm.length >= 3 ? 1 : page;
 
       const data = await fetchApplications(
-        resetPage,
+        page,
         pageSize,
         searchTerm,
         sortBy,
@@ -76,7 +74,7 @@ export const useApplications = (
       );
       return {
         ...data,
-        currentPage: resetPage, // Ensure we use the correct page in case of reset
+        currentPage: page, // Ensure we use the correct page in case of reset
       };
     },
     {
