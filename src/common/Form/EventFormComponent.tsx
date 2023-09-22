@@ -3,10 +3,6 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { FormContainer } from './FormStyles';
 import Grid from '@mui/material/Grid';
-import { z } from 'zod';
-
-const eventNameSchema = z.string().min(4).max(50);
-const eventDescriptionSchema = z.string().min(4).max(50);
 
 const EventFormComponent = ({
   onCancel,
@@ -21,37 +17,36 @@ const EventFormComponent = ({
   );
   const [nameError, setNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
+  const [nameRequiredError, setNameRequiredError] = useState(false);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
     setEventName(newName);
-    try {
-      eventNameSchema.parse(newName); // Validate using Zod schema
-      setNameError(false);
-    } catch (error) {
-      setNameError(true);
-    }
+    validateName(newName);
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDescription = e.target.value;
     setEventDescription(newDescription);
-    try {
-      eventDescriptionSchema.parse(newDescription); // Validate using Zod schema
-      setDescriptionError(false);
-    } catch (error) {
-      setDescriptionError(true);
-    }
+    validateDescription(newDescription);
+  };
+
+  const validateName = (name: string) => {
+    setNameError(name.length < 3 || name.length > 50);
+    setNameRequiredError(name.length === 0);
+  };
+
+  const validateDescription = (description: string) => {
+    setDescriptionError(description.length < 3 || description.length > 50);
   };
 
   const handleSubmit = () => {
-    try {
-      eventNameSchema.parse(eventName);
-      eventDescriptionSchema.parse(eventDescription);
+    // Validate before submitting
+    validateName(eventName);
+    validateDescription(eventDescription);
+
+    if (!nameError && !descriptionError && !nameRequiredError) {
       onSubmit({ eventName, eventDescription });
-    } catch (error) {
-      // Handle validation errors
-      console.error('Validation error:', error.errors);
     }
   };
 
@@ -83,9 +78,13 @@ const EventFormComponent = ({
           margin='normal'
           variant='outlined'
           required
-          error={nameError}
+          error={nameError || nameRequiredError}
           helperText={
-            nameError ? 'Event Name should be between 3 and 50 characters' : ''
+            nameRequiredError
+              ? 'Event Name is required'
+              : nameError
+              ? 'Event Name should be between 3 and 50 characters'
+              : ''
           }
           inputProps={{
             maxLength: 50,

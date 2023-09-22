@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Tile from "../../common/Tiles/Tile";
 import {
   Slide,
@@ -12,6 +12,7 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  Tooltip,
 } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
@@ -22,10 +23,15 @@ import {
   updateNotification,
 } from "../../containers/NotificationGrid";
 import Snackbar from "@mui/material/Snackbar";
+import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import NotificationFormComponent from "../../common/Form/NotificationFormComponent";
 import { useQueryClient } from "@tanstack/react-query";
 import "./Tiles.css";
 import { useNavigate } from "react-router-dom";
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>((props, ref) => {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 interface NotificationData {
   isActive: boolean;
@@ -38,6 +44,8 @@ interface NotificationData {
 }
 
 interface NotificationsProps {
+  setPage: React.Dispatch<React.SetStateAction<number>>;
+  page: number;
   searchTerm: string;
   clickedEventId: string | number;
   onNotificationTileClick: (notificationId: string | number) => void;
@@ -52,6 +60,8 @@ const pageSize = 6;
 const Notifications: React.FC<NotificationsProps> = ({
   searchTerm,
   clickedEventId,
+  page,
+  setPage,
   onNotificationTileClick,
   sortBy,
   sortOrder,
@@ -75,6 +85,12 @@ const Notifications: React.FC<NotificationsProps> = ({
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
   const [deleteDialogData, setDeleteDialogData] =
     useState<NotificationData | null>(null);
+  useEffect(() => {
+    if (searchTerm && searchTerm.length >= 3) {
+      setCurrentPage(1);
+      setPage(1);
+    }
+  }, [searchTerm, page]);
 
   const navigate = useNavigate();
 
@@ -84,7 +100,7 @@ const Notifications: React.FC<NotificationsProps> = ({
     isError,
   } = useNotifications(
     clickedEventId,
-    currentPage,
+    page,
     pageSize,
     searchTerm,
     sortBy,
@@ -95,26 +111,30 @@ const Notifications: React.FC<NotificationsProps> = ({
   const queryClient = useQueryClient();
 
   const handleNext = () => {
-    if (currentPage < TilesData.totalPages) {
+    if (page < TilesData.totalPages) {
       queryClient.invalidateQueries([
         "notifications",
         clickedEventId,
         currentPage + 1,
         pageSize,
       ]);
+      setPage(page + 1);
+
       setCurrentPage(currentPage + 1);
     }
   };
 
   const handleBack = () => {
-    if (currentPage > 1) {
+    if (page > 1) {
       queryClient.invalidateQueries([
         "notifications",
         clickedEventId,
-        currentPage - 1,
+        page - 1,
         pageSize,
       ]);
+
       setCurrentPage(currentPage - 1);
+      setPage(page - 1);
     }
   };
 
@@ -167,6 +187,7 @@ const Notifications: React.FC<NotificationsProps> = ({
         currentPage,
         pageSize,
       ]);
+      setPage(1);
     } catch (error) {
       console.error("Error deleting notification:", error);
       setAlertMessage(
@@ -185,6 +206,7 @@ const Notifications: React.FC<NotificationsProps> = ({
       queryClient.invalidateQueries([
         "notifications",
         clickedEventId,
+        page,
         currentPage,
         pageSize,
       ]);
@@ -285,18 +307,22 @@ const Notifications: React.FC<NotificationsProps> = ({
                 alignItems: "center",
               }}
             >
-              <IconButton onClick={handleBack} disabled={currentPage === 1}>
-                <ArrowBackIos />
-              </IconButton>
+              <Tooltip title="Back">
+                <IconButton onClick={handleBack} disabled={page === 1}>
+                  <ArrowBackIos />
+                </IconButton>
+              </Tooltip>
               <span style={{ margin: "0 5px" }}>
-                {currentPage} of {TilesData?.totalPages}
+                {page || 1} of {TilesData?.totalPages || 1}
               </span>
-              <IconButton
-                onClick={handleNext}
-                disabled={currentPage === TilesData?.totalPages}
-              >
-                <ArrowForwardIos />
-              </IconButton>
+              <Tooltip title="Next">
+                <IconButton
+                  onClick={handleNext}
+                  disabled={page === TilesData?.totalPages}
+                >
+                  <ArrowForwardIos />
+                </IconButton>
+              </Tooltip>
             </div>
             <div
               style={{

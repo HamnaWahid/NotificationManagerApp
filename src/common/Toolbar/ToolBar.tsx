@@ -32,7 +32,9 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>((props, ref) => {
 interface ToolbarHeaderProps {
   title: string;
   searchTerm: string;
+  page: number;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
   sortBy: string;
   sortOrder: string;
   setSortBy: React.Dispatch<React.SetStateAction<string>>;
@@ -44,6 +46,8 @@ interface ToolbarHeaderProps {
 const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
   title,
   searchTerm,
+  page,
+  setPage,
   setSearchTerm,
   setSortBy,
   setSortOrder,
@@ -101,7 +105,8 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
   }) => {
     try {
       await handleAddApplication(formData);
-      setOpenDialog(false);
+      setOpenDialog(false); // Close the dialog on successful addition
+      queryClient.invalidateQueries(["applications", 1, pageSize, searchTerm]);
     } catch (error) {
       console.error("Error adding application:", error);
       setAlertMessage(
@@ -143,11 +148,18 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
               onChange={(e) => {
                 const v = e.target.value;
                 if (v.length >= 3) {
+                  setPage(1);
                   setSearchTerm(v);
-                  queryClient.invalidateQueries(["applications", searchTerm]);
+                  queryClient.invalidateQueries([
+                    "applications",
+                    page,
+                    searchTerm,
+                  ]);
                 }
                 if (v.length === 0) {
+                  setPage(1);
                   setSearchTerm("");
+                  queryClient.invalidateQueries(["applications", searchTerm]);
                 }
               }}
             />
@@ -286,11 +298,18 @@ const ToolbarHeader: React.FC<ToolbarHeaderProps> = ({
               onChange={(e) => {
                 const v = e.target.value;
                 if (v.length >= 3) {
+                  setPage(1);
                   setSearchTerm(v);
-                  queryClient.invalidateQueries(["applications", searchTerm]);
+                  queryClient.invalidateQueries([
+                    "applications",
+                    page,
+                    searchTerm,
+                  ]);
                 }
                 if (v.length === 0) {
+                  setPage(1);
                   setSearchTerm("");
+                  queryClient.invalidateQueries(["applications", searchTerm]);
                 }
               }}
             />

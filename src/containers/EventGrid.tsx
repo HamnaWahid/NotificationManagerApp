@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import apiClient from "../apiServices/serviceClient";
+import { useQuery } from '@tanstack/react-query';
+import apiClient from '../apiServices/serviceClient';
 
 interface EventData {
   eventName: string;
@@ -23,22 +23,22 @@ export const fetchEvents = async (
   });
 
   if (applicationId !== null) {
-    params.set("applicationId", applicationId.toString());
+    params.set('applicationId', applicationId.toString());
   }
 
   if (searchTerm && searchTerm.length >= 3) {
-    params.set("eventName", searchTerm);
+    params.set('eventName', searchTerm);
   }
 
   // Add sorting parameters to the URL if provided
   if (sortBy && sortOrder) {
-    params.set("sortBy", sortBy);
-    params.set("sortOrder", sortOrder);
+    params.set('sortBy', sortBy);
+    params.set('sortOrder', sortOrder);
   }
 
   // Add isActive parameter to the URL if provided and not null
   if (isActive !== undefined && isActive !== null) {
-    params.set("isActive", isActive.toString());
+    params.set('isActive', isActive.toString());
   }
 
   const response = await apiClient.get(`/events/?${params}`);
@@ -58,7 +58,7 @@ export const useEvents = (
 ) => {
   return useQuery(
     [
-      "events",
+      'events',
       applicationId,
       page,
       pageSize,
@@ -67,8 +67,8 @@ export const useEvents = (
       sortOrder,
       isActive,
     ],
-    () =>
-      fetchEvents(
+    async () => {
+      const data = await fetchEvents(
         applicationId,
         page,
         pageSize,
@@ -76,7 +76,12 @@ export const useEvents = (
         sortBy,
         sortOrder,
         isActive
-      ),
+      );
+      return {
+        ...data,
+        currentPage: page,
+      };
+    },
     {
       staleTime: 1000,
     }
@@ -85,7 +90,7 @@ export const useEvents = (
 
 export const deleteEvent = async (eventId: string | number): Promise<void> => {
   const response = await apiClient.patch(`/events/${eventId}/delete`);
-  console.log("responseeee", response);
+  console.log('responseeee', response);
   return response.data; // You may handle the response data as needed
 };
 
@@ -102,19 +107,19 @@ export const updateEvent = async (
 ): Promise<void> => {
   try {
     const response = await apiClient.put(`/events/${eventId}/update`, data);
-    console.log("Event updated:", response.data);
+    console.log('Event updated:', response.data);
   } catch (error) {
-    console.error("Error updating event:", error);
+    console.error('Error updating event:', error);
     throw error; // You can handle or propagate the error as necessary
   }
 };
 
 export const addEvent = async (data: EventData): Promise<void> => {
   try {
-    const response = await apiClient.post("/events/", data);
-    console.log("Event added:", response.data);
+    const response = await apiClient.post('/events/', data);
+    console.log('Event added:', response.data);
   } catch (error) {
-    console.error("Error adding event:", error);
+    console.error('Error adding event:', error);
     throw error; // You can handle or propagate the error as necessary
   }
 };

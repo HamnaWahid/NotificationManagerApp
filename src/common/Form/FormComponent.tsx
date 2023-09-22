@@ -3,10 +3,6 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { FormContainer } from './FormStyles';
 import Grid from '@mui/material/Grid';
-import { z } from 'zod';
-
-const appNameSchema = z.string().min(4).max(50);
-const appDescriptionSchema = z.string().min(4).max(50);
 
 interface FormComponentProps {
   onCancel: () => void;
@@ -24,43 +20,49 @@ const FormComponent = ({
   initialName,
   initialDescription,
 }: FormComponentProps) => {
-  const [appName, setAppName] = useState(initialName || '');
-  const [appDescription, setAppDescription] = useState(
-    initialDescription || ''
-  );
+  const [appName, setName] = useState(initialName || '');
+  const [appDescription, setDescription] = useState(initialDescription || '');
   const [nameError, setNameError] = useState(false);
   const [descriptionError, setDescriptionError] = useState(false);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
-    setAppName(newName);
-    try {
-      appNameSchema.parse(newName); // Validate using Zod schema
-      setNameError(false);
-    } catch (error) {
-      setNameError(true);
-    }
+    setName(newName);
+    validateFields(newName, appDescription);
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDescription = e.target.value;
-    setAppDescription(newDescription);
-    try {
-      appDescriptionSchema.parse(newDescription); // Validate using Zod schema
-      setDescriptionError(false);
-    } catch (error) {
+    setDescription(newDescription);
+    validateFields(appName, newDescription);
+  };
+
+  const validateFields = (name: string, description: string) => {
+    if (name.trim() === '') {
+      setNameError(true);
+    } else if (name.trim().length < 3 || name.trim().length > 50) {
+      setNameError(true);
+    } else {
+      setNameError(false);
+    }
+
+    if (description.trim() === '') {
       setDescriptionError(true);
+    } else if (
+      description.trim().length < 3 ||
+      description.trim().length > 50
+    ) {
+      setDescriptionError(true);
+    } else {
+      setDescriptionError(false);
     }
   };
 
   const handleSubmit = () => {
-    try {
-      appNameSchema.parse(appName);
-      appDescriptionSchema.parse(appDescription);
+    validateFields(appName, appDescription);
+
+    if (!nameError && !descriptionError) {
       onSubmit({ appName, appDescription });
-    } catch (error) {
-      // Handle validation errors
-      console.error('Validation error:', error.errors);
     }
   };
 
@@ -91,14 +93,15 @@ const FormComponent = ({
           fullWidth
           margin='normal'
           variant='outlined'
-          required
+          required // Make the field required
           error={nameError}
           helperText={
-            nameError ? 'Name should be between 4 and 50 characters' : ''
+            nameError
+              ? appName.trim() === ''
+                ? 'Name is required'
+                : 'Name should be between 3 and 50 characters'
+              : ''
           }
-          inputProps={{
-            maxLength: 50,
-          }}
         />
         <TextField
           label='Description'
@@ -107,18 +110,17 @@ const FormComponent = ({
           fullWidth
           margin='normal'
           variant='outlined'
-          multiline
-          rows={4}
-          required
+          multiline // Allow multiline input
+          rows={4} // Set the number of rows for multiline
+          required // Make the field required
           error={descriptionError}
           helperText={
             descriptionError
-              ? 'Description should be between 4 and 50 characters'
+              ? appDescription.trim() === ''
+                ? 'Description is required'
+                : 'Description should be between 3 and 50 characters'
               : ''
           }
-          inputProps={{
-            maxLength: 50,
-          }}
         />
         <div className='button-container'>
           <Button

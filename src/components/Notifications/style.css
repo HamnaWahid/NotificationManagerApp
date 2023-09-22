@@ -8,55 +8,59 @@
 }
 
 .custom-mentions-input {
-  margin: 'normal';
+  margin: normal;
   padding: 10px;
   border-radius: 8px;
   height: 105px;
   margin-top: 15px;
   letter-spacing: inherit;
 }
-.custom-mentions-input .custom-mentions-input__input:hover {
+
+.custom-mentions-input:hover {
   border-color: black; /* Change to the color you want on hover */
 }
+
 .custom-mentions-input .custom-mentions-input__input {
   color: black; /* Set text color to black for the textarea */
   border-radius: 4px;
   font: inherit;
-  border-color: #c4c4c4;
+  border: 1px solid #c4c4c4; /* Adjust border style */
   padding: 10px 14px;
+  width: 100%; /* Adjust the width as needed */
 }
 
 .custom-mention {
   padding: 8px 12px;
   background-color: #c4c4c4;
-  border-radius: 8px;
+  border-radius: 4px;
+  border: 1px solid black; /* Add border style */
   cursor: pointer;
-  color: black; /* Set text color to black */
+  color: black;
 }
+
 .custom-mention:hover {
-  background-color: #3f51b5; /* Change to the color you want on hover */
+  background-color: #3f51b5;
+  border: 1px solid black; /* Add border style on hover */
 }
 
-/* Add more styles as needed */
-/* 
-.custom-dropdown {
-  position: relative;
-}
-
-.custom-dropdown-menu {
+.custom-mention-suggestions-list {
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #071b2f;
+  overflow: auto;
+  max-height: 200px;
   position: absolute;
-  max-height: 150px; /* Adjust the maximum height as needed */
-/* overflow-y: auto;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  width: 100%;
+  z-index: 1;
 }
 
-.custom-dropdown-item {
-  padding: 8px;
-  cursor: pointer;
+.custom-mention-suggestions-item {
+  padding: 5px 15px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
 
-.custom-dropdown-item:hover {
-  background-color: #f0f0f0;
-} */
+.custom-mention-suggestions-item:focus {
+  background-color: #cee4e5;
+}

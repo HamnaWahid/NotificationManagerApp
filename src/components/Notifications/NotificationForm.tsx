@@ -8,8 +8,7 @@ import { MentionsInput, Mention } from 'react-mentions';
 import './style.css';
 import { useTags } from '../../containers/Tag'; // Assuming useTags is in the Tag file
 import { useNotificationById } from '../../containers/NotificationGrid'; // Import the useNotificationById hook
-
-// import { TagSharp } from '@mui/icons-material';
+import Loading from '../../common/Loading';
 
 interface Tag {
   id: number;
@@ -64,21 +63,40 @@ const NotificationForm = ({
   const [description, setDescription] = useState('');
   const [body, setBody] = useState('');
   const [preview, setPreview] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [subjectError, setSubjectError] = useState('');
+  const [descriptionError, setDescriptionError] = useState('');
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
+    setNameError(validateLength(e.target.value, 3, 100));
   };
 
   const handleSubjectChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSubject(e.target.value);
+    setSubjectError(validateLength(e.target.value, 5, 100));
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDescription(e.target.value);
+    setDescriptionError(validateLength(e.target.value, 3, 200));
   };
 
   const handleBodyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBody(e.target.value);
+  };
+
+  const validateLength = (
+    value: string,
+    minLength: number,
+    maxLength: number
+  ) => {
+    if (value.trim() === '') {
+      return 'This field is required.';
+    } else if (value.length < minLength || value.length > maxLength) {
+      return `Length should be between ${minLength} and ${maxLength} characters.`;
+    }
+    return '';
   };
 
   useEffect(() => {
@@ -126,19 +144,29 @@ const NotificationForm = ({
   }, [data, notificationLoading, notificationData]);
 
   const handleSubmit = () => {
-    onSubmit({
-      notificationName: name,
-      templateSubject: subject,
-      notificationDescription: description,
-      templateBody: body,
-    });
+    const nameError = validateLength(name, 3, 100);
+    const subjectError = validateLength(subject, 5, 100);
+    const descriptionError = validateLength(description, 3, 200);
+
+    setNameError(nameError);
+    setSubjectError(subjectError);
+    setDescriptionError(descriptionError);
+
+    if (!nameError && !subjectError && !descriptionError) {
+      onSubmit({
+        notificationName: name,
+        templateSubject: subject,
+        notificationDescription: description,
+        templateBody: body,
+      });
+    }
   };
 
   const handleCancel = () => {
     onCancel();
   };
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (isError || !tagData) {
@@ -172,6 +200,12 @@ const NotificationForm = ({
                 margin='normal'
                 variant='outlined'
                 required
+                error={!!nameError}
+                helperText={nameError}
+                inputProps={{
+                  minLength: 3,
+                  maxLength: 100,
+                }}
               />
               <TextField
                 label='Subject'
@@ -181,6 +215,12 @@ const NotificationForm = ({
                 margin='normal'
                 variant='outlined'
                 required
+                error={!!subjectError}
+                helperText={subjectError}
+                inputProps={{
+                  minLength: 5,
+                  maxLength: 100,
+                }}
               />
               <TextField
                 label='Description'
@@ -190,12 +230,30 @@ const NotificationForm = ({
                 margin='normal'
                 variant='outlined'
                 required
+                error={!!descriptionError}
+                helperText={descriptionError}
+                inputProps={{
+                  minLength: 3,
+                  maxLength: 200,
+                }}
               />
               <MentionsInput
+                customSuggestionsContainer={(highlightedDisplay) => (
+                  <div
+                    style={{
+                      overflow: 'auto',
+                      maxHeight: 200,
+                      position: 'absolute',
+                      zIndex: 1,
+                    }}
+                  >
+                    {highlightedDisplay}
+                  </div>
+                )}
                 className='custom-mentions-input'
                 value={body}
                 onChange={(e) => handleBodyChange(e)}
-                placeholder='Body'
+                placeholder='Body *'
               >
                 <Mention
                   trigger='{'
@@ -205,12 +263,13 @@ const NotificationForm = ({
                     search,
                     highlightedDisplay
                   ) => (
-                    <div className='custom-mention '>{highlightedDisplay}</div>
+                    <div className='custom-mention'>{highlightedDisplay}</div>
                   )}
                   displayTransform={(id, display) => `{${display}}`}
                   markup='{__display__}'
                 />
               </MentionsInput>
+
               <div className='button-container'>
                 <Button
                   variant='contained'

@@ -31,9 +31,11 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>((props, ref) => {
 
 interface EventToolbarHeaderProps {
   title: string;
+  page: number;
   clickedAppId: string | number;
   clickedAppName: string;
   searchTerm: string;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
   sortBy: string;
   setSortBy: React.Dispatch<React.SetStateAction<string>>;
@@ -47,6 +49,8 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
   title,
   clickedAppId,
   clickedAppName,
+  page,
+  setPage,
   searchTerm,
   setSearchTerm,
   setSortBy,
@@ -156,17 +160,22 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
           <Tooltip title="Search">
             <InputBase
               placeholder="Search"
-              style={{ color: "#3f51b5", marginLeft: "10px" }}
+              style={{ marginLeft: "10px" }}
               inputProps={{ "aria-label": "search" }}
               defaultValue={searchTerm}
               onChange={(e) => {
                 const v = e.target.value;
+
                 if (v.length >= 3) {
+                  setPage(1);
                   setSearchTerm(v);
-                  queryClient.invalidateQueries(["events", searchTerm]);
+                  queryClient.invalidateQueries(["events", page, searchTerm]);
                 }
+
                 if (v.length === 0) {
+                  setPage(1);
                   setSearchTerm("");
+                  queryClient.invalidateQueries(["events", searchTerm]);
                 }
               }}
             />
@@ -289,17 +298,22 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
           <Tooltip title="Search">
             <InputBase
               placeholder="Search"
-              style={{ color: "#3f51b5", marginLeft: "10px" }}
+              style={{ marginLeft: "10px" }}
               inputProps={{ "aria-label": "search" }}
               defaultValue={searchTerm}
               onChange={(e) => {
                 const v = e.target.value;
+
                 if (v.length >= 3) {
+                  setPage(1);
                   setSearchTerm(v);
-                  queryClient.invalidateQueries(["events", searchTerm]);
+                  queryClient.invalidateQueries(["events", page, searchTerm]);
                 }
+
                 if (v.length === 0) {
+                  setPage(1);
                   setSearchTerm("");
+                  queryClient.invalidateQueries(["events", searchTerm]);
                 }
               }}
             />

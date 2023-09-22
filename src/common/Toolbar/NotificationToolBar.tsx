@@ -24,9 +24,11 @@ import Tooltip from "@mui/material/Tooltip";
 import Hidden from "@mui/material/Hidden"; // Import Hidden from Material-UI
 
 interface NotificationToolbarHeaderProps {
+  page: number;
   title: string;
-  clickedEventId: string | number;
-  clickedEventName: string;
+  clickedEventId: string | number; // Changed to clickedEventId
+  clickedEventName: string; // Added clickedEventName
+  setPage: React.Dispatch<React.SetStateAction<number>>;
   searchTerm: string;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
   setSortBy: React.Dispatch<React.SetStateAction<string>>;
@@ -42,6 +44,8 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
   searchTerm,
   setSearchTerm,
   setSortBy,
+  page,
+  setPage,
   setSortOrder,
   setIsActive,
 }) => {
@@ -111,24 +115,22 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
           </Tooltip>
           <InputBase
             placeholder="Search"
-            style={{
-              color: "#3f51b5",
-              marginLeft: "10px",
-              border: "1px solid #ccc",
-              borderRadius: "5px",
-              fontSize: "16px",
-              padding: "8px",
-            }}
+            style={{ marginLeft: "10px" }}
             inputProps={{ "aria-label": "search" }}
             defaultValue={searchTerm}
             onChange={(e) => {
               const v = e.target.value;
+
               if (v.length >= 3) {
+                setPage(1);
                 setSearchTerm(v);
-                queryClient.invalidateQueries(["notifications", searchTerm]);
+                queryClient.invalidateQueries(["events", page, searchTerm]);
               }
+
               if (v.length === 0) {
+                setPage(1);
                 setSearchTerm("");
+                queryClient.invalidateQueries(["events", searchTerm]);
               }
             }}
           />
@@ -242,24 +244,22 @@ const NotificationToolbarHeader: React.FC<NotificationToolbarHeaderProps> = ({
           <Tooltip title="Search">
             <InputBase
               placeholder="Search"
-              style={{
-                color: "#3f51b5",
-                marginLeft: "10px",
-                border: "1px solid #ccc",
-                borderRadius: "5px",
-                fontSize: "16px",
-                padding: "8px",
-              }}
+              style={{ marginLeft: "10px" }}
               inputProps={{ "aria-label": "search" }}
               defaultValue={searchTerm}
               onChange={(e) => {
                 const v = e.target.value;
+
                 if (v.length >= 3) {
+                  setPage(1);
                   setSearchTerm(v);
-                  queryClient.invalidateQueries(["notifications", searchTerm]);
+                  queryClient.invalidateQueries(["events", page, searchTerm]);
                 }
+
                 if (v.length === 0) {
+                  setPage(1);
                   setSearchTerm("");
+                  queryClient.invalidateQueries(["events", searchTerm]);
                 }
               }}
             />

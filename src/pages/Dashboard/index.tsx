@@ -62,6 +62,7 @@ const Index: React.FC = () => {
   const [isActive, setIsActive] = useState<null | boolean>(null); // Initialize isActive with null
   const [isActive2, setIsActive2] = useState<null | boolean>(null); // Initialize isActive with null
   const [isActive3, setIsActive3] = useState<null | boolean>(null); // Initialize isActive with null
+  const [page, setPage] = useState<number>(1);
 
   const handleAppTileClick = (
     applicationId: string | number,
@@ -94,6 +95,8 @@ const Index: React.FC = () => {
     <div>
       <ToolbarHeader
         title="Application"
+        page={page}
+        setPage={setPage}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         sortBy={sortBy}
@@ -104,6 +107,8 @@ const Index: React.FC = () => {
         setIsActive={setIsActive} // Pass setIsActive
       />
       <Dashboard
+        page={page}
+        setPage={setPage}
         searchTerm={searchTerm}
         sortBy={sortBy}
         sortOrder={sortOrder}
@@ -116,6 +121,8 @@ const Index: React.FC = () => {
       {clickedAppId ? (
         <>
           <EventToolbarHeader
+            page={page}
+            setPage={setPage}
             title="Events"
             clickedAppName={clickedAppName}
             clickedAppId={clickedAppId}
@@ -129,6 +136,8 @@ const Index: React.FC = () => {
             setIsActive={setIsActive2} // Pass setIsActive
           />
           <Events
+            page={page}
+            setPage={setPage}
             searchTerm={searchTerm}
             clickedAppId={clickedAppId}
             onSet={handleEventTileClick}
@@ -151,6 +160,8 @@ const Index: React.FC = () => {
       {showNotifications && clickedEventId ? (
         <>
           <NotificationToolbarHeader
+            page={page}
+            setPage={setPage}
             title="Notifications"
             clickedEventId={clickedEventId}
             clickedEventName={clickedEventName}
@@ -164,6 +175,8 @@ const Index: React.FC = () => {
             setIsActive={setIsActive3} // Pass setIsActive
           />
           <Notifications
+            page={page}
+            setPage={setPage}
             searchTerm={searchTerm}
             clickedEventId={clickedEventId}
             sortBy={sortBy3}
