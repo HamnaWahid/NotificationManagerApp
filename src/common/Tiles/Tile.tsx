@@ -13,7 +13,7 @@ import ButtonGroup from "../ButtonGroup/ButtonGroup";
 import { CardActionArea } from "@mui/material";
 import InfoIcon from "@mui/icons-material/Info"; // Import the InfoIcon
 import ReactCardFlip from "react-card-flip";
-
+import Tooltip from "@mui/material/Tooltip";
 interface TileProps {
   Id: string | number;
   title: string;
@@ -63,19 +63,21 @@ const Tile = ({
       <TileCard className={isClicked ? "clicked" : ""}>
         <div style={{ display: "flex" }}>
           <LeftContainer>
-            <CardActionArea onClick={handleTileClick}>
-              <TileContent>
-                <div>
-                  <TileHeading>{title}</TileHeading>
-                  <TileDescription>
-                    {" "}
-                    {description.length > 40
-                      ? description.slice(0, 40) + "..."
-                      : description}
-                  </TileDescription>
-                </div>
-              </TileContent>
-            </CardActionArea>
+            <Tooltip title="Click here to edit">
+              <CardActionArea onClick={handleTileClick}>
+                <TileContent>
+                  <div>
+                    <TileHeading>{title}</TileHeading>
+                    <TileDescription>
+                      {" "}
+                      {description.length > 40
+                        ? description.slice(0, 40) + "..."
+                        : description}
+                    </TileDescription>
+                  </div>
+                </TileContent>
+              </CardActionArea>
+            </Tooltip>
           </LeftContainer>
           <ButtonGroupContainer>
             <ButtonGroup

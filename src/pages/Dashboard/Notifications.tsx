@@ -13,6 +13,7 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import {
   useNotifications,
@@ -275,6 +276,7 @@ const Notifications: React.FC<NotificationsProps> = ({
               ))}
             </Grid>
           </Slide>
+
           <Paper elevation={1} square>
             <div
               style={{
