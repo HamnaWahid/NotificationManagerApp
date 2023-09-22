@@ -6,7 +6,12 @@ import {
   Grid,
   IconButton,
   Dialog,
-  AlertTitle,
+  Alert,
+  AlertTitle, // Added AlertTitle import
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import {
@@ -16,15 +21,10 @@ import {
   updateNotification,
 } from "../../containers/NotificationGrid";
 import Snackbar from "@mui/material/Snackbar";
-import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import NotificationFormComponent from "../../common/Form/NotificationFormComponent";
 import { useQueryClient } from "@tanstack/react-query";
 import "./Tiles.css";
 import { useNavigate } from "react-router-dom";
-
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>((props, ref) => {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
 
 interface NotificationData {
   isActive: boolean;
@@ -42,7 +42,7 @@ interface NotificationsProps {
   onNotificationTileClick: (notificationId: string | number) => void;
   sortBy: string;
   sortOrder: string;
-  isActive: boolean | null; // Add isActive prop
+  isActive: boolean | null;
   setIsActive: React.Dispatch<React.SetStateAction<boolean | null>>;
 }
 
@@ -71,6 +71,10 @@ const Notifications: React.FC<NotificationsProps> = ({
   const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
     "success"
   );
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+  const [deleteDialogData, setDeleteDialogData] =
+    useState<NotificationData | null>(null);
+
   const navigate = useNavigate();
 
   const {
@@ -209,13 +213,29 @@ const Notifications: React.FC<NotificationsProps> = ({
     navigate(`/edit-notification/${clickedEventId}/${tileId}`);
   };
 
+  const handleDeleteDialogOpen = (data: NotificationData) => {
+    setDeleteDialogData(data);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteDialogClose = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteDialogData) {
+      handleDeleteClick(deleteDialogData.id || deleteDialogData._id);
+      handleDeleteDialogClose();
+    }
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
   if (isError) {
     setAlertMessage(
-      `Eroor Fetching data: ${
+      `Error fetching data: ${
         error.response?.data.error || error.response.data
       }`
     );
@@ -246,7 +266,7 @@ const Notifications: React.FC<NotificationsProps> = ({
                     dateUpdated={data.dateUpdated}
                     isToggled={data.isActive}
                     onUpdateClick={() => handleUpdateClick(data)}
-                    onDeleteClick={() => handleDeleteClick(data.id || data._id)}
+                    onDeleteClick={() => handleDeleteDialogOpen(data)}
                     onToggleClick={() => handleToggleClick(data.id || data._id)}
                     onTileClick={() => handleTileClick(data.id || data._id)}
                     isClicked={clickedTileIds.has(data.id || data._id)}
@@ -276,7 +296,6 @@ const Notifications: React.FC<NotificationsProps> = ({
                 <ArrowForwardIos />
               </IconButton>
             </div>
-            {/* Display the total number of Notifications */}
             <div
               style={{
                 display: "flex",
@@ -304,6 +323,21 @@ const Notifications: React.FC<NotificationsProps> = ({
               title={"Edit Notification"}
             />
           )}
+        </Dialog>
+
+        <Dialog open={isDeleteDialogOpen} onClose={handleDeleteDialogClose}>
+          <DialogTitle>Confirm Delete</DialogTitle>
+          <DialogContent>
+            <div>Are you sure you want to delete the notification?</div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleConfirmDelete} color="error">
+              Delete
+            </Button>
+            <Button onClick={handleDeleteDialogClose} color="primary">
+              Cancel
+            </Button>
+          </DialogActions>
         </Dialog>
 
         {showSnackbar && (

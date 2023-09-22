@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import ToolbarHeader from '../../common/Toolbar/ToolBar';
-import EventToolbarHeader from '../../common/Toolbar/EventToolBar';
-import NotificationToolbarHeader from '../../common/Toolbar/NotificationToolBar';
-import Events from './Events';
-import Dashboard from './Dashboard';
-import Notifications from './Notifications';
-import { useBetween } from 'use-between';
-import { Alert } from '@mui/material';
+import React, { useState } from "react";
+import ToolbarHeader from "../../common/Toolbar/ToolBar";
+import EventToolbarHeader from "../../common/Toolbar/EventToolBar";
+import NotificationToolbarHeader from "../../common/Toolbar/NotificationToolBar";
+import Events from "./Events";
+import Dashboard from "./Dashboard";
+import Notifications from "./Notifications";
+import { useBetween } from "use-between";
+import { Alert } from "@mui/material";
 export const IndexState = () => {
-  const [clickedAppName, setClickedAppName] = useState<string>('');
-  const [clickedEventName, setClickedEventName] = useState<string>('');
-  const [clickedAppId, setClickedAppId] = useState<string | number>('');
-  const [clickedEventId, setClickedEventId] = useState<string | number>('');
+  const [clickedAppName, setClickedAppName] = useState<string>("");
+  const [clickedEventName, setClickedEventName] = useState<string>("");
+  const [clickedAppId, setClickedAppId] = useState<string | number>("");
+  const [clickedEventId, setClickedEventId] = useState<string | number>("");
   const [showNotifications, setShowNotifications] = useState<boolean>(false); // Track whether to show notificatio
   const [clickedNotificationId, setClickedNotificationId] = useState<
     string | number
-  >('');
+  >("");
 
   return {
     clickedAppName,
@@ -52,18 +52,25 @@ const Index: React.FC = () => {
     setClickedNotificationId,
   } = useBetween(IndexState);
 
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [sortBy, setSortBy] = useState<string>('appName'); // Initialize with default sort option
-  const [sortOrder, setSortOrder] = useState<string>('asc'); // Initialize with default sort order
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [sortBy, setSortBy] = useState<string>("appName"); // Initialize with default sort option
+  const [sortBy2, setSortBy2] = useState<string>("eventName"); // Initialize with default sort option
+  const [sortBy3, setSortBy3] = useState<string>("notificationName"); // Initialize with default sort option
+  const [sortOrder, setSortOrder] = useState<string>("asc"); // Initialize with default sort order
+  const [sortOrder2, setSortOrder2] = useState<string>("asc"); // Initialize with default sort order
+  const [sortOrder3, setSortOrder3] = useState<string>("asc"); // Initialize with default sort order
   const [isActive, setIsActive] = useState<null | boolean>(null); // Initialize isActive with null
   const [isActive2, setIsActive2] = useState<null | boolean>(null); // Initialize isActive with null
   const [isActive3, setIsActive3] = useState<null | boolean>(null); // Initialize isActive with null
 
-  const handleAppTileClick = (appId: string | number, appName: string) => {
-    setClickedAppId(appId);
+  const handleAppTileClick = (
+    applicationId: string | number,
+    appName: string
+  ) => {
+    setClickedAppId(applicationId);
     setClickedAppName(appName);
-    setClickedEventId(''); // Reset clickedEventId when a new app is clicked
-    setClickedEventName(''); // Reset clickedEventName when a new app is clicked
+    setClickedEventId(""); //del
+    setClickedEventName(""); // del
     setShowNotifications(false); // Hide notifications when a new app is clicked
     setShowAppAlert(false);
   };
@@ -74,6 +81,7 @@ const Index: React.FC = () => {
   ) => {
     setClickedEventId(eventId);
     setClickedEventName(eventName);
+    setClickedNotificationId(" ");
     setShowNotifications(true); // Show notifications when an event is clicked
   };
 
@@ -85,7 +93,7 @@ const Index: React.FC = () => {
   return (
     <div>
       <ToolbarHeader
-        title='Application'
+        title="Application"
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         sortBy={sortBy}
@@ -108,31 +116,32 @@ const Index: React.FC = () => {
       {clickedAppId ? (
         <>
           <EventToolbarHeader
-            title='Events'
+            title="Events"
             clickedAppName={clickedAppName}
             clickedAppId={clickedAppId}
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
-            sortBy={sortBy}
-            sortOrder={sortOrder} // Pass sortOrder to ToolbarHeader
-            setSortBy={setSortBy} // Pass setSortBy to ToolbarHeader
-            setSortOrder={setSortOrder} // Pass setSortOrder to ToolbarHeader
+            sortBy={sortBy2}
+            sortOrder={sortOrder2} // Pass sortOrder to ToolbarHeader
+            setSortBy={setSortBy2} // Pass setSortBy to ToolbarHeader
+            setSortOrder={setSortOrder2} // Pass setSortOrder to ToolbarHeader
             isActive={isActive2} // Pass isActive
             setIsActive={setIsActive2} // Pass setIsActive
           />
           <Events
             searchTerm={searchTerm}
             clickedAppId={clickedAppId}
-            sortBy={sortBy}
-            sortOrder={sortOrder}
+            onSet={handleEventTileClick}
+            sortBy={sortBy2}
+            sortOrder={sortOrder2}
             onEventTileClick={handleEventTileClick}
             isActive={isActive2} // Pass isActive
             setIsActive={setIsActive2} // Pass setIsActive
           />
         </>
       ) : (
-        <div style={{ marginTop: '2px' }}>
-          <Alert severity='warning'>
+        <div style={{ marginTop: "2px" }}>
+          <Alert severity="warning">
             Please select an Application to view events.
           </Alert>
         </div>
@@ -142,31 +151,31 @@ const Index: React.FC = () => {
       {showNotifications && clickedEventId ? (
         <>
           <NotificationToolbarHeader
-            title='Notifications'
+            title="Notifications"
             clickedEventId={clickedEventId}
             clickedEventName={clickedEventName}
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
-            sortBy={sortBy}
-            sortOrder={sortOrder} // Pass sortOrder to ToolbarHeader
-            setSortBy={setSortBy} // Pass setSortBy to ToolbarHeader
-            setSortOrder={setSortOrder} // Pass setSortOrder to ToolbarHeader
+            sortBy={sortBy3}
+            sortOrder={sortOrder3} // Pass sortOrder to ToolbarHeader
+            setSortBy={setSortBy3} // Pass setSortBy to ToolbarHeader
+            setSortOrder={setSortOrder3} // Pass setSortOrder to ToolbarHeader
             isActive={isActive3} // Pass isActive
             setIsActive={setIsActive3} // Pass setIsActive
           />
           <Notifications
             searchTerm={searchTerm}
             clickedEventId={clickedEventId}
-            sortBy={sortBy}
-            sortOrder={sortOrder}
+            sortBy={sortBy3}
+            sortOrder={sortOrder3}
             onNotificationTileClick={handleNotificationTileClick}
             isActive={isActive3} // Pass isActive
             setIsActive={setIsActive3} // Pass setIsActive
           />
         </>
       ) : (
-        <div style={{ marginTop: '20px' }}>
-          <Alert severity='warning'>
+        <div style={{ marginTop: "20px" }}>
+          <Alert severity="warning">
             Please select an Event to view notifications.
           </Alert>
         </div>

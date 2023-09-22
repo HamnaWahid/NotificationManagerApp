@@ -35,7 +35,7 @@ export const TileContent = styled("div")(({ theme }) => ({
 export const InfoIconContainer = styled("div")({
   position: "absolute",
   top: 10, // Adjust this value as needed to position the icon vertically
-  right: 10, // Adjust this value as needed to position the icon horizontally
+  left: 10, // Adjust this value as needed to position the icon horizontally
 });
 export const ButtonGroupContainer = styled("div")(({ theme }) => ({
   display: "flex", // Added display flex to align items horizontally

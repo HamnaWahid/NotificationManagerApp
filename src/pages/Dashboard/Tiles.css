@@ -26,3 +26,36 @@
   ); /* Adjust the tile width as needed */
   grid-gap: 20px; /* Add spacing between tiles */
 }
+/* Styles for Delete Confirmation Dialog */
+.delete-dialog-title {
+  background-color: #f44336; /* Red background for the title */
+  color: white;
+  border: 1px solid #f44336; /* Add a red border around the title */
+}
+
+.delete-dialog-content {
+  padding: 16px;
+}
+
+.delete-dialog-actions {
+  padding: 16px;
+  justify-content: space-between;
+}
+
+.delete-dialog-delete-button {
+  background-color: #f44336; /* Red background for the delete button */
+  color: white;
+}
+
+.delete-dialog-delete-button:hover {
+  background-color: #d32f2f; /* Darker red on hover */
+}
+
+.delete-dialog-cancel-button {
+  background-color: #2196f3; /* Blue background for the cancel button */
+  color: white;
+}
+
+.delete-dialog-cancel-button:hover {
+  background-color: #1976d2; /* Darker blue on hover */
+}

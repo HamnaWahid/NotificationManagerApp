@@ -69,7 +69,7 @@ const flippedDescription = {
 const InfoIconContainer = styled("div")({
   position: "absolute",
   top: 10, // Adjust this value as needed to position the icon vertically
-  right: 10, // Adjust this value as needed to position the icon horizontally
+  left: 10, // Adjust this value as needed to position the icon horizontally
 });
 export {
   AppTileCard,

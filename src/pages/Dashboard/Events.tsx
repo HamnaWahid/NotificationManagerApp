@@ -6,7 +6,10 @@ import {
   Grid,
   IconButton,
   Dialog,
-  AlertTitle,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
 } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import Snackbar from "@mui/material/Snackbar";
@@ -36,18 +39,20 @@ interface EventData {
 }
 
 interface EventsProps {
+  onSet: (applicationId: string | number, appName: string) => void;
   searchTerm: string;
   clickedAppId: string | number;
   onEventTileClick: (eventId: string | number, eventName: string) => void;
   sortBy: string;
   sortOrder: string;
-  isActive: boolean | null; // Add isActive prop
+  isActive: boolean | null;
   setIsActive: React.Dispatch<React.SetStateAction<boolean | null>>;
 }
 
 const pageSize = 6;
 
 const Events: React.FC<EventsProps> = ({
+  onSet,
   searchTerm,
   clickedAppId,
   onEventTileClick,
@@ -69,6 +74,11 @@ const Events: React.FC<EventsProps> = ({
   );
   const [clickedTileIds, setClickedTileIds] = useState<Set<string | number>>(
     new Set()
+  ); //here
+
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
+  const [deleteDialogData, setDeleteDialogData] = useState<EventData | null>(
+    null
   );
 
   const {
@@ -86,7 +96,7 @@ const Events: React.FC<EventsProps> = ({
   );
 
   const queryClient = useQueryClient();
-  console.log("dattaaaaa", TilesData);
+
   const handleNext = () => {
     if (currentPage < TilesData.totalPages) {
       queryClient.invalidateQueries([
@@ -141,7 +151,7 @@ const Events: React.FC<EventsProps> = ({
       } catch (error) {
         console.error("Error updating event:", error);
         setAlertMessage(
-          `Error updating notification: ${
+          `Error updating event: ${
             error.response?.data.error || error.response.data
           }`
         );
@@ -152,6 +162,7 @@ const Events: React.FC<EventsProps> = ({
   };
 
   const handleDeleteClick = async (eventId: string | number) => {
+    //here
     try {
       await deleteEvent(eventId);
       queryClient.invalidateQueries([
@@ -160,10 +171,14 @@ const Events: React.FC<EventsProps> = ({
         currentPage,
         pageSize,
       ]);
+      setClickedTileIds(new Set());
+      onSet(" ", " ");
+
+      setDeleteDialogOpen(false);
     } catch (error) {
       console.error("Error deleting event:", error);
       setAlertMessage(
-        `Error deleting notification: ${
+        `Error deleting event: ${
           error.response?.data.error || error.response.data
         }`
       );
@@ -184,7 +199,7 @@ const Events: React.FC<EventsProps> = ({
     } catch (error) {
       console.error("Error deactivating event:", error);
       setAlertMessage(
-        `Error deactivating notification: ${
+        `Error deactivating event: ${
           error.response?.data.error || error.response.data
         }`
       );
@@ -194,6 +209,7 @@ const Events: React.FC<EventsProps> = ({
   };
 
   const handleTileClick = (tileId: string | number) => {
+    //here
     const newClickedTileIds = new Set(clickedTileIds);
     newClickedTileIds.clear();
     newClickedTileIds.add(tileId);
@@ -207,123 +223,126 @@ const Events: React.FC<EventsProps> = ({
     }
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const handleOpenDeleteDialog = (data: EventData) => {
+    setDeleteDialogData(data);
+    setDeleteDialogOpen(true);
+  };
 
-  if (isError) {
-    setAlertMessage(
-      `Error fetching data: ${
-        error.response?.data.error || error.response.data
-      }`
-    );
-    setAlertSeverity("error");
-    setShowAlert(true);
-    return <div>Error fetching data</div>;
-  }
-  // Check if there are no events and show a warning
-  if (!TilesData?.events || TilesData.events.length === 0) {
-    return (
-      <Alert severity="warning" variant="outlined">
-        <AlertTitle>Warning</AlertTitle>
-        This app has no events
-      </Alert>
-    );
-  } else {
-    return (
-      <>
-        <div className="events">
-          <Slide direction="left" in={true} mountOnEnter unmountOnExit>
-            <Grid container spacing={2} className="gridcontainer">
-              {TilesData?.events?.map((data: EventData) => (
-                <Grid item xs={12} sm={6} md={4} key={data.id || data._id}>
-                  <Tile
-                    Id={data.id || data._id}
-                    title={data.eventName}
-                    description={data.eventDescription}
-                    dateCreated={data.dateCreated}
-                    dateUpdated={data.dateUpdated}
-                    isToggled={data.isActive}
-                    onUpdateClick={() => handleUpdateClick(data)}
-                    onDeleteClick={() => handleDeleteClick(data.id || data._id)}
-                    onToggleClick={() => handleToggleClick(data.id || data._id)}
-                    onTileClick={() => handleTileClick(data.id || data._id)}
-                    isClicked={clickedTileIds.has(data.id || data._id)}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          </Slide>
-          <Paper elevation={1} square>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <IconButton onClick={handleBack} disabled={currentPage === 1}>
-                <ArrowBackIos />
-              </IconButton>
-              <span style={{ margin: "0 5px" }}>
-                {currentPage} of {TilesData?.totalPages}
-              </span>
-              <IconButton
-                onClick={handleNext}
-                disabled={currentPage === TilesData?.totalPages}
-              >
-                <ArrowForwardIos />
-              </IconButton>
-            </div>
-            <div style={{ flex: 1, textAlign: "center" }}>
-              Events: {TilesData?.totalEvents}
-            </div>
-          </Paper>
-        </div>
-
-        <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
-          {selectedEventData && (
-            <EventFormComponent
-              onCancel={handleCloseDialog}
-              onSubmit={handleUpdateAction}
-              message="Update Event"
-              initialName={selectedEventData.eventName}
-              initialDescription={selectedEventData.eventDescription}
-              title={"Edit Event"}
-            />
-          )}
-        </Dialog>
-        {showSnackbar && (
-          <Snackbar
-            open={showSnackbar}
-            autoHideDuration={1300}
-            onClose={() => setShowSnackbar(false)}
-          >
-            <Alert severity="success" onClose={() => setShowSnackbar(false)}>
-              {snackbarMessage}
-            </Alert>
-          </Snackbar>
-        )}
-
-        {showAlert && (
-          <Snackbar
-            open={showAlert}
-            autoHideDuration={1300}
-            onClose={() => setShowAlert(false)}
+  return (
+    <>
+      <div className="events">
+        <Slide direction="left" in={true} mountOnEnter unmountOnExit>
+          <Grid container spacing={2} className="gridcontainer">
+            {TilesData?.events?.map((data: EventData) => (
+              <Grid item xs={12} sm={6} md={4} key={data.id || data._id}>
+                <Tile
+                  Id={data.id || data._id}
+                  title={data.eventName}
+                  description={data.eventDescription}
+                  dateCreated={data.dateCreated}
+                  dateUpdated={data.dateUpdated}
+                  isToggled={data.isActive}
+                  onUpdateClick={() => handleUpdateClick(data)}
+                  onDeleteClick={() => handleOpenDeleteDialog(data)}
+                  onToggleClick={() => handleToggleClick(data.id || data._id)}
+                  onTileClick={() => handleTileClick(data.id || data._id)}
+                  isClicked={clickedTileIds.has(data.id || data._id)} //here
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Slide>
+        <Paper elevation={1} square>
+          <div
             style={{
-              top: "20%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            <Alert severity={alertSeverity} onClose={() => setShowAlert(false)}>
-              {alertMessage}
-            </Alert>
-          </Snackbar>
+            <IconButton onClick={handleBack} disabled={currentPage === 1}>
+              <ArrowBackIos />
+            </IconButton>
+            <span style={{ margin: "0 5px" }}>
+              {currentPage} of {TilesData?.totalPages}
+            </span>
+            <IconButton
+              onClick={handleNext}
+              disabled={currentPage === TilesData?.totalPages}
+            >
+              <ArrowForwardIos />
+            </IconButton>
+          </div>
+          <div style={{ flex: 1, textAlign: "center" }}>
+            Events: {TilesData?.totalEvents}
+          </div>
+        </Paper>
+      </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={isDeleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+      >
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <div>Are you sure you want to delete the event?</div>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              handleDeleteClick(deleteDialogData?.id || deleteDialogData?._id);
+              setDeleteDialogOpen(false);
+            }}
+            color="error"
+          >
+            Delete
+          </Button>
+          <Button onClick={() => setDeleteDialogOpen(false)} color="primary">
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Update Event Dialog */}
+      <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
+        {selectedEventData && (
+          <EventFormComponent
+            onCancel={handleCloseDialog}
+            onSubmit={handleUpdateAction}
+            message="Update Event"
+            initialName={selectedEventData.eventName}
+            initialDescription={selectedEventData.eventDescription}
+            title={"Edit Event"}
+          />
         )}
-      </>
-    );
-  }
+      </Dialog>
+
+      {showSnackbar && (
+        <Snackbar
+          open={showSnackbar}
+          autoHideDuration={1300}
+          onClose={() => setShowSnackbar(false)}
+        >
+          <Alert severity="success" onClose={() => setShowSnackbar(false)}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+      )}
+
+      {showAlert && (
+        <Snackbar
+          open={showAlert}
+          autoHideDuration={1300}
+          onClose={() => setShowAlert(false)}
+        >
+          <Alert severity={alertSeverity} onClose={() => setShowAlert(false)}>
+            {alertMessage}
+          </Alert>
+        </Snackbar>
+      )}
+    </>
+  );
 };
 
 export default Events;

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import useHandleAddEvent from './handleAddEvent';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import React, { useState } from "react";
+import useHandleAddEvent from "./handleAddEvent";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert, { AlertProps } from "@mui/material/Alert";
 import {
   Toolbar,
   Typography,
@@ -11,15 +11,22 @@ import {
   MenuItem,
   Button,
   Dialog,
-} from '@mui/material';
-import { Search, Sort, SortByAlpha, Add, FilterAlt } from '@mui/icons-material';
-import EventFormComponent from '../Form/EventFormComponent';
-import './ToolbarStyles.css';
-import { useQueryClient } from '@tanstack/react-query';
-import Tooltip from '@mui/material/Tooltip';
+  Hidden,
+} from "@mui/material";
+import {
+  Sort,
+  SortByAlpha,
+  Add,
+  FilterAlt,
+  MoreVert,
+} from "@mui/icons-material";
+import EventFormComponent from "../Form/EventFormComponent";
+import "./ToolbarStyles.css";
+import { useQueryClient } from "@tanstack/react-query";
+import Tooltip from "@mui/material/Tooltip";
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>((props, ref) => {
-  return <MuiAlert elevation={6} ref={ref} variant='filled' {...props} />;
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 interface EventToolbarHeaderProps {
@@ -54,12 +61,13 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
     useState<null | HTMLElement>(null);
   const queryClient = useQueryClient();
   const [showSnackbar, setShowSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState<string>('');
+  const [snackbarMessage, setSnackbarMessage] = useState<string>("");
   const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState<string>('');
-  const [alertSeverity, setAlertSeverity] = useState<'success' | 'error'>(
-    'success'
+  const [alertMessage, setAlertMessage] = useState<string>("");
+  const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
+    "success"
   );
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleClickSort = (event: React.MouseEvent<HTMLElement>) => {
     setSortAnchorEl(event.currentTarget);
@@ -85,10 +93,13 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
 
   const handleSortOptionClick = (option: string) => {
     setSortBy(option);
-    setSortOrder('asc');
+    setSortOrder("asc");
     handleClose();
   };
-
+  const handleSortOrderClick = (option: string) => {
+    setSortOrder(option);
+    handleClose();
+  };
   const handleAddEvent = useHandleAddEvent();
 
   const handleFormSubmit = async (formData: {
@@ -104,13 +115,13 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
       await handleAddEvent(formDataWithAppId);
       setOpenDialog(false); // Close the dialog after successful submission
     } catch (error) {
-      console.error('Error adding event:', error);
+      console.error("Error adding event:", error);
       setAlertMessage(
         `Error adding event: ${
           error.response?.data.error || error.response.data
         }`
       );
-      setAlertSeverity('error');
+      setAlertSeverity("error");
       setShowAlert(true);
       // You can handle the error state or other logic here if needed
     }
@@ -119,185 +130,318 @@ const EventToolbarHeader: React.FC<EventToolbarHeaderProps> = ({
   const handleClickStatusFilter = (event: React.MouseEvent<HTMLElement>) => {
     setStatusMenuAnchorEl(event.currentTarget);
   };
-
+  const handleMenuButtonClick = (event: React.MouseEvent<HTMLElement>) => {
+    setMenuAnchorEl(event.currentTarget);
+  };
   return (
-    <Toolbar className='curved-appbar toolbar-header'>
+    <Toolbar className="curved-appbar toolbar-header">
       <Typography
-        variant='h6'
-        style={{ flexGrow: 1, color: '#333', fontWeight: 'bold' }}
+        variant="h6"
+        style={{ flexGrow: 1, color: "#333", fontWeight: "bold" }}
       >
-        {title} -{' '}
+        {title} -{" "}
         <span
           style={{
-            fontSize: '17px',
-            color: '#3f51b5',
+            fontSize: "17px",
+            color: "#3f51b5",
           }}
         >
           {clickedAppName} {/* Use clickedEventName */}
         </span>
       </Typography>
-      <div style={{ position: 'relative' }}>
-        <Tooltip title='Search'>
-          <IconButton>
-            <Search />
+
+      {/* Show all buttons and input on larger screens */}
+      <Hidden smDown>
+        <div style={{ position: "relative" }}>
+          <Tooltip title="Search">
+            <InputBase
+              placeholder="Search"
+              style={{ color: "#3f51b5", marginLeft: "10px" }}
+              inputProps={{ "aria-label": "search" }}
+              defaultValue={searchTerm}
+              onChange={(e) => {
+                const v = e.target.value;
+                if (v.length >= 3) {
+                  setSearchTerm(v);
+                  queryClient.invalidateQueries(["events", searchTerm]);
+                }
+                if (v.length === 0) {
+                  setSearchTerm("");
+                }
+              }}
+            />
+          </Tooltip>
+        </div>
+
+        <div>
+          <div style={{ display: "flex" }}>
+            <Tooltip title="Sort By">
+              <IconButton onClick={handleClickSortByAlpha}>
+                <SortByAlpha />
+              </IconButton>
+            </Tooltip>
+          </div>
+          <Menu
+            anchorEl={alphaSortAnchorEl}
+            keepMounted
+            open={Boolean(alphaSortAnchorEl)}
+            onClose={handleClose}
+          >
+            <MenuItem onClick={() => handleSortOptionClick("eventName")}>
+              Sort by Name
+            </MenuItem>
+            <MenuItem onClick={() => handleSortOptionClick("dateCreated")}>
+              Sort by Date
+            </MenuItem>
+            <MenuItem onClick={() => handleSortOptionClick("isActive")}>
+              Sort by Active Status
+            </MenuItem>
+          </Menu>
+        </div>
+
+        <div>
+          <Tooltip title="Sort Order">
+            <IconButton onClick={handleClickSort}>
+              <Sort />
+            </IconButton>
+          </Tooltip>
+          <Menu
+            anchorEl={sortAnchorEl}
+            keepMounted
+            open={Boolean(sortAnchorEl)}
+            onClose={handleClose}
+          >
+            <MenuItem onClick={() => handleSortOrderClick("asc")}>
+              Ascendings
+            </MenuItem>
+            <MenuItem onClick={() => handleSortOrderClick("desc")}>
+              Descending
+            </MenuItem>
+          </Menu>
+        </div>
+
+        <div>
+          <Tooltip title="Status Filter">
+            <IconButton onClick={handleClickStatusFilter}>
+              <FilterAlt />
+            </IconButton>
+          </Tooltip>
+          <Menu
+            anchorEl={statusMenuAnchorEl}
+            keepMounted
+            open={Boolean(statusMenuAnchorEl)}
+            onClose={handleClose}
+          >
+            <MenuItem
+              onClick={() => {
+                setIsActive(true);
+                handleClose();
+              }}
+            >
+              Active
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setIsActive(false);
+                handleClose();
+              }}
+            >
+              Inactive
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setIsActive(null);
+                handleClose();
+              }}
+            >
+              All
+            </MenuItem>
+          </Menu>
+        </div>
+        <div>
+          <Tooltip title="Add">
+            <Button
+              variant="outlined"
+              color="primary"
+              size="small"
+              style={{
+                marginRight: "5px",
+                color: "#3f51b5",
+              }}
+              onClick={handleAddClick}
+            >
+              <Add />
+            </Button>
+          </Tooltip>
+          <Dialog open={openDialog} onClose={handleDialogClose}>
+            <EventFormComponent
+              title="Add Event"
+              onCancel={handleDialogClose}
+              onSubmit={handleFormSubmit}
+            />
+          </Dialog>
+        </div>
+      </Hidden>
+
+      {/* Show a menu button on screens smaller than tablet */}
+      <Hidden mdUp>
+        <div style={{ position: "relative" }}>
+          <Tooltip title="Search">
+            <InputBase
+              placeholder="Search"
+              style={{ color: "#3f51b5", marginLeft: "10px" }}
+              inputProps={{ "aria-label": "search" }}
+              defaultValue={searchTerm}
+              onChange={(e) => {
+                const v = e.target.value;
+                if (v.length >= 3) {
+                  setSearchTerm(v);
+                  queryClient.invalidateQueries(["events", searchTerm]);
+                }
+                if (v.length === 0) {
+                  setSearchTerm("");
+                }
+              }}
+            />
+          </Tooltip>
+        </div>
+        <Tooltip title="Menu">
+          <IconButton onClick={handleMenuButtonClick}>
+            <MoreVert />
           </IconButton>
         </Tooltip>
-        <InputBase
-          placeholder='Search'
-          style={{ marginLeft: '10px' }}
-          inputProps={{ 'aria-label': 'search' }}
-          defaultValue={searchTerm}
-          onChange={(e) => {
-            const v = e.target.value;
+        <Menu
+          anchorEl={menuAnchorEl}
+          keepMounted
+          open={Boolean(menuAnchorEl)}
+          onClose={() => setMenuAnchorEl(null)}
+        >
+          {/* Remove the duplicated "Add" button */}
+          <MenuItem>
+            <Button size="small" onClick={handleAddClick}>
+              <Add />
+            </Button>
+            <Dialog open={openDialog} onClose={handleDialogClose}>
+              <EventFormComponent
+                title="Add Event"
+                onCancel={handleDialogClose}
+                onSubmit={handleFormSubmit}
+              />
+            </Dialog>
+          </MenuItem>
 
-            if (v.length >= 3) {
-              setSearchTerm(v);
-              queryClient.invalidateQueries(['events', searchTerm]);
-            }
-
-            if (v.length === 0) {
-              setSearchTerm('');
-            }
-          }}
-        />
-      </div>
-      <div>
-        <div style={{ display: 'flex' }}>
-          <Tooltip title='Sort By'>
+          {/* Add a horizontal menu for "Sort By" */}
+          <MenuItem>
             <IconButton onClick={handleClickSortByAlpha}>
               <SortByAlpha />
             </IconButton>
-          </Tooltip>
-        </div>
-        <Menu
-          anchorEl={alphaSortAnchorEl}
-          keepMounted
-          open={Boolean(alphaSortAnchorEl)}
-          onClose={handleClose}
-        >
-          <MenuItem onClick={() => handleSortOptionClick('eventName')}>
-            Sort by Name
+            <Menu
+              anchorEl={alphaSortAnchorEl}
+              keepMounted
+              open={Boolean(alphaSortAnchorEl)}
+              onClose={handleClose}
+              style={{ marginTop: "8px" }}
+            >
+              <MenuItem onClick={() => handleSortOptionClick("eventName")}>
+                Sort by Name
+              </MenuItem>
+              <MenuItem onClick={() => handleSortOptionClick("dateCreated")}>
+                Sort by Date
+              </MenuItem>
+              <MenuItem onClick={() => handleSortOptionClick("isActive")}>
+                Sort by Active Status
+              </MenuItem>
+            </Menu>
           </MenuItem>
-          <MenuItem onClick={() => handleSortOptionClick('dateCreated')}>
-            Sort by Date
+
+          {/* sorting */}
+          <MenuItem>
+            <IconButton onClick={handleClickSort}>
+              <Sort />
+            </IconButton>
+            <Menu
+              anchorEl={sortAnchorEl}
+              keepMounted
+              open={Boolean(sortAnchorEl)}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={() => handleSortOptionClick("asc")}>
+                Ascending
+              </MenuItem>
+              <MenuItem onClick={() => handleSortOptionClick("desc")}>
+                Descending
+              </MenuItem>
+            </Menu>
           </MenuItem>
-          <MenuItem onClick={() => handleSortOptionClick('isActive')}>
-            Sort by Active Status
+
+          {/* status filter */}
+          <MenuItem>
+            <IconButton onClick={handleClickStatusFilter}>
+              <FilterAlt />
+            </IconButton>
+            <Menu
+              anchorEl={statusMenuAnchorEl}
+              keepMounted
+              open={Boolean(statusMenuAnchorEl)}
+              onClose={handleClose}
+            >
+              <MenuItem
+                onClick={() => {
+                  setIsActive(true);
+                  handleClose();
+                }}
+              >
+                Active
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setIsActive(false);
+                  handleClose();
+                }}
+              >
+                Inactive
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  setIsActive(null);
+                  handleClose();
+                }}
+              >
+                All
+              </MenuItem>
+            </Menu>
           </MenuItem>
         </Menu>
-      </div>
-      <div>
-        <Tooltip title='Sort Order'>
-          <IconButton onClick={handleClickSort}>
-            <Sort />
-          </IconButton>
-        </Tooltip>
-        <Menu
-          anchorEl={sortAnchorEl}
-          keepMounted
-          open={Boolean(sortAnchorEl)}
-          onClose={handleClose}
+      </Hidden>
+
+      {showSnackbar && (
+        <Snackbar
+          open={showSnackbar}
+          autoHideDuration={1300}
+          onClose={() => setShowSnackbar(false)}
         >
-          <MenuItem onClick={() => handleSortOptionClick('asc')}>
-            Ascending
-          </MenuItem>
-          <MenuItem onClick={() => handleSortOptionClick('desc')}>
-            Descending
-          </MenuItem>
-        </Menu>
-      </div>
-      <div>
-        <Tooltip title='Status Filter'>
-          <IconButton onClick={handleClickStatusFilter}>
-            <FilterAlt />
-          </IconButton>
-        </Tooltip>
-        <Menu
-          anchorEl={statusMenuAnchorEl}
-          keepMounted
-          open={Boolean(statusMenuAnchorEl)}
-          onClose={handleClose}
+          <Alert severity="success" onClose={() => setShowSnackbar(false)}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
+      )}
+
+      {showAlert && (
+        <Snackbar
+          open={showAlert}
+          autoHideDuration={1300}
+          onClose={() => setShowAlert(false)}
+          style={{
+            top: "20%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
         >
-          <MenuItem
-            onClick={() => {
-              setIsActive(true);
-              handleClose();
-            }}
-          >
-            Active
-          </MenuItem>
-
-          <MenuItem
-            onClick={() => {
-              setIsActive(false);
-              handleClose();
-            }}
-          >
-            Inactive
-          </MenuItem>
-
-          <MenuItem
-            onClick={() => {
-              setIsActive(null);
-              handleClose();
-            }}
-          >
-            All
-          </MenuItem>
-        </Menu>
-      </div>
-
-      <div>
-        <Tooltip title='Add'>
-          <Button
-            variant='outlined'
-            color='primary'
-            size='small'
-            style={{
-              marginRight: '5px',
-              color: '#3f51b5',
-            }}
-            onClick={handleAddClick}
-          >
-            <Add />
-          </Button>
-        </Tooltip>
-        <Dialog open={openDialog} onClose={handleDialogClose}>
-          <EventFormComponent
-            title='Add Event'
-            onCancel={handleDialogClose}
-            onSubmit={handleFormSubmit}
-          />
-        </Dialog>
-        {showSnackbar && (
-          <Snackbar
-            open={showSnackbar}
-            autoHideDuration={1300}
-            onClose={() => setShowSnackbar(false)}
-          >
-            <Alert severity='success' onClose={() => setShowSnackbar(false)}>
-              {snackbarMessage}
-            </Alert>
-          </Snackbar>
-        )}
-
-        {showAlert && (
-          <Snackbar
-            open={showAlert}
-            autoHideDuration={1300}
-            onClose={() => setShowAlert(false)}
-            style={{
-              top: '20%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-            }}
-          >
-            <Alert severity={alertSeverity} onClose={() => setShowAlert(false)}>
-              {alertMessage}
-            </Alert>
-          </Snackbar>
-        )}
-      </div>
+          <Alert severity={alertSeverity} onClose={() => setShowAlert(false)}>
+            {alertMessage}
+          </Alert>
+        </Snackbar>
+      )}
     </Toolbar>
   );
 };
