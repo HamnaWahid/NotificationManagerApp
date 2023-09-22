@@ -72,7 +72,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     'success'
   );
   useEffect(() => {
-    if (searchTerm && searchTerm.length >= 3 && !appTilesData > 4) {
+    if (searchTerm && searchTerm.length >= 3) {
       setCurrentPage(1);
       setPage(1);
     }

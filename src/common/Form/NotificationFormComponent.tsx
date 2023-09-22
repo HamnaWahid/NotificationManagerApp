@@ -33,30 +33,34 @@ const NotificationFormComponent = ({
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
     setNotificationName(newName);
-    try {
-      setNameError(false);
-    } catch (error) {
-      setNameError(true);
-    }
+    validateName(newName);
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDescription = e.target.value;
     setNotificationDescription(newDescription);
-    try {
-      setDescriptionError(false);
-    } catch (error) {
-      setDescriptionError(true);
-    }
+    validateDescription(newDescription);
+  };
+
+  const validateName = (name: string) => {
+    setNameError(name.trim() === '' || name.length < 3 || name.length > 50);
+  };
+
+  const validateDescription = (description: string) => {
+    setDescriptionError(
+      description.trim() === '' ||
+        description.length < 3 ||
+        description.length > 50
+    );
   };
 
   const handleSubmit = () => {
-    try {
-      // Additionally, you can validate templateSubject and templateBody here if needed
+    // Validate before submitting
+    validateName(notificationName);
+    validateDescription(notificationDescription);
+
+    if (!nameError && !descriptionError) {
       onSubmit({ notificationName, notificationDescription });
-    } catch (error) {
-      // Handle validation errors
-      console.error('Validation error:', error.errors);
     }
   };
 
@@ -91,11 +95,13 @@ const NotificationFormComponent = ({
           error={nameError}
           helperText={
             nameError
-              ? 'Notification Name should be between 4 and 50 characters'
+              ? notificationName.trim() === ''
+                ? 'Notification Name is required'
+                : 'Notification Name should be between 3 and 50 characters'
               : ''
           }
           inputProps={{
-            maxLength: 100,
+            maxLength: 50,
           }}
         />
         <TextField
@@ -111,7 +117,9 @@ const NotificationFormComponent = ({
           error={descriptionError}
           helperText={
             descriptionError
-              ? 'Notification Description should be between 4 and 50 characters'
+              ? notificationDescription.trim() === ''
+                ? 'Notification Description is required'
+                : 'Notification Description should be between 3 and 50 characters'
               : ''
           }
           inputProps={{

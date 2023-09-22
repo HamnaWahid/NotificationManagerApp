@@ -28,23 +28,40 @@ const FormComponent = ({
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
     setName(newName);
-    setNameError(newName.trim().length < 3 || newName.trim().length > 50);
+    validateFields(newName, appDescription);
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDescription = e.target.value;
     setDescription(newDescription);
-    setDescriptionError(
-      newDescription.trim().length < 3 || newDescription.trim().length > 50
-    );
+    validateFields(appName, newDescription);
+  };
+
+  const validateFields = (name: string, description: string) => {
+    if (name.trim() === '') {
+      setNameError(true);
+    } else if (name.trim().length < 3 || name.trim().length > 50) {
+      setNameError(true);
+    } else {
+      setNameError(false);
+    }
+
+    if (description.trim() === '') {
+      setDescriptionError(true);
+    } else if (
+      description.trim().length < 3 ||
+      description.trim().length > 50
+    ) {
+      setDescriptionError(true);
+    } else {
+      setDescriptionError(false);
+    }
   };
 
   const handleSubmit = () => {
-    if (appName.trim() === '' || appDescription.trim() === '') {
-      // If either field is empty, set error states
-      setNameError(appName.trim() === '');
-      setDescriptionError(appDescription.trim() === '');
-    } else {
+    validateFields(appName, appDescription);
+
+    if (!nameError && !descriptionError) {
       onSubmit({ appName, appDescription });
     }
   };
@@ -78,7 +95,13 @@ const FormComponent = ({
           variant='outlined'
           required // Make the field required
           error={nameError}
-          helperText={nameError ? 'Name is required' : ''}
+          helperText={
+            nameError
+              ? appName.trim() === ''
+                ? 'Name is required'
+                : 'Name should be between 3 and 50 characters'
+              : ''
+          }
         />
         <TextField
           label='Description'
@@ -91,7 +114,13 @@ const FormComponent = ({
           rows={4} // Set the number of rows for multiline
           required // Make the field required
           error={descriptionError}
-          helperText={descriptionError ? 'Description is required' : ''}
+          helperText={
+            descriptionError
+              ? appDescription.trim() === ''
+                ? 'Description is required'
+                : 'Description should be between 3 and 50 characters'
+              : ''
+          }
         />
         <div className='button-container'>
           <Button
