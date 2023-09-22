@@ -15,6 +15,7 @@ import {
   DialogActions,
   Button,
   Tooltip,
+  AlertTitle,
 } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import {
@@ -212,7 +213,19 @@ const Dashboard: React.FC<DashboardProps> = ({
     setClickedApplicationIds(newClickedApplicationIds); //del
     onSet(applicationId, appName);
   };
-
+  // Check if there are no notifications found during a search
+  if (
+    searchTerm &&
+    searchTerm.length >= 3 &&
+    appTilesData?.applications?.length === 0
+  ) {
+    return (
+      <Alert severity="info" variant="outlined">
+        <AlertTitle>No Apps Found</AlertTitle>
+        There are no apps matching your search criteria.
+      </Alert>
+    );
+  }
   return (
     <>
       <div className="dashboard">

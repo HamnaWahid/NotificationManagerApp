@@ -253,6 +253,15 @@ const Events: React.FC<EventsProps> = ({
     setShowAlert(true);
     return <div>Error fetching data</div>;
   }
+  // Check if there are no notifications found during a search
+  if (searchTerm && searchTerm.length >= 3 && TilesData?.events?.length === 0) {
+    return (
+      <Alert severity="info" variant="outlined">
+        <AlertTitle>No Events Found</AlertTitle>
+        There are no events matching your search criteria.
+      </Alert>
+    );
+  }
   if (!TilesData?.events || TilesData.events.length === 0) {
     return (
       <Alert severity="warning" variant="outlined">
