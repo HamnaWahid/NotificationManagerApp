@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  // baseURL: 'http://localhost:3000/api',
+  baseURL: 'http://192.168.100.149:3000/api',
 });
 
 // Add an interceptor to include the token in the headers
