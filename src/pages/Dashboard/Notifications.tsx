@@ -264,6 +264,19 @@ const Notifications: React.FC<NotificationsProps> = ({
     setShowAlert(true);
     return <div>Error fetching data</div>;
   }
+  // Check if there are no notifications found during a search
+  if (
+    searchTerm &&
+    searchTerm.length >= 3 &&
+    TilesData?.notifications?.length === 0
+  ) {
+    return (
+      <Alert severity="info" variant="outlined">
+        <AlertTitle>No Notifications Found</AlertTitle>
+        There are no notifications matching your search criteria.
+      </Alert>
+    );
+  }
   if (!TilesData?.notifications || TilesData.notifications.length === 0) {
     return (
       <Alert severity="warning" variant="outlined">

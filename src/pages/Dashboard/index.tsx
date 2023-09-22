@@ -53,6 +53,8 @@ const Index: React.FC = () => {
   } = useBetween(IndexState);
 
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchTerm2, setSearchTerm2] = useState<string>("");
+  const [searchTerm3, setSearchTerm3] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("appName"); // Initialize with default sort option
   const [sortBy2, setSortBy2] = useState<string>("eventName"); // Initialize with default sort option
   const [sortBy3, setSortBy3] = useState<string>("notificationName"); // Initialize with default sort option
@@ -126,8 +128,8 @@ const Index: React.FC = () => {
             title="Events"
             clickedAppName={clickedAppName}
             clickedAppId={clickedAppId}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
+            searchTerm={searchTerm2}
+            setSearchTerm={setSearchTerm2}
             sortBy={sortBy2}
             sortOrder={sortOrder2} // Pass sortOrder to ToolbarHeader
             setSortBy={setSortBy2} // Pass setSortBy to ToolbarHeader
@@ -138,7 +140,7 @@ const Index: React.FC = () => {
           <Events
             page={page}
             setPage={setPage}
-            searchTerm={searchTerm}
+            searchTerm={searchTerm2}
             clickedAppId={clickedAppId}
             onSet={handleEventTileClick}
             sortBy={sortBy2}
@@ -165,8 +167,8 @@ const Index: React.FC = () => {
             title="Notifications"
             clickedEventId={clickedEventId}
             clickedEventName={clickedEventName}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
+            searchTerm={searchTerm3}
+            setSearchTerm={setSearchTerm3}
             sortBy={sortBy3}
             sortOrder={sortOrder3} // Pass sortOrder to ToolbarHeader
             setSortBy={setSortBy3} // Pass setSortBy to ToolbarHeader
@@ -177,7 +179,7 @@ const Index: React.FC = () => {
           <Notifications
             page={page}
             setPage={setPage}
-            searchTerm={searchTerm}
+            searchTerm={searchTerm3}
             clickedEventId={clickedEventId}
             sortBy={sortBy3}
             sortOrder={sortOrder3}
